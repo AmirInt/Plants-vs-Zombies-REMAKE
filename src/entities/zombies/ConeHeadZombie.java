@@ -8,9 +8,8 @@ import java.awt.*;
 public class ConeHeadZombie extends Zombie{
 
     public ConeHeadZombie(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(560, xLocation, yLocation, 0);
-//        Setting the appearance
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif").getImage());
+        super(560, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif").getImage(),
+                0);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
             setMovingSpeed(25);
@@ -34,6 +33,16 @@ public class ConeHeadZombie extends Zombie{
     @Override
     public void setMovingSpeed(int movingSpeed) {
         super.setMovingSpeed(movingSpeed);
+    }
+
+    @Override
+    public int getMovingSpeed() {
+        return super.getMovingSpeed();
+    }
+
+    @Override
+    public void injure(int destructionPower) {
+        super.injure(destructionPower);
     }
 
     @Override

@@ -9,10 +9,11 @@ public abstract class Entity implements Runnable {
     protected int yLocation;
     protected Image appearance;
 
-    public Entity(int life, int xLocation, int yLocation) {
+    public Entity(int life, int xLocation, int yLocation, Image appearance) {
         this.life = life;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
+        this.appearance = appearance;
     }
 
     public void setAppearance(Image appearance) {

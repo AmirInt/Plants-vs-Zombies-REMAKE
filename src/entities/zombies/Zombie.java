@@ -10,9 +10,9 @@ public abstract class Zombie extends Entity{
     protected int destructionPower;
     protected int movingSpeed;
 
-    public Zombie(int life, int xLocation, int yLocation,
+    public Zombie(int life, int xLocation, int yLocation, Image appearance,
                   int destructionPower) {
-        super(life, xLocation, yLocation);
+        super(life, xLocation, yLocation, appearance);
         this.destructionPower = destructionPower;
     }
 
@@ -28,8 +28,18 @@ public abstract class Zombie extends Entity{
         this.destructionPower = destructionPower;
     }
 
+    public int getMovingSpeed() {
+        return movingSpeed;
+    }
+
+    public void injure(int destructionPower) {
+        if(life - destructionPower > 0) life -= destructionPower;
+        else die();
+    }
+
     public void destroy(Entity plant) {
     }
+
     public void downGrade() {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage());
     }
