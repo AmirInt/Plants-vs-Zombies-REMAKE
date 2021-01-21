@@ -22,7 +22,7 @@ public class GameLoop implements Runnable {
      */
     public static final int FPS = 30;
 
-    private GameFrame canvas;
+    private final GameFrame canvas;
     private GameState state;
 
     public GameLoop(GameFrame frame) {
@@ -53,8 +53,7 @@ public class GameLoop implements Runnable {
                 long delay = (1000 / FPS) - (System.currentTimeMillis() - start);
                 if (delay > 0)
                     Thread.sleep(delay);
-            } catch (InterruptedException ex) {
-            }
+            } catch (InterruptedException ignore) { }
         }
         canvas.render(state);
     }

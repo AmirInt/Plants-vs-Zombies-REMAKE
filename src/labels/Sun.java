@@ -1,4 +1,4 @@
-package entities.others;
+package labels;
 
 import entities.Entity;
 

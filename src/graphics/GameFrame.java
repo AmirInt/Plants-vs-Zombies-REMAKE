@@ -2,12 +2,9 @@ package graphics;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
 import javax.swing.*;
+import menus.Menu;
 
 /**
  * The window on which the rendering is performed.
@@ -25,9 +22,9 @@ public class GameFrame extends JFrame {
     public static final int GAME_WIDTH = 16 * GAME_HEIGHT / 9;  // wide aspect ratio
 
     private long lastRender;
-    private ArrayList<Float> fpsHistory;
+    private final ArrayList<Float> fpsHistory;
     private BufferStrategy bufferStrategy;
-    private Image image = new ImageIcon("F:\\PVS Design Kit\\images\\mainBG.png").getImage();
+    private final Image image;
 
     public GameFrame(String title) {
         super(title);
@@ -35,13 +32,7 @@ public class GameFrame extends JFrame {
         setSize(GAME_WIDTH, GAME_HEIGHT);
         lastRender = -1;
         fpsHistory = new ArrayList<>(100);
-
-	/*	try{
-			image = ImageIO.read(new File("Icon.png"));
-		}
-		catch(IOException e){
-			System.out.println(e);
-		}*/
+        image = new ImageIcon("Game accessories\\images\\mainBG.png").getImage();
     }
 
     /**
@@ -53,6 +44,11 @@ public class GameFrame extends JFrame {
         // Triple-buffering
         createBufferStrategy(3);
         bufferStrategy = getBufferStrategy();
+    }
+
+    public void displayMenu() {
+        Menu menu = new Menu(this);
+
     }
 
 
@@ -92,12 +88,11 @@ public class GameFrame extends JFrame {
      */
     private void doRendering(Graphics2D g2d, GameState state) {
         // Draw background
-        g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT, Color.BLACK, null);
-        // Draw ball
-        g2d.setColor(Color.BLACK);
-        ImageIcon imageIcon = new ImageIcon("F:\\PVS Design Kit\\images\\Gifs\\coneheadzombie.gif");
-        Image image = imageIcon.getImage();
-        g2d.drawImage(image, state.locX, state.locY, 60, 60, null);
+        g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
+
+        ImageIcon imageIcon = new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif");
+        Image image1 = imageIcon.getImage();
+        g2d.drawImage(image1, state.locX, state.locY, 60, 60, null);
 
         // Print FPS info
         long currentRender = System.currentTimeMillis();
