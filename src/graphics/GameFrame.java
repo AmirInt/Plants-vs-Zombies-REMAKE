@@ -26,8 +26,8 @@ public class GameFrame extends JFrame {
     private BufferStrategy bufferStrategy;
     private final Image image;
 
-    public GameFrame(String title) {
-        super(title);
+    public GameFrame() {
+        super("Plants vs. Zombies");
         setResizable(false);
         setSize(GAME_WIDTH, GAME_HEIGHT);
         lastRender = -1;
@@ -48,7 +48,7 @@ public class GameFrame extends JFrame {
 
     public void displayMenu() {
         Menu menu = new Menu(this);
-
+        add(menu);
     }
 
 

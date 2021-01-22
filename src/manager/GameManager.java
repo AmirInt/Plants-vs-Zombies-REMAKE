@@ -15,16 +15,16 @@ public class GameManager {
 
         // After the player clicks 'PLAY' ...
         EventQueue.invokeLater(() -> {
-            GameFrame frame = new GameFrame("Simple Ball !");
+            GameFrame frame = new GameFrame();
             frame.setLocationRelativeTo(null); // put frame at center of screen
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+            frame.displayMenu();
             frame.setVisible(true);
             frame.initBufferStrategy();
             // Create and execute the game-loop
-            GameLoop game = new GameLoop(frame);
-            game.init();
-            ThreadPool.execute(game);
+//            GameLoop game = new GameLoop(frame);
+//            game.init();
+//            ThreadPool.execute(game);
             // and the game starts ...
         });
     }
