@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import manager.GameManager;
 import menus.Menu;
 
 /**
@@ -46,8 +48,7 @@ public class GameFrame extends JFrame {
         bufferStrategy = getBufferStrategy();
     }
 
-    public void displayMenu() {
-        Menu menu = new Menu(this);
+    public void displayMenu(GameManager gameManager, Menu menu) {
         add(menu);
     }
 

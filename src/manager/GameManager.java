@@ -1,13 +1,22 @@
 package manager;
 
 import graphics.*;
+import menus.Menu;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GameManager {
 
-    public static void main(String[] args) {
+    GameFrame frame;
+    Menu menu;
+
+    public GameManager() {
+        frame = new GameFrame();
+        menu = new Menu(this, frame);
+    }
+
+    public void launchGame() {
         // Initialize the global thread-pool
         ThreadPool.init();
 
@@ -15,17 +24,27 @@ public class GameManager {
 
         // After the player clicks 'PLAY' ...
         EventQueue.invokeLater(() -> {
-            GameFrame frame = new GameFrame();
             frame.setLocationRelativeTo(null); // put frame at center of screen
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.displayMenu();
+            frame.displayMenu(this, menu);
             frame.setVisible(true);
             frame.initBufferStrategy();
-            // Create and execute the game-loop
-//            GameLoop game = new GameLoop(frame);
-//            game.init();
-//            ThreadPool.execute(game);
-            // and the game starts ...
         });
+    }
+
+    public void play() {
+        EventQueue.invokeLater(() -> {
+//             Create and execute the game-loop
+            GameLoop game = new GameLoop(frame, menu);
+            game.init();
+            ThreadPool.execute(game);
+//             and the game starts ...
+        });
+    }
+
+    public static void main(String[] args) {
+        GameManager gameManager = new GameManager();
+
+        gameManager.launchGame();
     }
 }

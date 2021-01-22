@@ -1,5 +1,7 @@
 package graphics;
 
+import menus.Menu;
+
 /**
  * A very simple structure for the main game loop.
  * THIS IS NOT PERFECT, but works for most situations.
@@ -24,9 +26,11 @@ public class GameLoop implements Runnable {
 
     private final GameFrame canvas;
     private GameState state;
+    private final Menu menu;
 
-    public GameLoop(GameFrame frame) {
+    public GameLoop(GameFrame frame, Menu menu) {
         canvas = frame;
+        this.menu = menu;
     }
 
     /**
@@ -34,9 +38,11 @@ public class GameLoop implements Runnable {
      */
     public void init() {
         state = new GameState();
+        canvas.addKeyListener(state.getKeyListener());
+        canvas.addMouseListener(state.getMouseListener());
+        canvas.addMouseMotionListener(state.getMouseMotionListener());
     }
 
-    @Override
     public void run() {
         boolean gameOver = false;
         while (!gameOver) {
@@ -53,5 +59,11 @@ public class GameLoop implements Runnable {
             } catch (InterruptedException ignore) { }
         }
         canvas.render(state);
+        canvas.removeKeyListener(state.getKeyListener());
+        canvas.removeMouseListener(state.getMouseListener());
+        canvas.removeMouseMotionListener(state.getMouseMotionListener());
+        canvas.setContentPane(menu);
+        canvas.addMouseListener(menu.getMouseHandler());
+        canvas.addKeyListener(menu.getKeyHandler());
     }
 }

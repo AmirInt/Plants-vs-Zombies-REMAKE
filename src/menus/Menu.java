@@ -1,5 +1,6 @@
 package menus;
 
+import manager.GameManager;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -7,13 +8,14 @@ import java.awt.event.*;
 
 public class Menu extends JPanel {
 
+    private final GameManager gameManager;
+    private final JFrame gameFrame;
     private final Image backgroundImage;
     private final Border selectedItemBorder;
     private final Font unselectedItemFont;
     private final Font selectedItemFont;
     private final Color selectedItemColour;
     private final Color unselectedItemColour;
-    private final JFrame gameFrame;
     private final JPanel mainMenu;
     private final JPanel rankingMenu;
     private final JPanel settingsMenu;
@@ -22,8 +24,9 @@ public class Menu extends JPanel {
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
 
-    public Menu(JFrame gameFrame) {
-        super(new BorderLayout());
+    public Menu(GameManager gameManager, JFrame gameFrame) {
+        super(new GridBagLayout());
+        this.gameManager = gameManager;
         this.gameFrame = gameFrame;
         backgroundImage = new ImageIcon("Game accessories\\images\\PvZStreet_1440x900.0.jpeg").getImage();
         constraints = new GridBagConstraints();
@@ -31,7 +34,7 @@ public class Menu extends JPanel {
         selectedItemBorder = BorderFactory.createMatteBorder(0, 2, 10, 0, Color.YELLOW);
         unselectedItemFont = new Font("unselected", Font.BOLD, 40);
         selectedItemFont = new Font("selected", Font.BOLD, 45);
-        selectedItemColour = new Color(120, 60, 0);
+        selectedItemColour = new Color(180, 100, 0);
         unselectedItemColour = new Color(80, 10, 0);
 
         mainMenu = new JPanel(new GridBagLayout());
@@ -42,38 +45,41 @@ public class Menu extends JPanel {
         keyHandler = new KeyHandler(mainMenu);
         mouseHandler = new MouseHandler(mainMenu);
 
-        setComponents();
-
+        setMainMenuComponents();
+        getMainMenuListenersReady();
         setMainMenu();
 
         gameFrame.addKeyListener(keyHandler);
     }
 
-    private void setComponents() {
+    private void setMainMenuComponents() {
         newGame = new JLabel("New Game");
         newGame.setFont(unselectedItemFont);
-        newGame.setHorizontalAlignment(SwingConstants.CENTER);
         newGame.setForeground(unselectedItemColour);
         newGame.addMouseListener(mouseHandler);
         loadGame = new JLabel("Load Game");
         loadGame.setFont(unselectedItemFont);
-        loadGame.setHorizontalAlignment(SwingConstants.CENTER);
         loadGame.setForeground(unselectedItemColour);
         loadGame.addMouseListener(mouseHandler);
         ranking = new JLabel("Ranking");
         ranking.setFont(unselectedItemFont);
-        ranking.setHorizontalAlignment(SwingConstants.CENTER);
         ranking.setForeground(unselectedItemColour);
         ranking.addMouseListener(mouseHandler);
         settings = new JLabel("Settings");
         settings.setFont(unselectedItemFont);
-        settings.setHorizontalAlignment(SwingConstants.CENTER);
         settings.setForeground(unselectedItemColour);
         settings.addMouseListener(mouseHandler);
         exitGame = new JLabel("Exit Game");
         exitGame.setFont(unselectedItemFont);
-        exitGame.setHorizontalAlignment(SwingConstants.CENTER);
         exitGame.setForeground(unselectedItemColour);
+        exitGame.addMouseListener(mouseHandler);
+    }
+
+    public void getMainMenuListenersReady() {
+        newGame.addMouseListener(mouseHandler);
+        loadGame.addMouseListener(mouseHandler);
+        ranking.addMouseListener(mouseHandler);
+        settings.addMouseListener(mouseHandler);
         exitGame.addMouseListener(mouseHandler);
     }
 
@@ -89,8 +95,7 @@ public class Menu extends JPanel {
         constraints.gridy = 4;
         mainMenu.add(exitGame, constraints);
         constraints.gridy = 0;
-        setFocusedItem(exitGame, newGame);
-        add(mainMenu, BorderLayout.CENTER);
+        add(mainMenu);
     }
 
     private void setFocusedItem(JLabel unfocusedItem, JLabel focusGainingItem) {
@@ -104,6 +109,14 @@ public class Menu extends JPanel {
             focusGainingItem.setForeground(selectedItemColour);
             focusGainingItem.setBorder(selectedItemBorder);
         }
+    }
+
+    public KeyHandler getKeyHandler() {
+        return keyHandler;
+    }
+
+    public MouseHandler getMouseHandler() {
+        return mouseHandler;
     }
 
     @Override
@@ -135,6 +148,7 @@ public class Menu extends JPanel {
                     setFocusedItem(settings, ranking);
                 else if (exitGame.getForeground() == selectedItemColour)
                     setFocusedItem(exitGame, settings);
+                else setFocusedItem(newGame, exitGame);
             } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
                 if (newGame.getForeground() == selectedItemColour)
                     setFocusedItem(newGame, loadGame);
@@ -144,8 +158,13 @@ public class Menu extends JPanel {
                     setFocusedItem(ranking, settings);
                 else if (settings.getForeground() == selectedItemColour)
                     setFocusedItem(settings, exitGame);
+                else setFocusedItem(exitGame, newGame);
             } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (newGame.getForeground() == selectedItemColour) { }
+                if (newGame.getForeground() == selectedItemColour) {
+                    gameFrame.removeKeyListener(keyHandler);
+                    gameFrame.removeMouseListener(mouseHandler);
+                    gameManager.play();
+                }
                 else if (loadGame.getForeground() == selectedItemColour) { }
                 else if (ranking.getForeground() == selectedItemColour) { }
                 else if (settings.getForeground() == selectedItemColour) { }
@@ -170,7 +189,11 @@ public class Menu extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(e.getSource() == newGame) { }
+            if(e.getSource() == newGame) {
+                gameFrame.removeKeyListener(keyHandler);
+                gameFrame.removeMouseListener(mouseHandler);
+                gameManager.play();
+            }
             else if(e.getSource() == loadGame) { }
             else if(e.getSource() == ranking) { }
             else if(e.getSource() == settings) { }
@@ -180,6 +203,21 @@ public class Menu extends JPanel {
 
         @Override
         public void mouseEntered(MouseEvent e) {
+            newGame.setFont(unselectedItemFont);
+            newGame.setForeground(unselectedItemColour);
+            newGame.setBorder(null);
+            loadGame.setFont(unselectedItemFont);
+            loadGame.setForeground(unselectedItemColour);
+            loadGame.setBorder(null);
+            ranking.setFont(unselectedItemFont);
+            ranking.setForeground(unselectedItemColour);
+            ranking.setBorder(null);
+            settings.setFont(unselectedItemFont);
+            settings.setForeground(unselectedItemColour);
+            settings.setBorder(null);
+            exitGame.setFont(unselectedItemFont);
+            exitGame.setForeground(unselectedItemColour);
+            exitGame.setBorder(null);
             JLabel hoveredLabel = (JLabel) e.getSource();
             hoveredLabel.setFont(selectedItemFont);
             hoveredLabel.setForeground(selectedItemColour);
@@ -188,10 +226,12 @@ public class Menu extends JPanel {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            JLabel releasedLabel = (JLabel) e.getSource();
-            releasedLabel.setBorder(null);
-            releasedLabel.setForeground(unselectedItemColour);
-            releasedLabel.setFont(unselectedItemFont);
+            if(e.getSource() instanceof JLabel) {
+                JLabel releasedLabel = (JLabel) e.getSource();
+                releasedLabel.setBorder(null);
+                releasedLabel.setForeground(unselectedItemColour);
+                releasedLabel.setFont(unselectedItemFont);
+            }
         }
     }
 }
