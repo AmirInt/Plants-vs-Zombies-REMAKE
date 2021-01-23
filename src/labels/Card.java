@@ -17,4 +17,9 @@ public abstract class Card extends JLabel implements Runnable {
 
     public void use() { }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(cardImage, 0, 0, null);
+    }
 }

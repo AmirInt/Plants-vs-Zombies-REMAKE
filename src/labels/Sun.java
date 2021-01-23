@@ -14,7 +14,7 @@ public class Sun extends Entity {
         super(life, xLocation, yLocation,
                 new ImageIcon("Game accessories\\images\\Gifs\\sun.gif").getImage());
         this.yDestination = yDestination;
-        movingSpeed = 40;
+        movingSpeed = 0;
         reflection = yDestination - (yDestination - yLocation) / 5;
     }
 
@@ -24,7 +24,7 @@ public class Sun extends Entity {
                 Thread.sleep(30);
                 yLocation += movingSpeed;
                 xLocation += 5;
-                movingSpeed += 20;
+                movingSpeed += 2;
             } catch (InterruptedException ignore) { }
         }
         while (yLocation > reflection) {
@@ -32,7 +32,7 @@ public class Sun extends Entity {
                 Thread.sleep(30);
                 yLocation -= movingSpeed;
                 xLocation += 5;
-                movingSpeed -= 20;
+                movingSpeed -= 10;
             } catch (InterruptedException ignore) { }
         }
         while(yLocation < yDestination) {
@@ -40,13 +40,13 @@ public class Sun extends Entity {
                 Thread.sleep(30);
                 yLocation += movingSpeed;
                 xLocation += 5;
-                movingSpeed += 20;
+                movingSpeed += 2;
             } catch (InterruptedException ignore) { }
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 10; i++) {
             try {
                 Thread.sleep(30);
-                xLocation += 5;
+                xLocation += 10 - i;
             } catch (InterruptedException ignore) { }
         }
     }

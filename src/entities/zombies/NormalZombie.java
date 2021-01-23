@@ -29,6 +29,21 @@ public class NormalZombie extends Zombie {
     }
 
     @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
+    @Override
     public int getMovingSpeed() {
         return super.getMovingSpeed();
     }
@@ -55,6 +70,8 @@ public class NormalZombie extends Zombie {
 
     @Override
     public void run() {
-
+        for (int i = 0; i < 200; i++) {
+            move();
+        }
     }
 }

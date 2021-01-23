@@ -62,8 +62,8 @@ public class GameLoop implements Runnable {
         canvas.removeKeyListener(state.getKeyListener());
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
+        ThreadPool.shutdownNow();
         canvas.setContentPane(menu);
-        canvas.addMouseListener(menu.getMouseHandler());
-        canvas.addKeyListener(menu.getKeyHandler());
+        menu.getMainMenuListenersReady();
     }
 }

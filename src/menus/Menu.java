@@ -48,8 +48,6 @@ public class Menu extends JPanel {
         setMainMenuComponents();
         getMainMenuListenersReady();
         setMainMenu();
-
-        gameFrame.addKeyListener(keyHandler);
     }
 
     private void setMainMenuComponents() {
@@ -76,6 +74,7 @@ public class Menu extends JPanel {
     }
 
     public void getMainMenuListenersReady() {
+        gameFrame.addKeyListener(keyHandler);
         newGame.addMouseListener(mouseHandler);
         loadGame.addMouseListener(mouseHandler);
         ranking.addMouseListener(mouseHandler);
@@ -169,7 +168,7 @@ public class Menu extends JPanel {
                 else if (ranking.getForeground() == selectedItemColour) { }
                 else if (settings.getForeground() == selectedItemColour) { }
                 else if(exitGame.getForeground() == selectedItemColour)
-                    gameFrame.dispose();
+                    System.exit(0);
             }
             panel.revalidate();
             gameFrame.revalidate();
@@ -191,14 +190,18 @@ public class Menu extends JPanel {
         public void mouseClicked(MouseEvent e) {
             if(e.getSource() == newGame) {
                 gameFrame.removeKeyListener(keyHandler);
-                gameFrame.removeMouseListener(mouseHandler);
+                newGame.removeMouseListener(mouseHandler);
+                loadGame.removeMouseListener(mouseHandler);
+                ranking.removeMouseListener(mouseHandler);
+                settings.removeMouseListener(mouseHandler);
+                exitGame.removeMouseListener(mouseHandler);
                 gameManager.play();
             }
             else if(e.getSource() == loadGame) { }
             else if(e.getSource() == ranking) { }
             else if(e.getSource() == settings) { }
             else if(e.getSource() == exitGame)
-                gameFrame.dispose();
+                System.exit(0);
         }
 
         @Override

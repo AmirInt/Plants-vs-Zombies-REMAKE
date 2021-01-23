@@ -4,8 +4,13 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import javax.swing.*;
-
+import entities.Entity;
+import entities.zombies.BucketHeadZombie;
+import entities.zombies.ConeHeadZombie;
+import entities.zombies.NormalZombie;
+import enums.GameDifficulty;
 import manager.GameManager;
+import manager.GamePlayer;
 import menus.Menu;
 
 /**
@@ -27,6 +32,7 @@ public class GameFrame extends JFrame {
     private final ArrayList<Float> fpsHistory;
     private BufferStrategy bufferStrategy;
     private final Image image;
+    private ArrayList<Entity> entities;
 
     public GameFrame() {
         super("Plants vs. Zombies");
@@ -35,6 +41,19 @@ public class GameFrame extends JFrame {
         lastRender = -1;
         fpsHistory = new ArrayList<>(100);
         image = new ImageIcon("Game accessories\\images\\mainBG.png").getImage();
+    }
+
+    public void setEntities(GamePlayer gamePlayer) {
+        entities = gamePlayer.getEntities();
+//        NormalZombie normalZombie = new NormalZombie(600, 400);
+//        BucketHeadZombie bucketHeadZombie = new BucketHeadZombie(GameDifficulty.MEDIUM, 600, 300);
+//        ConeHeadZombie coneHeadZombie = new ConeHeadZombie(GameDifficulty.MEDIUM, 600, 500);
+//        entities.add(normalZombie);
+//        entities.add(coneHeadZombie);
+//        entities.add(bucketHeadZombie);
+//        ThreadPool.execute(normalZombie);
+//        ThreadPool.execute(bucketHeadZombie);
+//        ThreadPool.execute(coneHeadZombie);
     }
 
     /**
@@ -91,9 +110,10 @@ public class GameFrame extends JFrame {
         // Draw background
         g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
 
-        ImageIcon imageIcon = new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif");
-        Image image1 = imageIcon.getImage();
-        g2d.drawImage(image1, state.locX, state.locY, 60, 60, null);
+        for (Entity entity:
+             entities) {
+            g2d.drawImage(entity.getAppearance(), entity.getXLocation(), entity.getYLocation(), null);
+        }
 
         // Print FPS info
         long currentRender = System.currentTimeMillis();

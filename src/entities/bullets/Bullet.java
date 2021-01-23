@@ -17,6 +17,21 @@ public class Bullet extends Entity {
         this.destructionPower = destructionPower;
     }
 
+    @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
     public void hit(Zombie zombie) { }
 
     @Override

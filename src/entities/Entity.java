@@ -16,8 +16,20 @@ public abstract class Entity implements Runnable {
         this.appearance = appearance;
     }
 
+    public int getXLocation() {
+        return xLocation;
+    }
+
+    public int getYLocation() {
+        return yLocation;
+    }
+
     public void setAppearance(Image appearance) {
         this.appearance = appearance;
+    }
+
+    public Image getAppearance() {
+        return appearance;
     }
 
     public void die() {

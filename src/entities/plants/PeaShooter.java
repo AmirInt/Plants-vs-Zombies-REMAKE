@@ -10,6 +10,21 @@ public class PeaShooter extends Plant {
     }
 
     @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
+    @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
     }

@@ -16,6 +16,21 @@ public class LawnMower extends Entity {
         movingSpeed = 10;
     }
 
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
     public void trigger() {
         isTriggered = true;
     }

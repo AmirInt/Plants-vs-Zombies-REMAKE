@@ -9,6 +9,21 @@ public abstract class Plant extends Entity {
         super(life, xLocation, yLocation, appearance);
     }
 
+    @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
     public void getReadyForSabotage() { }
 
     @Override

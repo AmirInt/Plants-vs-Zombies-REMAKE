@@ -9,6 +9,21 @@ public class CherryBomb extends Plant {
         super(life, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage());
     }
 
+    @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
     public void bust() {
 
     }

@@ -17,6 +17,21 @@ public class Sunflower extends Plant {
     }
 
     @Override
+    public int getYLocation() {
+        return super.getYLocation();
+    }
+
+    @Override
+    public int getXLocation() {
+        return super.getXLocation();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
+    }
+
+    @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
     }

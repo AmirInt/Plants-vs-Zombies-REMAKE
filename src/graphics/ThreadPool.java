@@ -42,4 +42,8 @@ public class ThreadPool {
     public static void shutdownNow() {
         executor.shutdownNow();
     }
+
+    public static void killProcessedAtHand() {
+
+    }
 }
