@@ -12,9 +12,24 @@ public class Bullet extends Entity {
     int movingSpeed;
 
     public Bullet(int life, int xLocation, int yLocation, Image appearance, int destructionPower) {
-        super(life, xLocation, yLocation, appearance);
+        super(life, xLocation, yLocation, 28, 28, appearance);
         movingSpeed = 10;
         this.destructionPower = destructionPower;
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
+    }
+
+    @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
     }
 
     @Override
@@ -34,9 +49,8 @@ public class Bullet extends Entity {
 
     public void hit(Zombie zombie) { }
 
-    @Override
-    public void setAppearance(Image appearance) {
-        super.setAppearance(appearance);
+    public void move() {
+        xLocation += 10;
     }
 
     @Override
@@ -46,6 +60,8 @@ public class Bullet extends Entity {
 
     @Override
     public void run() {
-
+        while (!gameFinished) {
+            move();
+        }
     }
 }

@@ -1,18 +1,22 @@
 package entities.zombies;
 
 import entities.Entity;
+import graphics.GameLoop;
+import manager.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
 
 public abstract class Zombie extends Entity{
 
+    private GamePlayer gamePlayer;
     protected int destructionPower;
     protected int movingSpeed;
 
-    public Zombie(int life, int xLocation, int yLocation, Image appearance,
+    public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, Image appearance,
                   int destructionPower) {
-        super(life, xLocation, yLocation, appearance);
+        super(life, xLocation, yLocation, 70, 100, appearance);
+        this.gamePlayer = gamePlayer;
         this.destructionPower = destructionPower;
     }
 
@@ -29,6 +33,11 @@ public abstract class Zombie extends Entity{
     }
 
     @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -36,6 +45,16 @@ public abstract class Zombie extends Entity{
     @Override
     public int getYLocation() {
         return super.getYLocation();
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override
@@ -64,6 +83,10 @@ public abstract class Zombie extends Entity{
         try {
             Thread.sleep(movingSpeed);
         } catch (InterruptedException ignore) { }
+    }
+
+    public void finishTheGame() {
+        gamePlayer.lose();
     }
 
     @Override

@@ -11,9 +11,19 @@ public class LawnMower extends Entity {
     boolean isTriggered;
 
     public LawnMower(int life, int xLocation, int yLocation) {
-        super(life, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
+        super(life, xLocation, yLocation, 100, 100, new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
         isTriggered = false;
-        movingSpeed = 10;
+        movingSpeed = 0;
+    }
+
+    @Override
+    public void setAppearance(Image appearance) {
+        super.setAppearance(appearance);
+    }
+
+    @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
     }
 
     @Override
@@ -24,6 +34,16 @@ public class LawnMower extends Entity {
     @Override
     public int getXLocation() {
         return super.getXLocation();
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override
@@ -40,11 +60,6 @@ public class LawnMower extends Entity {
     }
 
     @Override
-    public void setAppearance(Image appearance) {
-        super.setAppearance(appearance);
-    }
-
-    @Override
     public void die() {
         super.die();
     }
@@ -54,9 +69,12 @@ public class LawnMower extends Entity {
         if(isTriggered) {
             setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
             while(xLocation < 1000) {
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException ignore) { }
                 move();
-                if(movingSpeed < 100)
-                    movingSpeed += 10;
+                if(movingSpeed < 20)
+                    movingSpeed += 2;
             }
             die();
         }

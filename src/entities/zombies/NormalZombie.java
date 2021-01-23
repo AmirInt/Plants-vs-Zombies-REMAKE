@@ -1,13 +1,15 @@
 package entities.zombies;
 
 import entities.Entity;
+import manager.GamePlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class NormalZombie extends Zombie {
 
-    public NormalZombie(int xLocation, int yLocation) {
-        super(200, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage(),
+    public NormalZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
+        super(gamePlayer, 200, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage(),
                 5);
 //        Setting the moving speed
         setMovingSpeed(30);
@@ -29,6 +31,11 @@ public class NormalZombie extends Zombie {
     }
 
     @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -36,6 +43,16 @@ public class NormalZombie extends Zombie {
     @Override
     public int getYLocation() {
         return super.getYLocation();
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override
@@ -69,8 +86,17 @@ public class NormalZombie extends Zombie {
     }
 
     @Override
+    public void finishTheGame() {
+        super.finishTheGame();
+    }
+
+    @Override
     public void run() {
-        for (int i = 0; i < 200; i++) {
+        while (!gameFinished) {
+            if(xLocation == 0) {
+                finishTheGame();
+                setGameFinished(true);
+            }
             move();
         }
     }

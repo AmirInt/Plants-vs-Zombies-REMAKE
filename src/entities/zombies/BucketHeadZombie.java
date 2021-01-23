@@ -2,13 +2,15 @@ package entities.zombies;
 
 import entities.Entity;
 import enums.GameDifficulty;
+import manager.GamePlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class BucketHeadZombie extends Zombie{
 
-    public BucketHeadZombie(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(560, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage(),
+    public BucketHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
+        super(gamePlayer, 560, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage(),
                 0);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
@@ -36,6 +38,11 @@ public class BucketHeadZombie extends Zombie{
     }
 
     @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getMovingSpeed() {
         return super.getMovingSpeed();
     }
@@ -48,6 +55,16 @@ public class BucketHeadZombie extends Zombie{
     @Override
     public int getYLocation() {
         return super.getYLocation();
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override
@@ -76,8 +93,17 @@ public class BucketHeadZombie extends Zombie{
     }
 
     @Override
+    public void finishTheGame() {
+        super.finishTheGame();
+    }
+
+    @Override
     public void run() {
-        for (int i = 0; i < 200; i++) {
+        while (!gameFinished) {
+            if(xLocation == 0) {
+                finishTheGame();
+                setGameFinished(true);
+            }
             move();
         }
     }

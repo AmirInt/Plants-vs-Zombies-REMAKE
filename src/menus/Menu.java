@@ -54,23 +54,18 @@ public class Menu extends JPanel {
         newGame = new JLabel("New Game");
         newGame.setFont(unselectedItemFont);
         newGame.setForeground(unselectedItemColour);
-        newGame.addMouseListener(mouseHandler);
         loadGame = new JLabel("Load Game");
         loadGame.setFont(unselectedItemFont);
         loadGame.setForeground(unselectedItemColour);
-        loadGame.addMouseListener(mouseHandler);
         ranking = new JLabel("Ranking");
         ranking.setFont(unselectedItemFont);
         ranking.setForeground(unselectedItemColour);
-        ranking.addMouseListener(mouseHandler);
         settings = new JLabel("Settings");
         settings.setFont(unselectedItemFont);
         settings.setForeground(unselectedItemColour);
-        settings.addMouseListener(mouseHandler);
         exitGame = new JLabel("Exit Game");
         exitGame.setFont(unselectedItemFont);
         exitGame.setForeground(unselectedItemColour);
-        exitGame.addMouseListener(mouseHandler);
     }
 
     public void getMainMenuListenersReady() {
@@ -148,7 +143,8 @@ public class Menu extends JPanel {
                 else if (exitGame.getForeground() == selectedItemColour)
                     setFocusedItem(exitGame, settings);
                 else setFocusedItem(newGame, exitGame);
-            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            }
+            else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
                 if (newGame.getForeground() == selectedItemColour)
                     setFocusedItem(newGame, loadGame);
                 else if (loadGame.getForeground() == selectedItemColour)
@@ -158,10 +154,15 @@ public class Menu extends JPanel {
                 else if (settings.getForeground() == selectedItemColour)
                     setFocusedItem(settings, exitGame);
                 else setFocusedItem(exitGame, newGame);
-            } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+            }
+            else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (newGame.getForeground() == selectedItemColour) {
                     gameFrame.removeKeyListener(keyHandler);
-                    gameFrame.removeMouseListener(mouseHandler);
+                    newGame.removeMouseListener(mouseHandler);
+                    loadGame.removeMouseListener(mouseHandler);
+                    ranking.removeMouseListener(mouseHandler);
+                    settings.removeMouseListener(mouseHandler);
+                    exitGame.removeMouseListener(mouseHandler);
                     gameManager.play();
                 }
                 else if (loadGame.getForeground() == selectedItemColour) { }

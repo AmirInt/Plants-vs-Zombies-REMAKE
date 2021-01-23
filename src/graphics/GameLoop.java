@@ -1,6 +1,9 @@
 package graphics;
 
+import manager.GamePlayer;
 import menus.Menu;
+
+import javax.swing.*;
 
 /**
  * A very simple structure for the main game loop.
@@ -27,10 +30,12 @@ public class GameLoop implements Runnable {
     private final GameFrame canvas;
     private GameState state;
     private final Menu menu;
+    private final GamePlayer gamePlayer;
 
-    public GameLoop(GameFrame frame, Menu menu) {
+    public GameLoop(GameFrame frame, Menu menu, GamePlayer gamePlayer) {
         canvas = frame;
         this.menu = menu;
+        this.gamePlayer = gamePlayer;
     }
 
     /**
@@ -38,6 +43,7 @@ public class GameLoop implements Runnable {
      */
     public void init() {
         state = new GameState();
+        canvas.setContentPane(new JPanel());
         canvas.addKeyListener(state.getKeyListener());
         canvas.addMouseListener(state.getMouseListener());
         canvas.addMouseMotionListener(state.getMouseMotionListener());
@@ -62,7 +68,7 @@ public class GameLoop implements Runnable {
         canvas.removeKeyListener(state.getKeyListener());
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
-        ThreadPool.shutdownNow();
+        gamePlayer.win();
         canvas.setContentPane(menu);
         menu.getMainMenuListenersReady();
     }

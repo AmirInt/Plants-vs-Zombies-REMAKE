@@ -10,6 +10,16 @@ public class SnowPea extends Plant {
     }
 
     @Override
+    public void setAppearance(Image appearance) {
+        super.setAppearance(appearance);
+    }
+
+    @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getYLocation() {
         return super.getYLocation();
     }
@@ -20,8 +30,13 @@ public class SnowPea extends Plant {
     }
 
     @Override
-    public void setAppearance(Image appearance) {
-        super.setAppearance(appearance);
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override

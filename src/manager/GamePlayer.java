@@ -7,13 +7,14 @@ import entities.plants.*;
 import entities.zombies.*;
 import java.util.ArrayList;
 import enums.*;
-import labels.Sun;
+import entities.others.Sun;
 import graphics.ThreadPool;
 import java.util.HashMap;
 import java.util.Random;
 
 public class GamePlayer implements Runnable {
 
+    private int score;
     private int time;
     private final int[] zombiesTurnUpTimes;
     private final GameDifficulty gameDifficulty;
@@ -31,6 +32,7 @@ public class GamePlayer implements Runnable {
     private final int fourthRow = 510;
     private final int fifthRow = 620;
     private final int sunDroppingPeriod;
+    private boolean gameFinished;
 
     public GamePlayer(GameDifficulty gameDifficulty, HashMap<Integer, AvailableZombies> availableZombies) {
         time = 0;
@@ -48,6 +50,7 @@ public class GamePlayer implements Runnable {
         if(gameDifficulty == GameDifficulty.MEDIUM)
             sunDroppingPeriod = 25;
         else sunDroppingPeriod = 30;
+        gameFinished = false;
     }
 
     private void setZombiesTurnUpTimes() {
@@ -80,9 +83,9 @@ public class GamePlayer implements Runnable {
         int zombieType = random.nextInt(availableZombies.size());
         int zombieYLocation = getZombieYLocation();
         return switch (availableZombies.get(zombieType)) {
-            case BucketHeadZombie -> new BucketHeadZombie(gameDifficulty, 1400, zombieYLocation);
-            case ConeHeadZombie -> new ConeHeadZombie(gameDifficulty, 1400, zombieYLocation);
-            default -> new NormalZombie(1400, zombieYLocation);
+            case BucketHeadZombie -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            case ConeHeadZombie -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            default -> new NormalZombie(this, 1400, zombieYLocation);
         };
     }
 
@@ -233,11 +236,35 @@ public class GamePlayer implements Runnable {
         return entities;
     }
 
+    private void finishTheGame() {
+        gameFinished = true;
+        for (Entity entity:
+                entities) {
+            entity.setGameFinished(true);
+        }
+    }
+
+    public void win() {
+        finishTheGame();
+        score = gameDifficulty == GameDifficulty.MEDIUM ? 3 : 10;
+    }
+
+    public void lose() {
+        finishTheGame();
+        score = gameDifficulty == GameDifficulty.MEDIUM ? -1 : -3;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
     @Override
     public void run() {
         int index = 0;
         while (time < 530) {
             try {
+                if(gameFinished)
+                    break;
                 Thread.sleep(1000);
                 ++time;
                 if(time % sunDroppingPeriod == 0)
@@ -250,7 +277,9 @@ public class GamePlayer implements Runnable {
                     ++index;
                     index = Math.min(index, 28);
                 }
-            } catch (InterruptedException ignore) { }
+            } catch (InterruptedException ignore) {
+                System.out.println("Caught!");
+            }
         }
     }
 }

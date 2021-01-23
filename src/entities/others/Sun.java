@@ -1,4 +1,4 @@
-package labels;
+package entities.others;
 
 import entities.Entity;
 
@@ -11,7 +11,7 @@ public class Sun extends Entity {
     int yDestination;
 
     public Sun(int life, int xLocation, int yLocation, int yDestination) {
-        super(life, xLocation, yLocation,
+        super(life, xLocation, yLocation, 50, 48,
                 new ImageIcon("Game accessories\\images\\Gifs\\sun.gif").getImage());
         this.yDestination = yDestination;
         movingSpeed = 0;

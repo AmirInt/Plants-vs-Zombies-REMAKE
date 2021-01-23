@@ -34,7 +34,7 @@ public class GameManager {
         EventQueue.invokeLater(() -> {
             frame.setLocationRelativeTo(null); // put frame at center of screen
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.displayMenu(this, menu);
+            frame.displayMenu(menu);
             frame.setVisible(true);
             frame.initBufferStrategy();
         });
@@ -44,7 +44,7 @@ public class GameManager {
         EventQueue.invokeLater(() -> {
 //             Create and execute the game-loop
             GamePlayer gamePlayer = new GamePlayer(GameDifficulty.MEDIUM, availableZombies);
-            GameLoop game = new GameLoop(frame, menu);
+            GameLoop game = new GameLoop(frame, menu, gamePlayer);
             game.init();
             frame.setEntities(gamePlayer);
             ThreadPool.execute(game);

@@ -13,6 +13,11 @@ public class FrozenPea extends Bullet {
     }
 
     @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -20,6 +25,16 @@ public class FrozenPea extends Bullet {
     @Override
     public int getYLocation() {
         return super.getYLocation();
+    }
+
+    @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
     }
 
     @Override

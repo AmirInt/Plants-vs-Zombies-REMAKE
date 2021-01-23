@@ -10,6 +10,16 @@ public class PeaShooter extends Plant {
     }
 
     @Override
+    public void setAppearance(Image appearance) {
+        super.setAppearance(appearance);
+    }
+
+    @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -20,13 +30,18 @@ public class PeaShooter extends Plant {
     }
 
     @Override
-    public Image getAppearance() {
-        return super.getAppearance();
+    public int getWidth() {
+        return super.getWidth();
     }
 
     @Override
-    public void setAppearance(Image appearance) {
-        super.setAppearance(appearance);
+    public int getHeight() {
+        return super.getHeight();
+    }
+
+    @Override
+    public Image getAppearance() {
+        return super.getAppearance();
     }
 
     @Override

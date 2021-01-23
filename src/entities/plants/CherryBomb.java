@@ -10,6 +10,16 @@ public class CherryBomb extends Plant {
     }
 
     @Override
+    public void setAppearance(Image appearance) {
+        super.setAppearance(appearance);
+    }
+
+    @Override
+    public void setGameFinished(boolean gameFinished) {
+        super.setGameFinished(gameFinished);
+    }
+
+    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -20,17 +30,22 @@ public class CherryBomb extends Plant {
     }
 
     @Override
+    public int getWidth() {
+        return super.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return super.getHeight();
+    }
+
+    @Override
     public Image getAppearance() {
         return super.getAppearance();
     }
 
     public void bust() {
 
-    }
-
-    @Override
-    public void setAppearance(Image appearance) {
-        super.setAppearance(appearance);
     }
 
     @Override

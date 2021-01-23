@@ -5,11 +5,6 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import javax.swing.*;
 import entities.Entity;
-import entities.zombies.BucketHeadZombie;
-import entities.zombies.ConeHeadZombie;
-import entities.zombies.NormalZombie;
-import enums.GameDifficulty;
-import manager.GameManager;
 import manager.GamePlayer;
 import menus.Menu;
 
@@ -45,15 +40,6 @@ public class GameFrame extends JFrame {
 
     public void setEntities(GamePlayer gamePlayer) {
         entities = gamePlayer.getEntities();
-//        NormalZombie normalZombie = new NormalZombie(600, 400);
-//        BucketHeadZombie bucketHeadZombie = new BucketHeadZombie(GameDifficulty.MEDIUM, 600, 300);
-//        ConeHeadZombie coneHeadZombie = new ConeHeadZombie(GameDifficulty.MEDIUM, 600, 500);
-//        entities.add(normalZombie);
-//        entities.add(coneHeadZombie);
-//        entities.add(bucketHeadZombie);
-//        ThreadPool.execute(normalZombie);
-//        ThreadPool.execute(bucketHeadZombie);
-//        ThreadPool.execute(coneHeadZombie);
     }
 
     /**
@@ -67,7 +53,7 @@ public class GameFrame extends JFrame {
         bufferStrategy = getBufferStrategy();
     }
 
-    public void displayMenu(GameManager gameManager, Menu menu) {
+    public void displayMenu(Menu menu) {
         add(menu);
     }
 
@@ -112,7 +98,11 @@ public class GameFrame extends JFrame {
 
         for (Entity entity:
              entities) {
-            g2d.drawImage(entity.getAppearance(), entity.getXLocation(), entity.getYLocation(), null);
+            int width = entity.getWidth();
+            int height = entity.getHeight();
+            int x = entity.getXLocation() - width / 2;
+            int y = entity.getYLocation() - height / 2;
+            g2d.drawImage(entity.getAppearance(), x, y, width, height, null);
         }
 
         // Print FPS info
