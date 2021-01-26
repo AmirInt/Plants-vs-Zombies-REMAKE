@@ -1,22 +1,20 @@
 package entities.plants;
 
+import manager.GamePlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class CherryBomb extends Plant {
+public class Walnut extends Plant {
 
-    public CherryBomb(int xLocation, int yLocation) {
-        super(70, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage());
+    public Walnut(int xLocation, int yLocation, GamePlayer gamePlayer) {
+        super(150, xLocation, yLocation,
+                new ImageIcon("Game accessories\\images\\Gifs\\walnut_full_life.gif").getImage(), gamePlayer);
     }
 
     @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override
@@ -44,8 +42,13 @@ public class CherryBomb extends Plant {
         return super.getAppearance();
     }
 
-    public void bust() {
+    public void getReadyForSabotage() { }
 
+    @Override
+    public synchronized void injure(int lifeTakenAway) {
+        super.injure(lifeTakenAway);
+        if(life < 100)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life.gif"));
     }
 
     @Override
@@ -55,11 +58,6 @@ public class CherryBomb extends Plant {
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(1000);
-            bust();
-            die();
-        } catch (InterruptedException ignore) { }
-    }
 
+    }
 }

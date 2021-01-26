@@ -42,9 +42,8 @@ public class GameLoop implements Runnable {
      * This must be called before the game loop starts.
      */
     public void init() {
-        state = new GameState();
+        state = new GameState(gamePlayer, canvas);
         canvas.setContentPane(new JPanel());
-        canvas.addKeyListener(state.getKeyListener());
         canvas.addMouseListener(state.getMouseListener());
         canvas.addMouseMotionListener(state.getMouseMotionListener());
     }
@@ -55,7 +54,6 @@ public class GameLoop implements Runnable {
             try {
                 long start = System.currentTimeMillis();
                 //
-                state.update();
                 canvas.render(state);
                 gameOver = state.gameOver;
                 //
@@ -65,7 +63,6 @@ public class GameLoop implements Runnable {
             } catch (InterruptedException ignore) { }
         }
         canvas.render(state);
-        canvas.removeKeyListener(state.getKeyListener());
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
         gamePlayer.win();

@@ -1,6 +1,12 @@
 package entities;
 
+import manager.GamePlayer;
+
 import java.awt.*;
+import entities.others.*;
+import entities.zombies.*;
+import entities.plants.*;
+import entities.bullets.*;
 
 public abstract class Entity implements Runnable {
 
@@ -10,20 +16,20 @@ public abstract class Entity implements Runnable {
     protected final int width;
     protected final int height;
     protected Image appearance;
-    protected boolean gameFinished;
+    protected final GamePlayer gamePlayer;
 
-    public Entity(int life, int xLocation, int yLocation, int width, int height, Image appearance) {
+    public Entity(int life, int xLocation, int yLocation, int width, int height, Image appearance, GamePlayer gamePlayer) {
         this.life = life;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
         this.width = width;
         this.height = height;
         this.appearance = appearance;
-        gameFinished = false;
+        this.gamePlayer = gamePlayer;
     }
 
-    public void setGameFinished(boolean gameFinished) {
-        this.gameFinished = gameFinished;
+    public void setLife(int life) {
+        this.life = life;
     }
 
     public int getXLocation() {
@@ -51,6 +57,12 @@ public abstract class Entity implements Runnable {
     }
 
     public void die() {
-        life = 0;
+        gamePlayer.remove(gamePlayer.getEntities(), this);
+        if(this instanceof Sun)
+            gamePlayer.remove(gamePlayer.getSuns(), (Sun) this);
+        if(this instanceof Zombie)
+            gamePlayer.remove(gamePlayer.getZombies(), (Zombie) this);
+        if(this instanceof Plant)
+            gamePlayer.remove(gamePlayer.getPlants(), (Plant) this);
     }
 }

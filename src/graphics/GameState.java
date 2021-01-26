@@ -1,12 +1,17 @@
 package graphics;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import cards.*;
+import entities.plants.*;
+import entities.others.Sun;
+import manager.GamePlayer;
+
+import javax.swing.*;
 
 /**
  * This class holds the state of game and all of its elements.
@@ -16,137 +21,162 @@ import java.awt.event.MouseMotionListener;
  */
 public class GameState {
 
-    public int locX, locY, diam;
     public boolean gameOver;
-
-    private boolean keyUP, keyDOWN, keyRIGHT, keyLEFT;
-    private boolean mousePress;
     private int mouseX, mouseY;
-    private KeyHandler keyHandler;
-    private MouseHandler mouseHandler;
+    private boolean isToPlant;
 
-    public GameState() {
-        locX = 100;
-        locY = 100;
-        diam = 32;
+    private final GamePlayer gamePlayer;
+    private final GameFrame gameFrame;
+    private final MouseHandler mouseHandler;
+    private final MouseMotionHandler mouseMotionHandler;
+    private final ArrayList<Card> availablePlants;
+    private Card selectedCard;
+
+    public GameState(GamePlayer gamePlayer, GameFrame gameFrame) {
         gameOver = false;
-        //
-        keyUP = false;
-        keyDOWN = false;
-        keyRIGHT = false;
-        keyLEFT = false;
-        //
-        mousePress = false;
-        mouseX = 0;
-        mouseY = 0;
-        //
-        keyHandler = new KeyHandler();
+        isToPlant = false;
+
+        this.gamePlayer = gamePlayer;
+        this.gameFrame = gameFrame;
+        availablePlants = gamePlayer.getAvailablePlants();
+
         mouseHandler = new MouseHandler();
+        mouseMotionHandler = new MouseMotionHandler();
     }
 
     /**
      * The method which updates the game state.
      */
-    public void update() {
-        if (mousePress) {
-            locY = mouseY - diam / 2;
-            locX = mouseX - diam / 2;
-        }
-        if (keyUP)
-            locY -= 2;
-        if (keyDOWN)
-            locY += 2;
-        if (keyLEFT)
-            locX -= 2;
-        if (keyRIGHT)
-            locX += 2;
-
-        locX = Math.max(locX, 0);
-        locX = Math.min(locX, GameFrame.GAME_WIDTH - diam);
-        locY = Math.max(locY, 0);
-        locY = Math.min(locY, GameFrame.GAME_HEIGHT - diam);
+    public void update(int x, int y) {
+        mouseX = x;
+        mouseY = y;
     }
 
-
-    public KeyListener getKeyListener() {
-        return keyHandler;
+    public int getMouseX() {
+        return mouseX;
     }
+
+    public int getMouseY() {
+        return mouseY;
+    }
+
     public MouseListener getMouseListener() {
         return mouseHandler;
     }
     public MouseMotionListener getMouseMotionListener() {
-        return mouseHandler;
+        return mouseMotionHandler;
     }
 
+    public boolean getToPlant() {
+        return isToPlant;
+    }
 
+    public int getEnergy() {
+        return gamePlayer.getEnergy();
+    }
 
-    /**
-     * The keyboard handler.
-     */
-    class KeyHandler extends KeyAdapter {
+    public Image getSelectedCardImage() {
 
-        @Override
-        public void keyPressed(KeyEvent e) {
-            switch (e.getKeyCode())
-            {
-                case KeyEvent.VK_UP:
-                    keyUP = true;
-                    break;
-                case KeyEvent.VK_DOWN:
-                    keyDOWN = true;
-                    break;
-                case KeyEvent.VK_LEFT:
-                    keyLEFT = true;
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    keyRIGHT = true;
-                    break;
-                case KeyEvent.VK_ESCAPE:
-                    gameOver = true;
-                    break;
-            }
+        Image image = null;
+
+        if (selectedCard instanceof SunflowerCard) {
+            image = new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage();
+        } else if (selectedCard instanceof PeaShooterCard) {
+            image = new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage();
+        } else if (selectedCard instanceof SnowPeaCard) {
+            image = new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage();
+        } else if (selectedCard instanceof WalnutCard) {
+            image = new ImageIcon("Game accessories\\images\\Gifs\\walnut_full_life.gif").getImage();
+        } else if (selectedCard instanceof CherryBombCard) {
+            image = new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage();
         }
 
-        @Override
-        public void keyReleased(KeyEvent e) {
-            switch (e.getKeyCode())
-            {
-                case KeyEvent.VK_UP:
-                    keyUP = false;
-                    break;
-                case KeyEvent.VK_DOWN:
-                    keyDOWN = false;
-                    break;
-                case KeyEvent.VK_LEFT:
-                    keyLEFT = false;
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    keyRIGHT = false;
-                    break;
-            }
-        }
-
+        return image;
     }
 
     /**
      * The mouse handler.
      */
-    class MouseHandler extends MouseAdapter {
+    private class MouseHandler extends MouseAdapter {
 
-        @Override
-        public void mousePressed(MouseEvent e) {
-            mouseX = e.getX();
-            mouseY = e.getY();
-            mousePress = true;
+        private boolean isInside(int point, int location, int range) {
+            return !((point > location + range / 2) || (point < location - range / 2));
+        }
+
+        private boolean isFree(int row, int column) {
+            for (Plant plant:
+                 gamePlayer.getPlants()) {
+                if(plant.getXLocation() == column && plant.getYLocation() == row)
+                    return false;
+            }
+            return true;
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
-            mousePress = false;
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON1 && !isToPlant) {
+                for (Card card :
+                        availablePlants) {
+                    if (isInside(e.getX(), card.getXLocation(), card.getWidth())
+                            && isInside(e.getY(), card.getYLocation(), card.getHeight())) {
+                        gameFrame.addMouseMotionListener(mouseMotionHandler);
+                        selectedCard = card;
+                        isToPlant = true;
+                        return;
+                    }
+                }
+                for (Sun sun :
+                        gamePlayer.getSuns()) {
+                    if (isInside(e.getX(), sun.getXLocation(), sun.getWidth())
+                            && isInside(e.getY(), sun.getYLocation(), sun.getHeight())) {
+                        gamePlayer.remove(gamePlayer.getSuns(), sun);
+                        gamePlayer.remove(gamePlayer.getEntities(), sun);
+                        gamePlayer.setEnergy(gamePlayer.getEnergy() + 25);
+                        return;
+                    }
+                }
+            }
+            else if (e.getButton() == MouseEvent.BUTTON1 && isToPlant) {
+                int row = gamePlayer.rowOf(e.getY());
+                int column = gamePlayer.columnOf(e.getX());
+                if(isFree(row, column) && selectedCard.getEnabled()) {
+                    if (selectedCard instanceof SunflowerCard) {
+                        Sunflower sunflower = new Sunflower(column, row, gamePlayer);
+                        gamePlayer.addPlant(sunflower);
+                        ThreadPool.execute(sunflower);
+                    } else if (selectedCard instanceof PeaShooterCard) {
+                        PeaShooter peaShooter = new PeaShooter(column, row);
+                        gamePlayer.addPlant(peaShooter);
+                        ThreadPool.execute(peaShooter);
+                    } else if (selectedCard instanceof SnowPeaCard) {
+                        SnowPea snowPea = new SnowPea(column, row);
+                        gamePlayer.addPlant(snowPea);
+                        ThreadPool.execute(snowPea);
+                    } else if (selectedCard instanceof WalnutCard) {
+                        Walnut walnut = new Walnut(column, row, gamePlayer);
+                        gamePlayer.addPlant(walnut);
+                        ThreadPool.execute(walnut);
+                    } else if (selectedCard instanceof CherryBombCard) {
+                        CherryBomb cherryBomb = new CherryBomb(column, row);
+                        gamePlayer.addPlant(cherryBomb);
+                        ThreadPool.execute(cherryBomb);
+                    }
+                    ThreadPool.execute(selectedCard);
+                    gameFrame.removeMouseMotionListener(mouseMotionHandler);
+                    isToPlant = false;
+                }
+            }
+            else if (e.getButton() == MouseEvent.BUTTON3 && isToPlant) {
+                gameFrame.removeMouseMotionListener(mouseMotionHandler);
+                isToPlant = false;
+            }
         }
+    }
+
+    private class MouseMotionHandler extends MouseAdapter {
 
         @Override
-        public void mouseDragged(MouseEvent e) {
+        public void mouseMoved(MouseEvent e) {
             mouseX = e.getX();
             mouseY = e.getY();
         }

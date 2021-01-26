@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class SnowPea extends Plant {
 
-    public SnowPea(int life, int xLocation, int yLocation) {
-        super(life, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\freezenpeashooter.gif").getImage());
+    public SnowPea(int xLocation, int yLocation) {
+        super(100, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage());
     }
 
     @Override

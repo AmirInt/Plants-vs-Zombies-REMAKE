@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class PeaShooter extends Plant {
 
-    public PeaShooter(int life, int xLocation, int yLocation) {
-        super(life, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage());
+    public PeaShooter(int xLocation, int yLocation) {
+        super(70, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage());
     }
 
     @Override

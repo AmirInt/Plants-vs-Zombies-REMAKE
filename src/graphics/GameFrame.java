@@ -5,6 +5,8 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import javax.swing.*;
 import entities.Entity;
+import cards.Card;
+import entities.plants.Walnut;
 import manager.GamePlayer;
 import menus.Menu;
 
@@ -28,6 +30,7 @@ public class GameFrame extends JFrame {
     private BufferStrategy bufferStrategy;
     private final Image image;
     private ArrayList<Entity> entities;
+    private ArrayList<Card> availablePlants;
 
     public GameFrame() {
         super("Plants vs. Zombies");
@@ -42,6 +45,10 @@ public class GameFrame extends JFrame {
         entities = gamePlayer.getEntities();
     }
 
+    public void setAvailablePlants(GamePlayer gamePlayer) {
+        availablePlants = gamePlayer.getAvailablePlants();
+    }
+
     /**
      * This must be called once after the JFrame is shown:
      *    frame.setVisible(true);
@@ -54,7 +61,7 @@ public class GameFrame extends JFrame {
     }
 
     public void displayMenu(Menu menu) {
-        add(menu);
+        setContentPane(menu);
     }
 
 
@@ -96,6 +103,14 @@ public class GameFrame extends JFrame {
         // Draw background
         g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
 
+        g2d.drawString(state.getEnergy() + "", 50, 120);
+
+        for (Card availablePlant:
+             availablePlants) {
+            g2d.drawImage(availablePlant.getCardImage(), availablePlant.getXLocation() - availablePlant.getWidth() / 2,
+                    availablePlant.getYLocation() - availablePlant.getHeight() / 2, null);
+        }
+
         for (Entity entity:
              entities) {
             int width = entity.getWidth();
@@ -103,6 +118,10 @@ public class GameFrame extends JFrame {
             int x = entity.getXLocation() - width / 2;
             int y = entity.getYLocation() - height / 2;
             g2d.drawImage(entity.getAppearance(), x, y, width, height, null);
+        }
+
+        if(state.getToPlant()) {
+            g2d.drawImage(state.getSelectedCardImage(), state.getMouseX(), state.getMouseY(), null);
         }
 
         // Print FPS info
