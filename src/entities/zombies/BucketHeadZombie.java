@@ -38,11 +38,6 @@ public class BucketHeadZombie extends Zombie{
     }
 
     @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
-    }
-
-    @Override
     public int getMovingSpeed() {
         return super.getMovingSpeed();
     }
@@ -99,10 +94,9 @@ public class BucketHeadZombie extends Zombie{
 
     @Override
     public void run() {
-        while (!gameFinished) {
+        while (!gamePlayer.isGameFinished()) {
             if(xLocation == 0) {
                 finishTheGame();
-                setGameFinished(true);
             }
             move();
         }

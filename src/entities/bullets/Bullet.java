@@ -2,6 +2,7 @@ package entities.bullets;
 
 import entities.Entity;
 import entities.zombies.Zombie;
+import manager.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +12,8 @@ public class Bullet extends Entity {
     int destructionPower;
     int movingSpeed;
 
-    public Bullet(int life, int xLocation, int yLocation, Image appearance, int destructionPower) {
-        super(life, xLocation, yLocation, 28, 28, appearance);
+    public Bullet(int xLocation, int yLocation, Image appearance, int destructionPower, GamePlayer gamePlayer) {
+        super(10, xLocation, yLocation, 28, 28, appearance, gamePlayer);
         movingSpeed = 10;
         this.destructionPower = destructionPower;
     }
@@ -25,11 +26,6 @@ public class Bullet extends Entity {
     @Override
     public int getHeight() {
         return super.getHeight();
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override
@@ -47,10 +43,17 @@ public class Bullet extends Entity {
         return super.getAppearance();
     }
 
-    public void hit(Zombie zombie) { }
+    public void hit(Zombie zombie) {
+        zombie.injure(destructionPower);
+        die();
+    }
 
     public void move() {
-        xLocation += 10;
+        xLocation += 2;
+        if(xLocation > 1400) {
+            life = 0;
+            die();
+        }
     }
 
     @Override
@@ -60,7 +63,17 @@ public class Bullet extends Entity {
 
     @Override
     public void run() {
-        while (!gameFinished) {
+        while (!gamePlayer.isGameFinished() && life > 0) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignore) { }
+            for (Zombie zombie:
+                 gamePlayer.getZombies()) {
+                if(zombie.getYLocation() == yLocation && Math.abs(zombie.getXLocation() - xLocation) <= 20) {
+                    hit(zombie);
+                    break;
+                }
+            }
             move();
         }
     }

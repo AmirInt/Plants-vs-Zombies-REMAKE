@@ -1,6 +1,7 @@
 package entities.others;
 
 import entities.Entity;
+import manager.GamePlayer;
 
 import javax.swing.*;
 
@@ -10,9 +11,9 @@ public class Sun extends Entity {
     int reflection;
     int yDestination;
 
-    public Sun(int xLocation, int yLocation, int yDestination) {
+    public Sun(int xLocation, int yLocation, int yDestination, GamePlayer gamePlayer) {
         super(10, xLocation, yLocation, 50, 48,
-                new ImageIcon("Game accessories\\images\\Gifs\\sun.gif").getImage());
+                new ImageIcon("Game accessories\\images\\Gifs\\sun.gif").getImage(), gamePlayer);
         this.yDestination = yDestination;
         movingSpeed = 0;
         reflection = yDestination - (yDestination - yLocation) / 10;

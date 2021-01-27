@@ -205,19 +205,20 @@ public class GamePlayer implements Runnable {
     }
 
     public synchronized void dropASun(int xLocation, int yLocation, int yDestination) {
-        Sun newSun = new Sun(xLocation, yLocation, yDestination);
+        Sun newSun = new Sun(xLocation, yLocation, yDestination, this);
         suns.add(newSun);
         entities.add(newSun);
         ThreadPool.execute(newSun);
     }
 
-    public synchronized void addSun(Sun newSun) {
-        suns.add(newSun);
-    }
-
     public synchronized void addPlant(Plant newPlant) {
         plants.add(newPlant);
         entities.add(newPlant);
+    }
+
+    public synchronized void addBullet(Bullet newBullet) {
+        bullets.add(newBullet);
+        entities.add(newBullet);
     }
 
     public ArrayList<Sun> getSuns() {
@@ -258,6 +259,10 @@ public class GamePlayer implements Runnable {
 
     public int getScore() {
         return score;
+    }
+
+    public void consumeEnergy(int consumedEnergy) {
+        energy -= consumedEnergy;
     }
 
     public boolean isGameFinished() {

@@ -118,7 +118,8 @@ public class GameState {
                 for (Card card :
                         availablePlants) {
                     if (isInside(e.getX(), card.getXLocation(), card.getWidth())
-                            && isInside(e.getY(), card.getYLocation(), card.getHeight())) {
+                            && isInside(e.getY(), card.getYLocation(), card.getHeight())
+                            && gamePlayer.getEnergy() >= card.getRequiredEnergy()) {
                         gameFrame.addMouseMotionListener(mouseMotionHandler);
                         selectedCard = card;
                         isToPlant = true;
@@ -145,11 +146,11 @@ public class GameState {
                         gamePlayer.addPlant(sunflower);
                         ThreadPool.execute(sunflower);
                     } else if (selectedCard instanceof PeaShooterCard) {
-                        PeaShooter peaShooter = new PeaShooter(column, row);
+                        PeaShooter peaShooter = new PeaShooter(column, row, gamePlayer);
                         gamePlayer.addPlant(peaShooter);
                         ThreadPool.execute(peaShooter);
                     } else if (selectedCard instanceof SnowPeaCard) {
-                        SnowPea snowPea = new SnowPea(column, row);
+                        SnowPea snowPea = new SnowPea(column, row, gamePlayer);
                         gamePlayer.addPlant(snowPea);
                         ThreadPool.execute(snowPea);
                     } else if (selectedCard instanceof WalnutCard) {
@@ -157,12 +158,13 @@ public class GameState {
                         gamePlayer.addPlant(walnut);
                         ThreadPool.execute(walnut);
                     } else if (selectedCard instanceof CherryBombCard) {
-                        CherryBomb cherryBomb = new CherryBomb(column, row);
+                        CherryBomb cherryBomb = new CherryBomb(column, row, gamePlayer);
                         gamePlayer.addPlant(cherryBomb);
                         ThreadPool.execute(cherryBomb);
                     }
                     ThreadPool.execute(selectedCard);
                     gameFrame.removeMouseMotionListener(mouseMotionHandler);
+                    gamePlayer.consumeEnergy(selectedCard.getRequiredEnergy());
                     isToPlant = false;
                 }
             }

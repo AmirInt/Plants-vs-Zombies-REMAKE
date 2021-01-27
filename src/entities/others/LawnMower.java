@@ -1,6 +1,7 @@
 package entities.others;
 
 import entities.Entity;
+import manager.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +11,9 @@ public class LawnMower extends Entity {
     int movingSpeed;
     boolean isTriggered;
 
-    public LawnMower(int life, int xLocation, int yLocation) {
-        super(life, xLocation, yLocation, 100, 100, new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
+    public LawnMower(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
+        super(life, xLocation, yLocation, 100, 100,
+                new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage(), gamePlayer);
         isTriggered = false;
         movingSpeed = 0;
     }
@@ -19,11 +21,6 @@ public class LawnMower extends Entity {
     @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override

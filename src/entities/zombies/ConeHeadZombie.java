@@ -38,11 +38,6 @@ public class ConeHeadZombie extends Zombie{
     }
 
     @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
-    }
-
-    @Override
     public int getXLocation() {
         return super.getXLocation();
     }
@@ -99,10 +94,9 @@ public class ConeHeadZombie extends Zombie{
 
     @Override
     public void run() {
-        while (!gameFinished) {
+        while (!gamePlayer.isGameFinished()) {
             if(xLocation == 0) {
                 finishTheGame();
-                setGameFinished(true);
             }
             move();
         }

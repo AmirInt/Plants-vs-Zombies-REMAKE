@@ -9,13 +9,13 @@ import java.awt.*;
 
 public abstract class Zombie extends Entity{
 
-    private GamePlayer gamePlayer;
+    protected GamePlayer gamePlayer;
     protected int destructionPower;
     protected int movingSpeed;
 
     public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, Image appearance,
                   int destructionPower) {
-        super(life, xLocation, yLocation, 70, 100, appearance);
+        super(life, xLocation, yLocation, 70, 100, appearance, gamePlayer);
         this.gamePlayer = gamePlayer;
         this.destructionPower = destructionPower;
     }
@@ -30,11 +30,6 @@ public abstract class Zombie extends Entity{
 
     public void setDestructionPower(int destructionPower) {
         this.destructionPower = destructionPower;
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override

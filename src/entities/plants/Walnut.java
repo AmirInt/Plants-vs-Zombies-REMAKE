@@ -48,11 +48,17 @@ public class Walnut extends Plant {
     public synchronized void injure(int lifeTakenAway) {
         super.injure(lifeTakenAway);
         if(life < 100)
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life.gif"));
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life.gif").getImage());
+        if(life < 50)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life (1).gif").getImage());
     }
 
     @Override
     public void die() {
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_dead.gif").getImage());
+        try {
+            Thread.sleep(40);
+        } catch (InterruptedException ignore) { }
         super.die();
     }
 

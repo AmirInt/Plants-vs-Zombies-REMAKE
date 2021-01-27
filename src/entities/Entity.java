@@ -64,5 +64,7 @@ public abstract class Entity implements Runnable {
             gamePlayer.remove(gamePlayer.getZombies(), (Zombie) this);
         if(this instanceof Plant)
             gamePlayer.remove(gamePlayer.getPlants(), (Plant) this);
+        if(this instanceof Bullet)
+            gamePlayer.remove(gamePlayer.getBullets(), (Bullet) this);
     }
 }

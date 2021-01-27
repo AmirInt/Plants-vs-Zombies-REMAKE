@@ -1,22 +1,20 @@
 package entities.plants;
 
+import manager.GamePlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class CherryBomb extends Plant {
 
-    public CherryBomb(int xLocation, int yLocation) {
-        super(70, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage());
+    public CherryBomb(int xLocation, int yLocation, GamePlayer gamePlayer) {
+        super(70, xLocation, yLocation,
+                new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage(), gamePlayer);
     }
 
     @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override

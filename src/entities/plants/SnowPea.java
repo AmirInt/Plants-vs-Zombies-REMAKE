@@ -1,22 +1,24 @@
 package entities.plants;
 
+import entities.bullets.Bullet;
+import entities.bullets.FrozenPea;
+import entities.zombies.BucketHeadZombie;
+import graphics.ThreadPool;
+import manager.GamePlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class SnowPea extends Plant {
 
-    public SnowPea(int xLocation, int yLocation) {
-        super(100, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage());
+    public SnowPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
+        super(100, xLocation, yLocation,
+                new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage(), gamePlayer);
     }
 
     @Override
     public void setAppearance(Image appearance) {
         super.setAppearance(appearance);
-    }
-
-    @Override
-    public void setGameFinished(boolean gameFinished) {
-        super.setGameFinished(gameFinished);
     }
 
     @Override
@@ -44,24 +46,34 @@ public class SnowPea extends Plant {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\freezenpeashooter.gif").getImage());
     }
 
-    public void shoot() {
+    @Override
+    public synchronized void injure(int lifeTakenAway) {
+        super.injure(lifeTakenAway);
+    }
 
+    public void shoot() {
+        Bullet newBullet = new FrozenPea(xLocation, yLocation, gamePlayer);
+        gamePlayer.addBullet(newBullet);
+        ThreadPool.execute(newBullet);
     }
 
     @Override
     public void die() {
-        super.die();
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter_dying.gif").getImage());
         try {
             Thread.sleep(250);
         } catch (InterruptedException ignore) { }
+        super.die();
     }
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(1000);
-            shoot();
-        } catch (InterruptedException ignore) { }
+        while (!gamePlayer.isGameFinished() && life > 0) {
+            try {
+                Thread.sleep(1500);
+                shoot();
+            } catch (InterruptedException ignore) {
+            }
+        }
     }
 }
