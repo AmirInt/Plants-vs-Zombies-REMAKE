@@ -3,10 +3,6 @@ package entities;
 import manager.GamePlayer;
 
 import java.awt.*;
-import entities.others.*;
-import entities.zombies.*;
-import entities.plants.*;
-import entities.bullets.*;
 
 public abstract class Entity implements Runnable {
 
@@ -57,14 +53,6 @@ public abstract class Entity implements Runnable {
     }
 
     public void die() {
-        gamePlayer.remove(gamePlayer.getEntities(), this);
-        if(this instanceof Sun)
-            gamePlayer.remove(gamePlayer.getSuns(), (Sun) this);
-        if(this instanceof Zombie)
-            gamePlayer.remove(gamePlayer.getZombies(), (Zombie) this);
-        if(this instanceof Plant)
-            gamePlayer.remove(gamePlayer.getPlants(), (Plant) this);
-        if(this instanceof Bullet)
-            gamePlayer.remove(gamePlayer.getBullets(), (Bullet) this);
+        gamePlayer.remove(this);
     }
 }

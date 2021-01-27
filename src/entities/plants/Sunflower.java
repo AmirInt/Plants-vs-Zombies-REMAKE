@@ -58,14 +58,14 @@ public class Sunflower extends Plant {
     }
 
     private void produce() {
-        gamePlayer.dropASun(xLocation, yLocation - height, yLocation + height);
+        gamePlayer.dropASun(xLocation, yLocation - height, yLocation);
     }
 
     @Override
     public void die() {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower_dying.gif").getImage());
         try {
-            Thread.sleep(250);
+            Thread.sleep(1000);
         } catch (InterruptedException ignore) { }
         life = 0;
         super.die();
@@ -73,7 +73,7 @@ public class Sunflower extends Plant {
 
     @Override
     public void run() {
-        while (!gamePlayer.isGameFinished() && life > 0) {
+        while (gamePlayer.isNotGameFinished() && life > 0) {
             try {
                 Thread.sleep(productionRate);
                 produce();

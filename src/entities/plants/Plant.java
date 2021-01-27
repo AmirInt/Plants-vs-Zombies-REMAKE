@@ -51,6 +51,7 @@ public abstract class Plant extends Entity {
 
     @Override
     public void die() {
+        life = 0;
         super.die();
     }
 }

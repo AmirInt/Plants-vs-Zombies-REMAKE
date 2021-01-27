@@ -1,9 +1,8 @@
 package entities.zombies;
 
 import entities.Entity;
-import graphics.GameLoop;
+import entities.plants.Plant;
 import manager.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -62,11 +61,15 @@ public abstract class Zombie extends Entity{
     }
 
     public void injure(int destructionPower) {
-        if(life - destructionPower > 0) life -= destructionPower;
-        else die();
+        life -= destructionPower;
+        if(life <= 0) die();
     }
 
-    public void destroy(Entity plant) {
+    public void destroy(Plant plant) {
+        try {
+            Thread.sleep(1000);
+            plant.injure(destructionPower);
+        } catch (InterruptedException ignore) { }
     }
 
     public void downGrade() {
@@ -84,8 +87,28 @@ public abstract class Zombie extends Entity{
         gamePlayer.lose();
     }
 
+    public void burn() {
+        try {
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\burntZombie.gif").getImage());
+            Thread.sleep(3000);
+            die();
+        } catch (InterruptedException ignore) { }
+    }
+
     @Override
     public void die() {
+        life = 0;
         super.die();
+    }
+
+    @Override
+    public void run() {
+        while (gamePlayer.isNotGameFinished() && life > 0) {
+            if(xLocation == 0) {
+                finishTheGame();
+                return;
+            } if(gamePlayer.destroyPlants(this))
+                move();
+        }
     }
 }

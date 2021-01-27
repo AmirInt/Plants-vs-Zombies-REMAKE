@@ -22,11 +22,6 @@ public class GamePlayer implements Runnable {
     private final ArrayList<AvailableZombies> availableZombies;
     private final ArrayList<Card> availablePlants;
     private final ArrayList<Entity> entities;
-    private final ArrayList<Zombie> zombies;
-    private final ArrayList<LawnMower> lawnMowers;
-    private final ArrayList<Plant> plants;
-    private final ArrayList<Sun> suns;
-    private final ArrayList<Bullet> bullets;
     private final Random random;
     private final ArrayList<Integer> rows;
     private final ArrayList<Integer> columns;
@@ -36,7 +31,7 @@ public class GamePlayer implements Runnable {
     public GamePlayer(GameDifficulty gameDifficulty, ArrayList<AvailableZombies> availableZombies,
                       ArrayList<Card> availablePlants) {
         time = 0;
-        energy = 0;
+        energy = 50;
         rows = new ArrayList<>();
         setRows();
         columns = new ArrayList<>();
@@ -46,11 +41,6 @@ public class GamePlayer implements Runnable {
         this.availableZombies = availableZombies;
         this.availablePlants = availablePlants;
         entities = new ArrayList<>();
-        zombies = new ArrayList<>();
-        lawnMowers = new ArrayList<>();
-        plants = new ArrayList<>();
-        suns = new ArrayList<>();
-        bullets = new ArrayList<>();
         random = new Random();
         setZombiesTurnUpTimes();
         if(gameDifficulty == GameDifficulty.MEDIUM)
@@ -119,76 +109,51 @@ public class GamePlayer implements Runnable {
         };
     }
 
-    private int getZombieYLocation() {
+    private synchronized int getZombieYLocation() {
         ArrayList<Integer> probabilities = new ArrayList<>(5);
-        probabilities.add(16);
-        probabilities.add(16);
-        probabilities.add(16);
-        probabilities.add(16);
-        probabilities.add(16);
-
-        int[] snowPeas = new int[5];
-        int[] peaShooters = new int[5];
+        probabilities.add(50);
+        probabilities.add(50);
+        probabilities.add(50);
+        probabilities.add(50);
+        probabilities.add(50);
 
         int index;
 
-        for (LawnMower lawnMower:
-                lawnMowers) {
-            index = rows.indexOf(lawnMower.getXLocation());
-            try {
-                probabilities.set(index, probabilities.get(index) - 12);
-                for (int i = 0; i < 5; i++) {
-                    if(i != index)
-                        probabilities.set(i, probabilities.get(i) + 3);
-                }
-            } catch (IndexOutOfBoundsException ignore) { }
-        }
-
-        for (Plant plant:
-                plants) {
-            if (plant instanceof SnowPea) {
-                index = rows.indexOf(plant.getXLocation());
+        for (Entity entity:
+             entities) {
+            if(entity instanceof LawnMower) {
+                index = rows.indexOf(entity.getXLocation());
                 try {
-                    ++snowPeas[index];
+                    probabilities.set(index, probabilities.get(index) - 12);
+                    for (int i = 0; i < 5; i++) {
+                        if(i != index)
+                            probabilities.set(i, probabilities.get(i) + 3);
+                    }
+                } catch (IndexOutOfBoundsException ignore) { }
+            }
+            else if(entity instanceof SnowPea) {
+                index = rows.indexOf(entity.getXLocation());
+                try {
+                    probabilities.set(index, probabilities.get(index) - 8);
+                    for (int i = 0; i < 5; i++) {
+                        if (i != index) {
+                            probabilities.set(i, probabilities.get(i) + 2);
+                        }
+                    }
+                } catch (IndexOutOfBoundsException ignore) { }
+            }
+            else if(entity instanceof PeaShooter) {
+                index = rows.indexOf(entity.getXLocation());
+                try {
+                    probabilities.set(index, probabilities.get(index) - 4);
+                    for (int i = 0; i < 5; i++) {
+                        if (i != index) {
+                            probabilities.set(i, probabilities.get(i) + 1);
+                        }
+                    }
                 } catch (IndexOutOfBoundsException ignore) { }
             }
         }
-        index = 0;
-        for (int i = 1; i < 5; ++i) {
-            if(snowPeas[i] > snowPeas[index])
-                index = i;
-        }
-        try {
-            probabilities.set(index, probabilities.get(index) - 8);
-            for (int i = 0; i < 5; i++) {
-                if(i != index) {
-                    probabilities.set(i, probabilities.get(i) + 2);
-                }
-            }
-        } catch (IndexOutOfBoundsException ignore) { }
-
-        for (Plant plant:
-                plants) {
-            if (plant instanceof PeaShooter) {
-                index = rows.indexOf(plant.getXLocation());
-                try {
-                    ++peaShooters[index];
-                } catch (IndexOutOfBoundsException ignore) { }
-            }
-        }
-        index = 0;
-        for (int i = 1; i < 5; ++i) {
-            if(peaShooters[i] > peaShooters[index])
-                index = i;
-        }
-        try {
-            probabilities.set(index, probabilities.get(index) - 4);
-            for (int i = 0; i < 5; i++) {
-                if(i != index) {
-                    probabilities.set(i, probabilities.get(i) + 1);
-                }
-            }
-        } catch (IndexOutOfBoundsException ignore) { }
 
         double randomSelection = random.nextInt(probabilities.get(0) + probabilities.get(1) +
                 probabilities.get(2) + probabilities.get(3) + probabilities.get(4));
@@ -204,41 +169,19 @@ public class GamePlayer implements Runnable {
         return rows.get(4);
     }
 
+    public synchronized <T extends Entity> void add(T t) {
+        entities.add(t);
+        ThreadPool.execute(t);
+    }
+
+    public synchronized <T extends Entity> boolean remove(T t) {
+        return entities.remove(t);
+    }
+
     public synchronized void dropASun(int xLocation, int yLocation, int yDestination) {
         Sun newSun = new Sun(xLocation, yLocation, yDestination, this);
-        suns.add(newSun);
-        entities.add(newSun);
+        add(newSun);
         ThreadPool.execute(newSun);
-    }
-
-    public synchronized void addPlant(Plant newPlant) {
-        plants.add(newPlant);
-        entities.add(newPlant);
-    }
-
-    public synchronized void addBullet(Bullet newBullet) {
-        bullets.add(newBullet);
-        entities.add(newBullet);
-    }
-
-    public ArrayList<Sun> getSuns() {
-        return suns;
-    }
-
-    public ArrayList<LawnMower> getLawnMowers() {
-        return lawnMowers;
-    }
-
-    public ArrayList<Plant> getPlants() {
-        return plants;
-    }
-
-    public ArrayList<Zombie> getZombies() {
-        return zombies;
-    }
-
-    public ArrayList<Bullet> getBullets() {
-        return bullets;
     }
 
     public ArrayList<Entity> getEntities() {
@@ -261,12 +204,65 @@ public class GamePlayer implements Runnable {
         return score;
     }
 
+    public synchronized boolean destroyPlants(Zombie zombie) {
+        boolean nothingOnTheWay = true;
+
+        for (Entity entity :
+                entities) {
+            if(entity instanceof Plant)
+                if(entity.getYLocation() == zombie.getYLocation() &&
+                        Math.abs(zombie.getXLocation() - entity.getXLocation()) < 20) {
+                    nothingOnTheWay = false;
+                    zombie.destroy((Plant) entity);
+                    break;
+                }
+                else nothingOnTheWay = true;
+        }
+        return nothingOnTheWay;
+    }
+
+    public synchronized void bumpBullet(Bullet bullet) {
+
+        for (Entity entity:
+                entities) {
+
+                if (entity instanceof Zombie)
+                    if (entity.getYLocation() == bullet.getYLocation() &&
+                            Math.abs(entity.getXLocation() - bullet.getXLocation()) <= 20) {
+                        bullet.hit((Zombie) entity);
+                        break;
+                    }
+        }
+    }
+
+    public synchronized boolean isFree(int row, int column) {
+        for (Entity entity:
+                entities) {
+            if(entity instanceof Plant)
+                if(entity.getXLocation() == column && entity.getYLocation() == row)
+                    return false;
+        }
+        return true;
+    }
+
+    public synchronized void bustZombies(CherryBomb cherryBomb) {
+        for (Entity entity :
+                entities) {
+            if(entity instanceof Zombie)
+                if(Math.abs(rowOf(entity.getYLocation()) - rowOf(cherryBomb.getYLocation())) <= 1
+                        && Math.abs(columnOf(entity.getXLocation()) - columnOf(cherryBomb.getXLocation())) <= 1) {
+                    Zombie zombie = (Zombie) entity;
+                    zombie.burn();
+                }
+        }
+    }
+
     public void consumeEnergy(int consumedEnergy) {
         energy -= consumedEnergy;
     }
 
-    public boolean isGameFinished() {
-        return gameFinished;
+    public boolean isNotGameFinished() {
+        return !gameFinished;
     }
 
     public int rowOf(int y) {
@@ -289,10 +285,6 @@ public class GamePlayer implements Runnable {
         return columns.get(8);
     }
 
-    public <T> void remove(ArrayList<T> collection, T t) {
-        collection.remove(t);
-    }
-
     private void finishTheGame() {
         gameFinished = true;
     }
@@ -310,26 +302,24 @@ public class GamePlayer implements Runnable {
     @Override
     public void run() {
         int index = 0;
-        while (time < 530) {
+        while (time < 530 && !gameFinished) {
             try {
-                if(gameFinished)
-                    break;
                 Thread.sleep(1000);
                 ++time;
+                System.out.println(time);
                 if(time % sunDroppingPeriod == 0)
                     dropASun(random.nextInt(600) + 200,
                             0, random.nextInt(400) + 200);
                 if(time == zombiesTurnUpTimes[index]) {
                     Zombie newZombie = enterNewZombie();
-                    zombies.add(newZombie);
-                    entities.add(newZombie);
+                    add(newZombie);
                     ThreadPool.execute(newZombie);
                     ++index;
                     index = Math.min(index, 28);
                 }
-            } catch (InterruptedException ignore) {
-                System.out.println("Caught!");
-            }
+            } catch (InterruptedException ignore) { }
         }
+        gameFinished = true;
+        System.out.println("Game Over");
     }
 }

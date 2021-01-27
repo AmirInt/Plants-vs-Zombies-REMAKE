@@ -7,10 +7,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import cards.*;
+import entities.Entity;
 import entities.plants.*;
 import entities.others.Sun;
 import manager.GamePlayer;
-
 import javax.swing.*;
 
 /**
@@ -42,14 +42,6 @@ public class GameState {
 
         mouseHandler = new MouseHandler();
         mouseMotionHandler = new MouseMotionHandler();
-    }
-
-    /**
-     * The method which updates the game state.
-     */
-    public void update(int x, int y) {
-        mouseX = x;
-        mouseY = y;
     }
 
     public int getMouseX() {
@@ -103,15 +95,6 @@ public class GameState {
             return !((point > location + range / 2) || (point < location - range / 2));
         }
 
-        private boolean isFree(int row, int column) {
-            for (Plant plant:
-                 gamePlayer.getPlants()) {
-                if(plant.getXLocation() == column && plant.getYLocation() == row)
-                    return false;
-            }
-            return true;
-        }
-
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1 && !isToPlant) {
@@ -126,41 +109,36 @@ public class GameState {
                         return;
                     }
                 }
-                for (Sun sun :
-                        gamePlayer.getSuns()) {
-                    if (isInside(e.getX(), sun.getXLocation(), sun.getWidth())
-                            && isInside(e.getY(), sun.getYLocation(), sun.getHeight())) {
-                        gamePlayer.remove(gamePlayer.getSuns(), sun);
-                        gamePlayer.remove(gamePlayer.getEntities(), sun);
-                        gamePlayer.setEnergy(gamePlayer.getEnergy() + 25);
-                        return;
-                    }
+                for (Entity entity :
+                        gamePlayer.getEntities()) {
+                    if(entity instanceof Sun)
+                        if (isInside(e.getX(), entity.getXLocation(), entity.getWidth())
+                                && isInside(e.getY(), entity.getYLocation(), entity.getHeight())) {
+                            gamePlayer.remove(entity);
+                            gamePlayer.setEnergy(gamePlayer.getEnergy() + 25);
+                            return;
+                        }
                 }
             }
             else if (e.getButton() == MouseEvent.BUTTON1 && isToPlant) {
                 int row = gamePlayer.rowOf(e.getY());
                 int column = gamePlayer.columnOf(e.getX());
-                if(isFree(row, column) && selectedCard.getEnabled()) {
+                if(gamePlayer.isFree(row, column) && selectedCard.getEnabled()) {
                     if (selectedCard instanceof SunflowerCard) {
                         Sunflower sunflower = new Sunflower(column, row, gamePlayer);
-                        gamePlayer.addPlant(sunflower);
-                        ThreadPool.execute(sunflower);
+                        gamePlayer.add(sunflower);
                     } else if (selectedCard instanceof PeaShooterCard) {
                         PeaShooter peaShooter = new PeaShooter(column, row, gamePlayer);
-                        gamePlayer.addPlant(peaShooter);
-                        ThreadPool.execute(peaShooter);
+                        gamePlayer.add(peaShooter);
                     } else if (selectedCard instanceof SnowPeaCard) {
                         SnowPea snowPea = new SnowPea(column, row, gamePlayer);
-                        gamePlayer.addPlant(snowPea);
-                        ThreadPool.execute(snowPea);
+                        gamePlayer.add(snowPea);
                     } else if (selectedCard instanceof WalnutCard) {
                         Walnut walnut = new Walnut(column, row, gamePlayer);
-                        gamePlayer.addPlant(walnut);
-                        ThreadPool.execute(walnut);
+                        gamePlayer.add(walnut);
                     } else if (selectedCard instanceof CherryBombCard) {
                         CherryBomb cherryBomb = new CherryBomb(column, row, gamePlayer);
-                        gamePlayer.addPlant(cherryBomb);
-                        ThreadPool.execute(cherryBomb);
+                        gamePlayer.add(cherryBomb);
                     }
                     ThreadPool.execute(selectedCard);
                     gameFrame.removeMouseMotionListener(mouseMotionHandler);

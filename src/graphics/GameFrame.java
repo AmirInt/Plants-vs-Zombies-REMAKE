@@ -3,10 +3,12 @@ package graphics;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import javax.swing.*;
 import entities.Entity;
 import cards.Card;
 import entities.plants.Walnut;
+import jdk.dynalink.linker.ConversionComparator;
 import manager.GamePlayer;
 import menus.Menu;
 
@@ -68,7 +70,7 @@ public class GameFrame extends JFrame {
     /**
      * Game rendering with triple-buffering using BufferStrategy.
      */
-    public void render(GameState state) {
+    public void render(GameState state, GamePlayer gamePlayer) {
         // Render single frame
         do {
             // The following loop ensures that the contents of the drawing buffer
@@ -78,7 +80,7 @@ public class GameFrame extends JFrame {
                 // to make sure the strategy is validated
                 Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
                 try {
-                    doRendering(graphics, state);
+                    doRendering(graphics, state, gamePlayer);
                 } finally {
                     // Dispose the graphics
                     graphics.dispose();
@@ -99,26 +101,28 @@ public class GameFrame extends JFrame {
     /**
      * Rendering all game elements based on the game state.
      */
-    private void doRendering(Graphics2D g2d, GameState state) {
+    private synchronized void doRendering(Graphics2D g2d, GameState state, GamePlayer gamePlayer) {
         // Draw background
         g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
 
         g2d.drawString(state.getEnergy() + "", 50, 120);
 
-        for (Card availablePlant:
-             availablePlants) {
+        for (Card availablePlant :
+                availablePlants) {
             g2d.drawImage(availablePlant.getCardImage(), availablePlant.getXLocation() - availablePlant.getWidth() / 2,
                     availablePlant.getYLocation() - availablePlant.getHeight() / 2, null);
         }
 
-        for (Entity entity:
-             entities) {
-            int width = entity.getWidth();
-            int height = entity.getHeight();
-            int x = entity.getXLocation() - width / 2;
-            int y = entity.getYLocation() - height / 2;
-            g2d.drawImage(entity.getAppearance(), x, y, width, height, null);
-        }
+        try {
+            for (Entity entity :
+                    entities) {
+                int width = entity.getWidth();
+                int height = entity.getHeight();
+                int x = entity.getXLocation() - width / 2;
+                int y = entity.getYLocation() - height / 2;
+                g2d.drawImage(entity.getAppearance(), x, y, width, height, null);
+            }
+        } catch (ConcurrentModificationException ignore) { }
 
         if(state.getToPlant()) {
             g2d.drawImage(state.getSelectedCardImage(), state.getMouseX(), state.getMouseY(), null);

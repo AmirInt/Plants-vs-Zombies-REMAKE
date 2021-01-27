@@ -1,6 +1,7 @@
 package entities.zombies;
 
 import entities.Entity;
+import entities.plants.Plant;
 import manager.GamePlayer;
 
 import javax.swing.*;
@@ -66,7 +67,7 @@ public class NormalZombie extends Zombie {
     }
 
     @Override
-    public void destroy(Entity plant) {
+    public void destroy(Plant plant) {
         super.destroy(plant);
     }
 
@@ -86,12 +87,21 @@ public class NormalZombie extends Zombie {
     }
 
     @Override
+    public void burn() {
+        super.burn();
+    }
+
+    @Override
+    public void die() {
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignore) { }
+        super.die();
+    }
+
+    @Override
     public void run() {
-        while (!gamePlayer.isGameFinished()) {
-            if(xLocation == 0) {
-                finishTheGame();
-            }
-            move();
-        }
+        super.run();
     }
 }

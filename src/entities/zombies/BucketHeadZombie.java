@@ -1,6 +1,6 @@
 package entities.zombies;
 
-import entities.Entity;
+import entities.plants.Plant;
 import enums.GameDifficulty;
 import manager.GamePlayer;
 
@@ -73,7 +73,7 @@ public class BucketHeadZombie extends Zombie{
     }
 
     @Override
-    public void destroy(Entity plant) {
+    public void destroy(Plant plant) {
         super.destroy(plant);
     }
 
@@ -93,12 +93,21 @@ public class BucketHeadZombie extends Zombie{
     }
 
     @Override
+    public void burn() {
+        super.burn();
+    }
+
+    @Override
+    public void die() {
+        try {
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
+            Thread.sleep(750);
+        } catch (InterruptedException ignore) { }
+        super.die();
+    }
+
+    @Override
     public void run() {
-        while (!gamePlayer.isGameFinished()) {
-            if(xLocation == 0) {
-                finishTheGame();
-            }
-            move();
-        }
+        super.run();
     }
 }

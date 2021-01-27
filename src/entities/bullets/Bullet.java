@@ -3,8 +3,6 @@ package entities.bullets;
 import entities.Entity;
 import entities.zombies.Zombie;
 import manager.GamePlayer;
-
-import javax.swing.*;
 import java.awt.*;
 
 public class Bullet extends Entity {
@@ -45,15 +43,19 @@ public class Bullet extends Entity {
 
     public void hit(Zombie zombie) {
         zombie.injure(destructionPower);
+        life = 0;
         die();
     }
 
     public void move() {
-        xLocation += 2;
-        if(xLocation > 1400) {
-            life = 0;
-            die();
-        }
+        try {
+            Thread.sleep(5);
+            xLocation += 1;
+            if (xLocation > 1000) {
+                life = 0;
+                die();
+            }
+        } catch (InterruptedException ignore) { }
     }
 
     @Override
@@ -63,17 +65,8 @@ public class Bullet extends Entity {
 
     @Override
     public void run() {
-        while (!gamePlayer.isGameFinished() && life > 0) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ignore) { }
-            for (Zombie zombie:
-                 gamePlayer.getZombies()) {
-                if(zombie.getYLocation() == yLocation && Math.abs(zombie.getXLocation() - xLocation) <= 20) {
-                    hit(zombie);
-                    break;
-                }
-            }
+        while (gamePlayer.isNotGameFinished() && life > 0) {
+            gamePlayer.bumpBullet(this);
             move();
         }
     }

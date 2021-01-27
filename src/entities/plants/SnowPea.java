@@ -53,7 +53,7 @@ public class SnowPea extends Plant {
 
     public void shoot() {
         Bullet newBullet = new FrozenPea(xLocation, yLocation, gamePlayer);
-        gamePlayer.addBullet(newBullet);
+        gamePlayer.add(newBullet);
         ThreadPool.execute(newBullet);
     }
 
@@ -61,16 +61,16 @@ public class SnowPea extends Plant {
     public void die() {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter_dying.gif").getImage());
         try {
-            Thread.sleep(250);
+            Thread.sleep(1000);
         } catch (InterruptedException ignore) { }
         super.die();
     }
 
     @Override
     public void run() {
-        while (!gamePlayer.isGameFinished() && life > 0) {
+        while (gamePlayer.isNotGameFinished() && life > 0) {
             try {
-                Thread.sleep(1500);
+                Thread.sleep(1000);
                 shoot();
             } catch (InterruptedException ignore) {
             }

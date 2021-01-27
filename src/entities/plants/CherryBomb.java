@@ -1,7 +1,8 @@
 package entities.plants;
 
+import entities.Entity;
+import entities.zombies.Zombie;
 import manager.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -43,7 +44,7 @@ public class CherryBomb extends Plant {
     }
 
     public void bust() {
-
+        gamePlayer.bustZombies(this);
     }
 
     @Override

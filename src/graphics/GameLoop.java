@@ -48,13 +48,13 @@ public class GameLoop implements Runnable {
         canvas.addMouseMotionListener(state.getMouseMotionListener());
     }
 
-    public void run() {
+    public synchronized void run() {
         boolean gameOver = false;
         while (!gameOver) {
             try {
                 long start = System.currentTimeMillis();
                 //
-                canvas.render(state);
+                canvas.render(state, gamePlayer);
                 gameOver = state.gameOver;
                 //
                 long delay = (1000 / FPS) - (System.currentTimeMillis() - start);
@@ -62,7 +62,7 @@ public class GameLoop implements Runnable {
                     Thread.sleep(delay);
             } catch (InterruptedException ignore) { }
         }
-        canvas.render(state);
+        canvas.render(state, gamePlayer);
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
         gamePlayer.win();

@@ -57,7 +57,7 @@ public class Walnut extends Plant {
     public void die() {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_dead.gif").getImage());
         try {
-            Thread.sleep(40);
+            Thread.sleep(500);
         } catch (InterruptedException ignore) { }
         super.die();
     }

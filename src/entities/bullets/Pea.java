@@ -40,7 +40,7 @@ public class Pea extends Bullet {
 
     @Override
     public void hit(Zombie zombie) {
-        zombie.injure(destructionPower);
+        super.hit(zombie);
     }
 
     @Override
