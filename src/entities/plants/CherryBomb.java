@@ -1,7 +1,5 @@
 package entities.plants;
 
-import entities.Entity;
-import entities.zombies.Zombie;
 import manager.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +42,7 @@ public class CherryBomb extends Plant {
     }
 
     public void bust() {
-        gamePlayer.bustZombies(this);
+        gamePlayer.bustThemZombies(this);
     }
 
     @Override
@@ -56,9 +54,9 @@ public class CherryBomb extends Plant {
     public void run() {
         try {
             Thread.sleep(1000);
-            bust();
-            die();
         } catch (InterruptedException ignore) { }
+        bust();
+        die();
     }
 
 }

@@ -11,12 +11,15 @@ public abstract class Zombie extends Entity{
     protected GamePlayer gamePlayer;
     protected int destructionPower;
     protected int movingSpeed;
+    protected int affectedMovingSpeed;
+    private boolean isBurnt;
 
     public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, Image appearance,
                   int destructionPower) {
         super(life, xLocation, yLocation, 70, 100, appearance, gamePlayer);
         this.gamePlayer = gamePlayer;
         this.destructionPower = destructionPower;
+        isBurnt = false;
     }
 
     public void setMovingSpeed(int movingSpeed) {
@@ -60,9 +63,17 @@ public abstract class Zombie extends Entity{
         return movingSpeed;
     }
 
+    public int getAffectedMovingSpeed() {
+        return affectedMovingSpeed;
+    }
+
     public void injure(int destructionPower) {
         life -= destructionPower;
-        if(life <= 0) die();
+        if(life < 200)
+            downGrade();
+        if(life <= 0) {
+            life = 0;
+        }
     }
 
     public void destroy(Plant plant) {
@@ -88,11 +99,7 @@ public abstract class Zombie extends Entity{
     }
 
     public void burn() {
-        try {
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\burntZombie.gif").getImage());
-            Thread.sleep(3000);
-            die();
-        } catch (InterruptedException ignore) { }
+        isBurnt = true;
     }
 
     @Override
@@ -103,12 +110,28 @@ public abstract class Zombie extends Entity{
 
     @Override
     public void run() {
-        while (gamePlayer.isNotGameFinished() && life > 0) {
+        while (gamePlayer.isNotGameFinished() && life > 0 && !isBurnt) {
             if(xLocation == 0) {
                 finishTheGame();
                 return;
-            } if(gamePlayer.destroyPlants(this))
-                move();
+            }
+            Plant poorPlant = gamePlayer.whichEntityIsWithinReachOf(this);
+            if(poorPlant != null)
+                destroy(poorPlant);
+            else move();
         }
+        if(isBurnt)
+            try {
+                setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\burntZombie.gif").getImage());
+                Thread.sleep(3000);
+                die();
+                return;
+            } catch (InterruptedException ignore) { }
+        if(life == 0)
+            try {
+                setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
+                Thread.sleep(1000);
+                die();
+            } catch (InterruptedException ignore) { }
     }
 }

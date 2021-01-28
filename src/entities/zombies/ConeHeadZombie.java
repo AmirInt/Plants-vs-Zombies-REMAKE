@@ -19,6 +19,7 @@ public class ConeHeadZombie extends Zombie{
             setMovingSpeed(20);
             setDestructionPower(15);
         }
+        affectedMovingSpeed = movingSpeed * 2;
     }
 
     @Override
@@ -98,10 +99,6 @@ public class ConeHeadZombie extends Zombie{
 
     @Override
     public void die() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignore) { }
         super.die();
     }
 

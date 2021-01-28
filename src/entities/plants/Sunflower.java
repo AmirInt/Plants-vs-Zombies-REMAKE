@@ -13,8 +13,8 @@ public class Sunflower extends Plant {
         super(50, xLocation, yLocation,
                 new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage(), gamePlayer);
         if(gamePlayer.getGameDifficulty() == GameDifficulty.MEDIUM)
-            productionRate = 20000;
-        else productionRate = 25000;
+            productionRate = 20;
+        else productionRate = 25;
     }
 
     @Override
@@ -63,22 +63,27 @@ public class Sunflower extends Plant {
 
     @Override
     public void die() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower_dying.gif").getImage());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignore) { }
-        life = 0;
         super.die();
     }
 
     @Override
     public void run() {
+        int i = 0;
         while (gamePlayer.isNotGameFinished() && life > 0) {
             try {
-                Thread.sleep(productionRate);
-                produce();
-            } catch (InterruptedException ignore) {
-            }
+                Thread.sleep(1000);
+                ++i;
+                i %= productionRate;
+                if(i == 0)
+                    produce();
+            } catch (InterruptedException ignore) { }
+        }
+        if(life == 0) {
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower_dying.gif").getImage());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) { }
+            die();
         }
     }
 }

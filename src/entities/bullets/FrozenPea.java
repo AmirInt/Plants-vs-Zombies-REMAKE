@@ -40,7 +40,7 @@ public class FrozenPea extends Bullet {
 
     @Override
     public void hit(Zombie zombie) {
-        zombie.setMovingSpeed(zombie.getMovingSpeed() * 2);
+        zombie.setMovingSpeed(zombie.getAffectedMovingSpeed());
         super.hit(zombie);
     }
 

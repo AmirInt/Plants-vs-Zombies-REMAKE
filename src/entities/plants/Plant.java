@@ -46,12 +46,11 @@ public abstract class Plant extends Entity {
     public synchronized void injure(int lifeTakenAway) {
         life -= lifeTakenAway;
         if(life <= 0)
-            die();
+            life = 0;
     }
 
     @Override
     public void die() {
-        life = 0;
         super.die();
     }
 }

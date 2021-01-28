@@ -3,14 +3,13 @@ package entities.zombies;
 import entities.plants.Plant;
 import enums.GameDifficulty;
 import manager.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class BucketHeadZombie extends Zombie{
 
     public BucketHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(gamePlayer, 560, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage(),
+        super(gamePlayer, 1300, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage(),
                 0);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
@@ -20,6 +19,7 @@ public class BucketHeadZombie extends Zombie{
             setMovingSpeed(20);
             setDestructionPower(25);
         }
+        affectedMovingSpeed = movingSpeed * 2;
     }
 
     @Override
@@ -99,10 +99,6 @@ public class BucketHeadZombie extends Zombie{
 
     @Override
     public void die() {
-        try {
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
-            Thread.sleep(750);
-        } catch (InterruptedException ignore) { }
         super.die();
     }
 

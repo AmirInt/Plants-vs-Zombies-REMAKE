@@ -9,12 +9,10 @@ import java.awt.*;
 public class LawnMower extends Entity {
 
     int movingSpeed;
-    boolean isTriggered;
 
     public LawnMower(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(life, xLocation, yLocation, 100, 100,
                 new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage(), gamePlayer);
-        isTriggered = false;
         movingSpeed = 0;
     }
 
@@ -48,12 +46,9 @@ public class LawnMower extends Entity {
         return super.getAppearance();
     }
 
-    public void trigger() {
-        isTriggered = true;
-    }
-
     public void move() {
         xLocation += movingSpeed;
+        ++movingSpeed;
     }
 
     @Override
@@ -63,17 +58,15 @@ public class LawnMower extends Entity {
 
     @Override
     public void run() {
-        if(isTriggered) {
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
-            while(xLocation < 1000) {
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException ignore) { }
-                move();
-                if(movingSpeed < 20)
-                    movingSpeed += 2;
-            }
-            die();
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
+        while (xLocation < 1350) {
+            gamePlayer.runOverZombies(this);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) { }
+            move();
         }
+        die();
     }
 }

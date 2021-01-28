@@ -96,7 +96,7 @@ public class GameState {
         }
 
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mouseReleased(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1 && !isToPlant) {
                 for (Card card :
                         availablePlants) {
@@ -127,18 +127,23 @@ public class GameState {
                     if (selectedCard instanceof SunflowerCard) {
                         Sunflower sunflower = new Sunflower(column, row, gamePlayer);
                         gamePlayer.add(sunflower);
+                        ThreadPool.execute(sunflower);
                     } else if (selectedCard instanceof PeaShooterCard) {
                         PeaShooter peaShooter = new PeaShooter(column, row, gamePlayer);
                         gamePlayer.add(peaShooter);
+                        ThreadPool.execute(peaShooter);
                     } else if (selectedCard instanceof SnowPeaCard) {
                         SnowPea snowPea = new SnowPea(column, row, gamePlayer);
                         gamePlayer.add(snowPea);
+                        ThreadPool.execute(snowPea);
                     } else if (selectedCard instanceof WalnutCard) {
                         Walnut walnut = new Walnut(column, row, gamePlayer);
                         gamePlayer.add(walnut);
+                        ThreadPool.execute(walnut);
                     } else if (selectedCard instanceof CherryBombCard) {
                         CherryBomb cherryBomb = new CherryBomb(column, row, gamePlayer);
                         gamePlayer.add(cherryBomb);
+                        ThreadPool.execute(cherryBomb);
                     }
                     ThreadPool.execute(selectedCard);
                     gameFrame.removeMouseMotionListener(mouseMotionHandler);

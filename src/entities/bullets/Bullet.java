@@ -51,7 +51,7 @@ public class Bullet extends Entity {
         try {
             Thread.sleep(5);
             xLocation += 1;
-            if (xLocation > 1000) {
+            if (xLocation > 1300) {
                 life = 0;
                 die();
             }

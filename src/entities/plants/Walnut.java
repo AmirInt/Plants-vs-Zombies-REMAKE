@@ -51,19 +51,23 @@ public class Walnut extends Plant {
             setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life.gif").getImage());
         if(life < 50)
             setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life (1).gif").getImage());
+        if(life <= 0) {
+            life = 0;
+            run();
+        }
     }
 
     @Override
     public void die() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_dead.gif").getImage());
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignore) { }
         super.die();
     }
 
     @Override
     public void run() {
-
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_dead.gif").getImage());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignore) { }
+        die();
     }
 }

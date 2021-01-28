@@ -63,10 +63,6 @@ public class PeaShooter extends Plant {
 
     @Override
     public void die() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter_dying.gif").getImage());
-        try {
-            Thread.sleep(750);
-        } catch (InterruptedException ignore) { }
         super.die();
     }
 
@@ -78,6 +74,14 @@ public class PeaShooter extends Plant {
                 shoot();
             } catch (InterruptedException ignore) {
             }
+        }
+        if(life == 0) {
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter_dying.gif").getImage());
+            try {
+                Thread.sleep(750);
+            } catch (InterruptedException ignore) {
+            }
+            die();
         }
     }
 }

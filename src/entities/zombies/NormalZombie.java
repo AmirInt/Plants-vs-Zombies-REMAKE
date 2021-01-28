@@ -1,9 +1,7 @@
 package entities.zombies;
 
-import entities.Entity;
 import entities.plants.Plant;
 import manager.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,6 +12,7 @@ public class NormalZombie extends Zombie {
                 5);
 //        Setting the moving speed
         setMovingSpeed(30);
+        affectedMovingSpeed = movingSpeed * 2;
     }
 
     @Override
@@ -93,10 +92,6 @@ public class NormalZombie extends Zombie {
 
     @Override
     public void die() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignore) { }
         super.die();
     }
 
