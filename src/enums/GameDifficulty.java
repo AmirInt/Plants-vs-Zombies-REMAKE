@@ -1,5 +1,7 @@
 package enums;
 
-public enum GameDifficulty {
+import java.io.Serializable;
+
+public enum GameDifficulty implements Serializable {
     MEDIUM, HARD
 }

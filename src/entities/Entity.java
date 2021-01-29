@@ -3,15 +3,16 @@ package entities;
 import manager.GamePlayer;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public abstract class Entity implements Runnable {
+public abstract class Entity implements Runnable, Serializable {
 
     protected int life;
     protected int xLocation;
     protected int yLocation;
     protected final int width;
     protected final int height;
-    protected Image appearance;
+    transient protected Image appearance;
     protected final GamePlayer gamePlayer;
 
     public Entity(int life, int xLocation, int yLocation, int width, int height, Image appearance, GamePlayer gamePlayer) {

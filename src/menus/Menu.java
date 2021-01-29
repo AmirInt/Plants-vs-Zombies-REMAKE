@@ -1,34 +1,30 @@
 package menus;
 
 import manager.GameManager;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.*;
+import java.io.Serializable;
 
-public class Menu extends JPanel {
+public class Menu extends JPanel implements Serializable {
 
-    private final GameManager gameManager;
-    private final JFrame gameFrame;
-    private final Image backgroundImage;
-    private final Border selectedItemBorder;
-    private final Font unselectedItemFont;
-    private final Font selectedItemFont;
-    private final Color selectedItemColour;
-    private final Color unselectedItemColour;
-    private final JPanel mainMenu;
-    private final JPanel rankingMenu;
-    private final JPanel settingsMenu;
-    private JLabel newGame, loadGame, ranking, settings, exitGame;
-    private final GridBagConstraints constraints;
-    private final KeyHandler keyHandler;
-    private final MouseHandler mouseHandler;
+    protected final GameManager gameManager;
+    protected final JFrame gameFrame;
+    protected final Image backgroundImage;
+    protected final Border selectedItemBorder;
+    protected final Font unselectedItemFont;
+    protected final Font selectedItemFont;
+    protected final Color selectedItemColour;
+    protected final Color unselectedItemColour;
+    protected final GridBagConstraints constraints;
 
-    public Menu(GameManager gameManager, JFrame gameFrame) {
-        super(new GridBagLayout());
+    public Menu(GameManager gameManager, JFrame gameFrame, Image backgroundImage, LayoutManager layoutManager) {
+
+        super(layoutManager);
         this.gameManager = gameManager;
         this.gameFrame = gameFrame;
-        backgroundImage = new ImageIcon("Game accessories\\images\\PvZStreet_1440x900.0.jpeg").getImage();
+        this.backgroundImage = backgroundImage;
         constraints = new GridBagConstraints();
 
         selectedItemBorder = BorderFactory.createMatteBorder(0, 2, 10, 0, Color.YELLOW);
@@ -37,81 +33,9 @@ public class Menu extends JPanel {
         selectedItemColour = new Color(180, 100, 0);
         unselectedItemColour = new Color(80, 10, 0);
 
-        mainMenu = new JPanel(new GridBagLayout());
-        mainMenu.setOpaque(false);
-        rankingMenu = new JPanel();
-        settingsMenu = new JPanel();
-
-        keyHandler = new KeyHandler(mainMenu);
-        mouseHandler = new MouseHandler(mainMenu);
-
-        setMainMenuComponents();
-        getMainMenuListenersReady();
-        setMainMenu();
     }
 
-    private void setMainMenuComponents() {
-        newGame = new JLabel("New Game");
-        newGame.setFont(unselectedItemFont);
-        newGame.setForeground(unselectedItemColour);
-        loadGame = new JLabel("Load Game");
-        loadGame.setFont(unselectedItemFont);
-        loadGame.setForeground(unselectedItemColour);
-        ranking = new JLabel("Ranking");
-        ranking.setFont(unselectedItemFont);
-        ranking.setForeground(unselectedItemColour);
-        settings = new JLabel("Settings");
-        settings.setFont(unselectedItemFont);
-        settings.setForeground(unselectedItemColour);
-        exitGame = new JLabel("Exit Game");
-        exitGame.setFont(unselectedItemFont);
-        exitGame.setForeground(unselectedItemColour);
-    }
-
-    public void getMainMenuListenersReady() {
-        gameFrame.addKeyListener(keyHandler);
-        newGame.addMouseListener(mouseHandler);
-        loadGame.addMouseListener(mouseHandler);
-        ranking.addMouseListener(mouseHandler);
-        settings.addMouseListener(mouseHandler);
-        exitGame.addMouseListener(mouseHandler);
-    }
-
-    private void setMainMenu() {
-        constraints.gridy = 0;
-        mainMenu.add(newGame, constraints);
-        constraints.gridy = 1;
-        mainMenu.add(loadGame, constraints);
-        constraints.gridy = 2;
-        mainMenu.add(ranking, constraints);
-        constraints.gridy = 3;
-        mainMenu.add(settings, constraints);
-        constraints.gridy = 4;
-        mainMenu.add(exitGame, constraints);
-        constraints.gridy = 0;
-        add(mainMenu);
-    }
-
-    private void setFocusedItem(JLabel unfocusedItem, JLabel focusGainingItem) {
-        if(unfocusedItem != null) {
-            unfocusedItem.setBorder(null);
-            unfocusedItem.setFont(unselectedItemFont);
-            unfocusedItem.setForeground(unselectedItemColour);
-        }
-        if(focusGainingItem != null) {
-            focusGainingItem.setFont(selectedItemFont);
-            focusGainingItem.setForeground(selectedItemColour);
-            focusGainingItem.setBorder(selectedItemBorder);
-        }
-    }
-
-    public KeyHandler getKeyHandler() {
-        return keyHandler;
-    }
-
-    public MouseHandler getMouseHandler() {
-        return mouseHandler;
-    }
+    public void getListenersReady() { }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -119,123 +43,4 @@ public class Menu extends JPanel {
         g.drawImage(backgroundImage, 0, 0, null);
     }
 
-    private class KeyHandler extends KeyAdapter {
-
-        JPanel panel;
-
-        public KeyHandler(JPanel panel) {
-            this.panel = panel;
-        }
-
-        public void setPanel(JPanel panel) {
-            this.panel = panel;
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_UP) {
-                if (loadGame.getForeground() == selectedItemColour)
-                    setFocusedItem(loadGame, newGame);
-                else if (ranking.getForeground() == selectedItemColour)
-                    setFocusedItem(ranking, loadGame);
-                else if (settings.getForeground() == selectedItemColour)
-                    setFocusedItem(settings, ranking);
-                else if (exitGame.getForeground() == selectedItemColour)
-                    setFocusedItem(exitGame, settings);
-                else setFocusedItem(newGame, exitGame);
-            }
-            else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (newGame.getForeground() == selectedItemColour)
-                    setFocusedItem(newGame, loadGame);
-                else if (loadGame.getForeground() == selectedItemColour)
-                    setFocusedItem(loadGame, ranking);
-                else if (ranking.getForeground() == selectedItemColour)
-                    setFocusedItem(ranking, settings);
-                else if (settings.getForeground() == selectedItemColour)
-                    setFocusedItem(settings, exitGame);
-                else setFocusedItem(exitGame, newGame);
-            }
-            else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (newGame.getForeground() == selectedItemColour) {
-                    gameFrame.removeKeyListener(keyHandler);
-                    newGame.removeMouseListener(mouseHandler);
-                    loadGame.removeMouseListener(mouseHandler);
-                    ranking.removeMouseListener(mouseHandler);
-                    settings.removeMouseListener(mouseHandler);
-                    exitGame.removeMouseListener(mouseHandler);
-                    gameManager.play();
-                }
-                else if (loadGame.getForeground() == selectedItemColour) { }
-                else if (ranking.getForeground() == selectedItemColour) { }
-                else if (settings.getForeground() == selectedItemColour) { }
-                else if(exitGame.getForeground() == selectedItemColour)
-                    System.exit(0);
-            }
-            panel.revalidate();
-            gameFrame.revalidate();
-        }
-    }
-    private class MouseHandler extends MouseAdapter {
-
-        JPanel panel;
-
-        public MouseHandler(JPanel panel) {
-            this.panel = panel;
-        }
-
-        public void setPanel(JPanel panel) {
-            this.panel = panel;
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if(e.getSource() == newGame) {
-                gameFrame.removeKeyListener(keyHandler);
-                newGame.removeMouseListener(mouseHandler);
-                loadGame.removeMouseListener(mouseHandler);
-                ranking.removeMouseListener(mouseHandler);
-                settings.removeMouseListener(mouseHandler);
-                exitGame.removeMouseListener(mouseHandler);
-                gameManager.play();
-            }
-            else if(e.getSource() == loadGame) { }
-            else if(e.getSource() == ranking) { }
-            else if(e.getSource() == settings) { }
-            else if(e.getSource() == exitGame)
-                System.exit(0);
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            newGame.setFont(unselectedItemFont);
-            newGame.setForeground(unselectedItemColour);
-            newGame.setBorder(null);
-            loadGame.setFont(unselectedItemFont);
-            loadGame.setForeground(unselectedItemColour);
-            loadGame.setBorder(null);
-            ranking.setFont(unselectedItemFont);
-            ranking.setForeground(unselectedItemColour);
-            ranking.setBorder(null);
-            settings.setFont(unselectedItemFont);
-            settings.setForeground(unselectedItemColour);
-            settings.setBorder(null);
-            exitGame.setFont(unselectedItemFont);
-            exitGame.setForeground(unselectedItemColour);
-            exitGame.setBorder(null);
-            JLabel hoveredLabel = (JLabel) e.getSource();
-            hoveredLabel.setFont(selectedItemFont);
-            hoveredLabel.setForeground(selectedItemColour);
-            hoveredLabel.setBorder(selectedItemBorder);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            if(e.getSource() instanceof JLabel) {
-                JLabel releasedLabel = (JLabel) e.getSource();
-                releasedLabel.setBorder(null);
-                releasedLabel.setForeground(unselectedItemColour);
-                releasedLabel.setFont(unselectedItemFont);
-            }
-        }
-    }
 }

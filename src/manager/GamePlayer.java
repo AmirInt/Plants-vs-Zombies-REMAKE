@@ -5,33 +5,35 @@ import entities.bullets.Bullet;
 import entities.others.LawnMower;
 import entities.plants.*;
 import entities.zombies.*;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import enums.*;
 import entities.others.Sun;
 import graphics.ThreadPool;
 import java.util.Random;
-import java.util.Scanner;
-
 import cards.*;
 
-public class GamePlayer implements Runnable {
+public class GamePlayer implements Runnable, Serializable {
 
+    private final GameManager gameManager;
     private int score;
     private int time;
     private int energy;
     private final int[] zombiesTurnUpTimes;
     private final GameDifficulty gameDifficulty;
     private final ArrayList<AvailableZombies> availableZombies;
-    private final ArrayList<Card> availablePlants;
+    private final ArrayList<AvailablePlants> availablePlants;
+    private ArrayList<Card> cards;
     private final ArrayList<Entity> entities;
-    private final Random random;
+    transient private Random random;
     private final ArrayList<Integer> rows;
     private final ArrayList<Integer> columns;
     private final int sunDroppingPeriod;
     private boolean gameFinished;
 
     public GamePlayer(GameDifficulty gameDifficulty, ArrayList<AvailableZombies> availableZombies,
-                      ArrayList<Card> availablePlants) {
+                      ArrayList<AvailablePlants> availablePlants, GameManager gameManager) {
         time = 0;
         energy = 0;
         rows = new ArrayList<>();
@@ -39,17 +41,40 @@ public class GamePlayer implements Runnable {
         columns = new ArrayList<>();
         setColumns();
         zombiesTurnUpTimes = new int[35];
+        this.gameManager = gameManager;
         this.gameDifficulty = gameDifficulty;
         this.availableZombies = availableZombies;
         this.availablePlants = availablePlants;
         entities = new ArrayList<>();
         setLawnMowers();
-        random = new Random();
-        setZombiesTurnUpTimes();
         if(gameDifficulty == GameDifficulty.MEDIUM)
             sunDroppingPeriod = 25;
         else sunDroppingPeriod = 30;
         gameFinished = false;
+    }
+
+    public void initialise() {
+        random = new Random();
+
+        cards = new ArrayList<>();
+        int i = 0;
+        for (AvailablePlants availablePlant:
+             availablePlants) {
+            if(availablePlant == AvailablePlants.SUNFLOWER) {
+                cards.add(SunflowerCard.getInstance(GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.PEASHOOTER) {
+                cards.add(PeaShooterCard.getInstance(GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.WALNUT) {
+                cards.add(WalnutCard.getInstance(GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.FROZEN_PEASHOOTER) {
+                cards.add(SnowPeaCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.CHERRY_BOMB) {
+                cards.add(CherryBombCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            }
+            ++i;
+        }
+
+        setZombiesTurnUpTimes();
     }
 
     private void setLawnMowers() {
@@ -189,7 +214,7 @@ public class GamePlayer implements Runnable {
     }
 
     public ArrayList<Card> getAvailablePlants() {
-        return availablePlants;
+        return cards;
     }
 
     public int getEnergy() {
@@ -276,11 +301,11 @@ public class GamePlayer implements Runnable {
                 entities) {
             if(entity instanceof Zombie)
                 if(entity.getYLocation() == lawnMower.getYLocation()
-                        && Math.abs(columnOf(entity.getXLocation()) - columnOf(lawnMower.getXLocation())) <= 20)
+                        && Math.abs(columnOf(entity.getXLocation()) - columnOf(lawnMower.getXLocation())) <= 60)
                     zombie = (Zombie) entity;
         }
         if(zombie != null)
-            zombie.die();
+            zombie.setLife(0);
     }
 
     public void consumeEnergy(int consumedEnergy) {

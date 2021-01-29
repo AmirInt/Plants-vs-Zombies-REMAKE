@@ -7,8 +7,6 @@ import java.util.ConcurrentModificationException;
 import javax.swing.*;
 import entities.Entity;
 import cards.Card;
-import entities.plants.Walnut;
-import jdk.dynalink.linker.ConversionComparator;
 import manager.GamePlayer;
 import menus.Menu;
 
@@ -56,7 +54,7 @@ public class GameFrame extends JFrame {
      *    frame.setVisible(true);
      * and before any rendering is started.
      */
-    public void initBufferStrategy() {
+    public void init() {
         // Triple-buffering
         createBufferStrategy(3);
         bufferStrategy = getBufferStrategy();
@@ -64,13 +62,14 @@ public class GameFrame extends JFrame {
 
     public void displayMenu(Menu menu) {
         setContentPane(menu);
+        menu.getListenersReady();
     }
 
 
     /**
      * Game rendering with triple-buffering using BufferStrategy.
      */
-    public void render(GameState state, GamePlayer gamePlayer) {
+    public void render(GameState state) {
         // Render single frame
         do {
             // The following loop ensures that the contents of the drawing buffer
@@ -80,7 +79,7 @@ public class GameFrame extends JFrame {
                 // to make sure the strategy is validated
                 Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
                 try {
-                    doRendering(graphics, state, gamePlayer);
+                    doRendering(graphics, state);
                 } finally {
                     // Dispose the graphics
                     graphics.dispose();
@@ -101,7 +100,7 @@ public class GameFrame extends JFrame {
     /**
      * Rendering all game elements based on the game state.
      */
-    private synchronized void doRendering(Graphics2D g2d, GameState state, GamePlayer gamePlayer) {
+    private synchronized void doRendering(Graphics2D g2d, GameState state) {
         // Draw background
         g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
 

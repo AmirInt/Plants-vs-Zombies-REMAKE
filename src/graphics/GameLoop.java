@@ -1,7 +1,7 @@
 package graphics;
 
 import manager.GamePlayer;
-import menus.Menu;
+import menus.MainMenu;
 
 import javax.swing.*;
 
@@ -29,12 +29,12 @@ public class GameLoop implements Runnable {
 
     private final GameFrame canvas;
     private GameState state;
-    private final Menu menu;
+    private final MainMenu mainMenu;
     private final GamePlayer gamePlayer;
 
-    public GameLoop(GameFrame frame, Menu menu, GamePlayer gamePlayer) {
+    public GameLoop(GameFrame frame, MainMenu mainMenu, GamePlayer gamePlayer) {
         canvas = frame;
-        this.menu = menu;
+        this.mainMenu = mainMenu;
         this.gamePlayer = gamePlayer;
     }
 
@@ -54,7 +54,7 @@ public class GameLoop implements Runnable {
             try {
                 long start = System.currentTimeMillis();
                 //
-                canvas.render(state, gamePlayer);
+                canvas.render(state);
                 gameOver = state.gameOver;
                 //
                 long delay = (1000 / FPS) - (System.currentTimeMillis() - start);
@@ -62,11 +62,11 @@ public class GameLoop implements Runnable {
                     Thread.sleep(delay);
             } catch (InterruptedException ignore) { }
         }
-        canvas.render(state, gamePlayer);
+        canvas.render(state);
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
         gamePlayer.win();
-        canvas.setContentPane(menu);
-        menu.getMainMenuListenersReady();
+        canvas.setContentPane(mainMenu);
+        mainMenu.getListenersReady();
     }
 }

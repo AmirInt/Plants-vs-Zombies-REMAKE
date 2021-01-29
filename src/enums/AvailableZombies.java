@@ -1,5 +1,7 @@
 package enums;
 
-public enum AvailableZombies {
+import java.io.Serializable;
+
+public enum AvailableZombies implements Serializable {
     NormalZombie, ConeHeadZombie, BucketHeadZombie
 }
