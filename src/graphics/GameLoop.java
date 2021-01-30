@@ -1,7 +1,7 @@
 package graphics;
 
-import manager.GamePlayer;
-import menus.MainMenu;
+import managers.GameManager;
+import managers.GamePlayer;
 
 import javax.swing.*;
 
@@ -29,44 +29,49 @@ public class GameLoop implements Runnable {
 
     private final GameFrame canvas;
     private GameState state;
-    private final MainMenu mainMenu;
+    private final GameManager gameManager;
     private final GamePlayer gamePlayer;
 
-    public GameLoop(GameFrame frame, MainMenu mainMenu, GamePlayer gamePlayer) {
+    public GameLoop(GameFrame frame, GamePlayer gamePlayer, GameManager gameManager) {
         canvas = frame;
-        this.mainMenu = mainMenu;
         this.gamePlayer = gamePlayer;
+        this.gameManager = gameManager;
     }
 
     /**
      * This must be called before the game loop starts.
      */
     public void init() {
-        state = new GameState(gamePlayer, canvas);
+        state = new GameState(gamePlayer, canvas, gameManager);
         canvas.setContentPane(new JPanel());
-        canvas.addMouseListener(state.getMouseListener());
-        canvas.addMouseMotionListener(state.getMouseMotionListener());
+    }
+
+    public GameState getState() {
+        return state;
     }
 
     public synchronized void run() {
-        boolean gameOver = false;
-        while (!gameOver) {
-            try {
-                long start = System.currentTimeMillis();
-                //
-                canvas.render(state);
-                gameOver = state.gameOver;
-                //
-                long delay = (1000 / FPS) - (System.currentTimeMillis() - start);
-                if (delay > 0)
-                    Thread.sleep(delay);
-            } catch (InterruptedException ignore) { }
+        while (gamePlayer.isNotGameFinished()) {
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                try {
+                    long start = System.currentTimeMillis();
+                    //
+                    canvas.render(state);
+                    //
+                    long delay = (1000 / FPS) - (System.currentTimeMillis() - start);
+                    if (delay > 0)
+                        Thread.sleep(delay);
+                } catch (InterruptedException ignore) {
+                }
+            }
         }
         canvas.render(state);
+        canvas.removeKeyListener(state.getKeyListener());
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());
-        gamePlayer.win();
-        canvas.setContentPane(mainMenu);
-        mainMenu.getListenersReady();
     }
 }

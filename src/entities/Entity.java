@@ -1,6 +1,6 @@
 package entities;
 
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -13,15 +13,18 @@ public abstract class Entity implements Runnable, Serializable {
     protected final int width;
     protected final int height;
     transient protected Image appearance;
-    protected final GamePlayer gamePlayer;
+    transient protected GamePlayer gamePlayer;
 
-    public Entity(int life, int xLocation, int yLocation, int width, int height, Image appearance, GamePlayer gamePlayer) {
+    public Entity(int life, int xLocation, int yLocation, int width, int height, GamePlayer gamePlayer) {
         this.life = life;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
         this.width = width;
         this.height = height;
-        this.appearance = appearance;
+        this.gamePlayer = gamePlayer;
+    }
+
+    public void initialise(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
     }
 

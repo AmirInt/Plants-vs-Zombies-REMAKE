@@ -3,7 +3,7 @@ package entities.plants;
 import entities.bullets.Bullet;
 import entities.bullets.Pea;
 import graphics.ThreadPool;
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +11,13 @@ import java.awt.*;
 public class PeaShooter extends Plant {
 
     public PeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(70, xLocation, yLocation,
-                new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage(), gamePlayer);
+        super(70, xLocation, yLocation, gamePlayer);
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage());
     }
 
     @Override
@@ -57,6 +62,7 @@ public class PeaShooter extends Plant {
 
     public void shoot() {
         Bullet newBullet = new Pea(xLocation, yLocation, gamePlayer);
+        newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);
         ThreadPool.execute(newBullet);
     }
@@ -69,10 +75,16 @@ public class PeaShooter extends Plant {
     @Override
     public void run() {
         while (gamePlayer.isNotGameFinished() && life > 0) {
-            try {
-                Thread.sleep(1000);
-                shoot();
-            } catch (InterruptedException ignore) {
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    shoot();
+                } catch (InterruptedException ignore) {
+                }
             }
         }
         if(life == 0) {

@@ -2,15 +2,14 @@ package entities.zombies;
 
 import entities.plants.Plant;
 import enums.GameDifficulty;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
 public class BucketHeadZombie extends Zombie{
 
     public BucketHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(gamePlayer, 1300, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage(),
-                0);
+        super(gamePlayer, 1300, xLocation, yLocation, 0);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
             setMovingSpeed(25);
@@ -20,6 +19,14 @@ public class BucketHeadZombie extends Zombie{
             setDestructionPower(25);
         }
         affectedMovingSpeed = movingSpeed * 2;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        if(life > 200)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage());
+        else downGrade();
     }
 
     @Override

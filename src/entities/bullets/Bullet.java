@@ -2,7 +2,7 @@ package entities.bullets;
 
 import entities.Entity;
 import entities.zombies.Zombie;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import java.awt.*;
 
 public class Bullet extends Entity {
@@ -10,10 +10,15 @@ public class Bullet extends Entity {
     int destructionPower;
     int movingSpeed;
 
-    public Bullet(int xLocation, int yLocation, Image appearance, int destructionPower, GamePlayer gamePlayer) {
-        super(10, xLocation, yLocation, 28, 28, appearance, gamePlayer);
+    public Bullet(int xLocation, int yLocation, int destructionPower, GamePlayer gamePlayer) {
+        super(10, xLocation, yLocation, 28, 28, gamePlayer);
         movingSpeed = 10;
         this.destructionPower = destructionPower;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
     }
 
     @Override
@@ -66,8 +71,14 @@ public class Bullet extends Entity {
     @Override
     public void run() {
         while (gamePlayer.isNotGameFinished() && life > 0) {
-            gamePlayer.bumpBullet(this);
-            move();
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                gamePlayer.bumpBullet(this);
+                move();
+            }
         }
     }
 }

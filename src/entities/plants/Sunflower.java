@@ -1,7 +1,7 @@
 package entities.plants;
 
 import enums.GameDifficulty;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,11 +10,16 @@ public class Sunflower extends Plant {
     private final int productionRate;
 
     public Sunflower(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(50, xLocation, yLocation,
-                new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage(), gamePlayer);
+        super(50, xLocation, yLocation, gamePlayer);
         if(gamePlayer.getGameDifficulty() == GameDifficulty.MEDIUM)
             productionRate = 20;
         else productionRate = 25;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage());
     }
 
     @Override
@@ -70,13 +75,20 @@ public class Sunflower extends Plant {
     public void run() {
         int i = 0;
         while (gamePlayer.isNotGameFinished() && life > 0) {
-            try {
-                Thread.sleep(1000);
-                ++i;
-                i %= productionRate;
-                if(i == 0)
-                    produce();
-            } catch (InterruptedException ignore) { }
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    ++i;
+                    i %= productionRate;
+                    if (i == 0)
+                        produce();
+                } catch (InterruptedException ignore) {
+                }
+            }
         }
         if(life == 0) {
             setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower_dying.gif").getImage());

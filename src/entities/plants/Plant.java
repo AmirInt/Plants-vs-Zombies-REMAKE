@@ -1,14 +1,19 @@
 package entities.plants;
 
 import entities.Entity;
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import java.awt.*;
 
 public abstract class Plant extends Entity {
 
-    public Plant(int life, int xLocation, int yLocation, Image appearance, GamePlayer gamePlayer) {
-        super(life, xLocation, yLocation, 70, 100, appearance, gamePlayer);
+    public Plant(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
+        super(life, xLocation, yLocation, 70, 100, gamePlayer);
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
     }
 
     @Override

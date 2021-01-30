@@ -1,16 +1,16 @@
 package graphics;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import cards.*;
 import entities.Entity;
 import entities.plants.*;
 import entities.others.Sun;
-import manager.GamePlayer;
+import managers.GameManager;
+import managers.GamePlayer;
+import menus.PauseMenu;
+
 import javax.swing.*;
 
 /**
@@ -21,27 +21,31 @@ import javax.swing.*;
  */
 public class GameState {
 
-    public boolean gameOver;
     private int mouseX, mouseY;
     private boolean isToPlant;
 
     private final GamePlayer gamePlayer;
     private final GameFrame gameFrame;
+    private final GameManager gameManager;
     private final MouseHandler mouseHandler;
     private final MouseMotionHandler mouseMotionHandler;
+    private final KeyHandler keyHandler;
     private final ArrayList<Card> availablePlants;
     private Card selectedCard;
+    private PauseMenu pauseMenu;
 
-    public GameState(GamePlayer gamePlayer, GameFrame gameFrame) {
-        gameOver = false;
+    public GameState(GamePlayer gamePlayer, GameFrame gameFrame, GameManager gameManager) {
         isToPlant = false;
 
         this.gamePlayer = gamePlayer;
         this.gameFrame = gameFrame;
+        this.gameManager = gameManager;
         availablePlants = gamePlayer.getAvailablePlants();
+        pauseMenu = new PauseMenu(gameManager, gameFrame, this);
 
         mouseHandler = new MouseHandler();
         mouseMotionHandler = new MouseMotionHandler();
+        keyHandler = new KeyHandler();
     }
 
     public int getMouseX() {
@@ -52,6 +56,9 @@ public class GameState {
         return mouseY;
     }
 
+    public KeyListener getKeyListener() {
+        return keyHandler;
+    }
     public MouseListener getMouseListener() {
         return mouseHandler;
     }
@@ -84,6 +91,28 @@ public class GameState {
         }
 
         return image;
+    }
+
+    public void pauseGame() {
+        gameFrame.removeMouseMotionListener(mouseMotionHandler);
+        gameFrame.removeMouseListener(mouseHandler);
+        gameFrame.removeKeyListener(keyHandler);
+        gamePlayer.setGamePaused(true);
+    }
+
+    public void unpauseGame() {
+        gameFrame.addKeyListener(keyHandler);
+        gameFrame.addMouseListener(mouseHandler);
+        gameFrame.addMouseMotionListener(mouseMotionHandler);
+        gamePlayer.setGamePaused(false);
+    }
+
+    public boolean saveGame() {
+        return gameManager.saveGame(gamePlayer);
+    }
+
+    public void killGame() {
+        gamePlayer.killGame();
     }
 
     /**
@@ -126,22 +155,26 @@ public class GameState {
                 if(gamePlayer.isFree(row, column) && selectedCard.getEnabled()) {
                     if (selectedCard instanceof SunflowerCard) {
                         Sunflower sunflower = new Sunflower(column, row, gamePlayer);
+                        sunflower.initialise(gamePlayer);
                         gamePlayer.add(sunflower);
                         ThreadPool.execute(sunflower);
                     } else if (selectedCard instanceof PeaShooterCard) {
                         PeaShooter peaShooter = new PeaShooter(column, row, gamePlayer);
+                        peaShooter.initialise(gamePlayer);
                         gamePlayer.add(peaShooter);
                         ThreadPool.execute(peaShooter);
                     } else if (selectedCard instanceof SnowPeaCard) {
                         SnowPea snowPea = new SnowPea(column, row, gamePlayer);
+                        snowPea.initialise(gamePlayer);
                         gamePlayer.add(snowPea);
                         ThreadPool.execute(snowPea);
                     } else if (selectedCard instanceof WalnutCard) {
                         Walnut walnut = new Walnut(column, row, gamePlayer);
+                        walnut.initialise(gamePlayer);
                         gamePlayer.add(walnut);
-                        ThreadPool.execute(walnut);
                     } else if (selectedCard instanceof CherryBombCard) {
                         CherryBomb cherryBomb = new CherryBomb(column, row, gamePlayer);
+                        cherryBomb.initialise(gamePlayer);
                         gamePlayer.add(cherryBomb);
                         ThreadPool.execute(cherryBomb);
                     }
@@ -164,6 +197,16 @@ public class GameState {
         public void mouseMoved(MouseEvent e) {
             mouseX = e.getX();
             mouseY = e.getY();
+        }
+    }
+
+    private class KeyHandler extends KeyAdapter {
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                pauseGame();
+                gameFrame.displayMenu(pauseMenu);
+            }
         }
     }
 }

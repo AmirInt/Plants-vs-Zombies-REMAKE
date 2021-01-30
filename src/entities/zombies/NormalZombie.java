@@ -1,18 +1,23 @@
 package entities.zombies;
 
 import entities.plants.Plant;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
 public class NormalZombie extends Zombie {
 
     public NormalZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
-        super(gamePlayer, 200, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage(),
-                5);
+        super(gamePlayer, 200, xLocation, yLocation,5);
 //        Setting the moving speed
         setMovingSpeed(30);
         affectedMovingSpeed = movingSpeed * 2;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage());
     }
 
     @Override

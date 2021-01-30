@@ -1,12 +1,15 @@
-package manager;
+package managers;
 
 import enums.*;
 import graphics.*;
-import cards.*;
 import menus.LaunchingMenu;
 import menus.MainMenu;
+import menus.PauseMenu;
+import server.User;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferStrategy;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public class GameManager implements Serializable {
     private String username;
     private boolean isSignedIn;
     private int score;
+    private int wins;
+    private int losses;
     private int plantsNumber;
     private int zombiesNumber;
 
@@ -31,6 +36,8 @@ public class GameManager implements Serializable {
         gameDifficulty = GameDifficulty.MEDIUM;
         availableZombies = new ArrayList<>();
         availablePlants = new ArrayList<>();
+        wins = 0;
+        losses = 0;
         score = 0;
     }
 
@@ -55,7 +62,6 @@ public class GameManager implements Serializable {
         availablePlants.add(AvailablePlants.FROZEN_PEASHOOTER);
         availablePlants.add(AvailablePlants.CHERRY_BOMB);
         plantsNumber = 5;
-
     }
 
     public void removeAvailableZombie(AvailableZombies zombie) {
@@ -66,14 +72,6 @@ public class GameManager implements Serializable {
         availableZombies.add(zombie);
     }
 
-    public String getUser() {
-        return username;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
     public boolean isSignedIn() {
         return isSignedIn;
     }
@@ -82,31 +80,48 @@ public class GameManager implements Serializable {
         isSignedIn = signedIn;
     }
 
-    public void setUser(String username) {
-        this.username = username;
-    }
-
     public void setGameDifficulty(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
     }
 
+    public GameDifficulty getGameDifficulty() {
+        return gameDifficulty;
+    }
+
+    public String getUser() {
+        return username;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public ArrayList<AvailablePlants> getAvailablePlants() {
+        return availablePlants;
+    }
+
+    public ArrayList<AvailableZombies> getAvailableZombies() {
+        return availableZombies;
+    }
+
     public int addUser(String username, String password) {
-        try (Socket socket = new Socket("127.0.0.1", 2000);
+        try (Socket socket = new Socket("127.0.0.1", 10002);
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
         ) {
             writer.write("Sign up\n".getBytes());
-            System.out.println("sign up sent");
             writer.write((username + "\n").getBytes());
-            System.out.println("username set");
             writer.write((password + "\n").getBytes());
-            System.out.println("password sent");
             String str = reader.readLine();
             if(str.equals("Success")) {
                 this.username = username;
+                score = 0;
+                wins = 0;
+                losses = 0;
                 isSignedIn = true;
                 boolean done = store();
                 if(done) {
+                    mainMenu.updateUsername();
                     frame.displayMenu(mainMenu);
                     frame.revalidate();
                     frame.requestFocus();
@@ -116,12 +131,13 @@ public class GameManager implements Serializable {
             }
             return 2;
         } catch (IOException e) {
+            e.printStackTrace();
             return 3;
         }
     }
 
     public int getUser(String username, String password) {
-        try (Socket socket = new Socket("127.0.0.1", 2000);
+        try (Socket socket = new Socket("127.0.0.1", 10002);
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
         ) {
@@ -135,10 +151,13 @@ public class GameManager implements Serializable {
             str = reader.readLine();
             if(str.equals("Correct")) {
                 this.username = username;
-                score = reader.read();
+                score = Integer.parseInt(reader.readLine());
+                wins = Integer.parseInt(reader.readLine());
+                losses = Integer.parseInt(reader.readLine());
                 isSignedIn = true;
                 boolean done = store();
                 if(done) {
+                    mainMenu.updateUsername();
                     frame.displayMenu(mainMenu);
                     frame.revalidate();
                     frame.requestFocus();
@@ -148,6 +167,7 @@ public class GameManager implements Serializable {
             }
             return 1;
         } catch (IOException e) {
+            e.printStackTrace();
             return 3;
         }
     }
@@ -162,6 +182,57 @@ public class GameManager implements Serializable {
         }
     }
 
+    public boolean updateUser(String newUsername, String newPassword) {
+        try (Socket socket = new Socket("127.0.0.1", 10002);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
+        ) {
+            String str;
+            writer.write("Update\n".getBytes());
+            writer.write((username + "\n").getBytes());
+            writer.write((newUsername + "\n").getBytes());
+            writer.write((newPassword + "\n").getBytes());
+            writer.write((wins + "\n").getBytes());
+            writer.write((losses + "\n").getBytes());
+            writer.write((score + "\n").getBytes());
+            str = reader.readLine();
+            if(str != null && str.equals("Done")) {
+                username = newUsername;
+                mainMenu.updateUsername();
+                store();
+                return true;
+            }
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public ArrayList<User> getPlayers() {
+        ObjectInputStream objectReader = null;
+        try (Socket socket = new Socket("127.0.0.1", 10002) ;
+             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
+            outputStream.write("Get users\n".getBytes());
+            objectReader = new ObjectInputStream(socket.getInputStream());
+            return (ArrayList<User>) objectReader.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Caught");
+            return null;
+        } catch (ClassNotFoundException e) {
+            System.out.println("Caught differently");
+            return null;
+        }
+        finally {
+            if(objectReader != null) {
+                try {
+                    objectReader.close();
+                } catch (IOException ignore) { }
+            }
+        }
+    }
+
     public boolean store() {
         try (FileOutputStream outputStream = new FileOutputStream("Game Manager\\Game Manager.dat")
              ; ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
@@ -170,6 +241,30 @@ public class GameManager implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public boolean saveGame(GamePlayer gamePlayer) {
+        ObjectOutputStream objectWriter = null;
+        try (Socket socket = new Socket("127.0.0.1", 10002) ;
+             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())
+             ; BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            outputStream.write("Save game\n".getBytes());
+            outputStream.write((username + "\n").getBytes());
+            objectWriter = new ObjectOutputStream(socket.getOutputStream());
+            objectWriter.writeObject(gamePlayer);
+            String str = reader.readLine();
+            return str.equals("Done");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Caught");
+            return false;
+        } finally {
+            if(objectWriter != null) {
+                try {
+                    objectWriter.close();
+                } catch (IOException ignore) { }
+            }
+        }
     }
 
     public void launchGame() {
@@ -188,18 +283,46 @@ public class GameManager implements Serializable {
         });
     }
 
-    public void play() {
+    public void gameFinished(GamePlayer gamePlayer) {
+
+        score += gamePlayer.getScore();
+        if(score > 0)
+            ++wins;
+        else ++losses;
+        store();
+        updateUser(username, username);
+
+        BufferStrategy bufferStrategy = frame.getBufferStrategy();
+        Graphics2D g2d = (Graphics2D) bufferStrategy.getDrawGraphics();
+        g2d.drawImage(new ImageIcon("Game accessories\\images\\gameOver.jpg").getImage(), 0, 0, frame);
+        g2d.setFont(new Font("", Font.BOLD, 45));
+        g2d.setColor(Color.WHITE);
+        if(score > 0) {
+            g2d.drawString("You Lost And...", 20, 100);
+            g2d.drawString("Poor Lame Lad", 800, 100);
+        } else {
+            g2d.drawString("You Lost And...", 20, 100);
+            g2d.drawString("Poor Lame Lad", 800, 100);
+        }
+        g2d.drawString("" + gamePlayer.getScore(), 600, 700);
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ignore) { }
+        frame.displayMenu(mainMenu);
+    }
+
+    public void play(GamePlayer gamePlayer) {
         EventQueue.invokeLater(() -> {
 //             Create and execute the game-loop
-            GamePlayer gamePlayer = new GamePlayer(GameDifficulty.MEDIUM,
-                    availableZombies, availablePlants, this);
             gamePlayer.initialise();
-            GameLoop game = new GameLoop(frame, mainMenu, gamePlayer);
+            GameLoop game = new GameLoop(frame, gamePlayer, this);
             game.init();
             frame.setEntities(gamePlayer);
             frame.setAvailablePlants(gamePlayer);
             ThreadPool.execute(game);
             ThreadPool.execute(gamePlayer);
+            frame.displayMenu(new PauseMenu(this, frame, game.getState()));
 //             and the game starts ...
         });
     }

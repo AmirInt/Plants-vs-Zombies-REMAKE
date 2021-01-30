@@ -1,13 +1,16 @@
 package graphics;
 
 import java.awt.*;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import javax.swing.*;
 import entities.Entity;
 import cards.Card;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import menus.Menu;
 
 /**
@@ -31,6 +34,9 @@ public class GameFrame extends JFrame {
     private final Image image;
     private ArrayList<Entity> entities;
     private ArrayList<Card> availablePlants;
+    private KeyListener keyListener;
+    private MouseListener mouseListener;
+    private MouseMotionListener mouseMotionListener;
 
     public GameFrame() {
         super("Plants vs. Zombies");
@@ -61,10 +67,12 @@ public class GameFrame extends JFrame {
     }
 
     public void displayMenu(Menu menu) {
+        menu.update();
         setContentPane(menu);
         menu.getListenersReady();
+        revalidate();
+        repaint();
     }
-
 
     /**
      * Game rendering with triple-buffering using BufferStrategy.
@@ -102,6 +110,9 @@ public class GameFrame extends JFrame {
      */
     private synchronized void doRendering(Graphics2D g2d, GameState state) {
         // Draw background
+        g2d.setFont(new Font("", Font.BOLD, 16));
+        g2d.setColor(new Color(200, 150, 40));
+
         g2d.drawImage(image, 0, 30, GAME_WIDTH, GAME_HEIGHT - 20, Color.BLACK, null);
 
         g2d.drawString(state.getEnergy() + "", 50, 120);
@@ -141,14 +152,6 @@ public class GameFrame extends JFrame {
             avg /= fpsHistory.size();
         }
         lastRender = currentRender;
-        // Draw GAME OVER
-        if (state.gameOver) {
-            String str = "GAME OVER";
-            g2d.setColor(Color.WHITE);
-            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD).deriveFont(64.0f));
-            int strWidth = g2d.getFontMetrics().stringWidth(str);
-            g2d.drawString(str, (GAME_WIDTH - strWidth) / 2, GAME_HEIGHT / 2);
-        }
     }
 
 }

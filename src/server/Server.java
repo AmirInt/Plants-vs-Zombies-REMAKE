@@ -1,46 +1,66 @@
 package server;
 
+import managers.GamePlayer;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 
 public class Server {
 
-    private TreeMap<Integer, User> usersRankings;
+    private ArrayList<User> usersList;
     private TreeMap<String, User> users;
     private ServerSocket serverSocket;
 
     public Server() {
         users = new TreeMap<>();
-        usersRankings = new TreeMap<>(Collections.reverseOrder());
+        usersList = new ArrayList<>();
         try {
-            serverSocket = new ServerSocket(2000);
+            serverSocket = new ServerSocket(10002);
         } catch (IOException e) {
             System.out.println("wrong in server");
         }
     }
 
     public synchronized User checkForUser(String username) {
-        System.out.println("someone checked for username");
-        System.out.println(username);
         return users.get(username);
     }
 
     public synchronized boolean addUser(String username, String password) {
-        System.out.println("someone attempted to sign up");
-        System.out.println(username + " " + password);
         User newUser = checkForUser(username);
         if(newUser == null) {
             newUser = new User(username, password);
             users.put(username, newUser);
-            usersRankings.put(0, newUser);
+            usersList.add(newUser);
             return true;
         }
         return false;
+    }
+
+    public synchronized boolean updateUser(String username, String newUsername, String newPassword, int wins, int losses, int score) {
+        if(checkForUser(newUsername) != null && !username.equals(newUsername))
+            return false;
+        User user = users.get(username);
+        user.update(newUsername, newPassword, wins, losses, score);
+        if(!username.equals(newUsername)) {
+            users.remove(username, user);
+            System.out.println(users.get(username));
+            users.put(newUsername, user);
+        }
+        return true;
+    }
+
+    public ArrayList<User> getUsersList() {
+        return usersList;
+    }
+
+    public boolean saveGame(GamePlayer gamePlayer, String username) {
+        User user = users.get(username);
+        return user.saveGame(gamePlayer);
     }
 
     public static void main(String[] args) {
@@ -50,8 +70,8 @@ public class Server {
             Socket communicationSocket;
             try {
                 communicationSocket = server.serverSocket.accept();
+                System.out.println("Someone reached out");
                 //
-                System.out.println("someone just reached");
                 SubServer subServer = new SubServer(server, communicationSocket);
                 executorService.execute(subServer);
             } catch (IOException e) {

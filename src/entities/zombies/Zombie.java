@@ -2,24 +2,27 @@ package entities.zombies;
 
 import entities.Entity;
 import entities.plants.Plant;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
 public abstract class Zombie extends Entity{
 
-    protected GamePlayer gamePlayer;
+    transient protected GamePlayer gamePlayer;
     protected int destructionPower;
     protected int movingSpeed;
     protected int affectedMovingSpeed;
     private boolean isBurnt;
 
-    public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, Image appearance,
-                  int destructionPower) {
-        super(life, xLocation, yLocation, 70, 100, appearance, gamePlayer);
+    public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, int destructionPower) {
+        super(life, xLocation, yLocation, 70, 100, gamePlayer);
         this.gamePlayer = gamePlayer;
         this.destructionPower = destructionPower;
         isBurnt = false;
+    }
+
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
     }
 
     public void setMovingSpeed(int movingSpeed) {
@@ -95,7 +98,7 @@ public abstract class Zombie extends Entity{
     }
 
     public void finishTheGame() {
-        gamePlayer.lose();
+        gamePlayer.setGameFinished(true);
     }
 
     public void burn() {
@@ -111,14 +114,20 @@ public abstract class Zombie extends Entity{
     @Override
     public void run() {
         while (gamePlayer.isNotGameFinished() && life > 0 && !isBurnt) {
-            if(xLocation == 0) {
-                finishTheGame();
-                return;
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                if (xLocation == 0) {
+                    finishTheGame();
+                    return;
+                }
+                Plant poorPlant = gamePlayer.whichEntityIsWithinReachOf(this);
+                if (poorPlant != null)
+                    destroy(poorPlant);
+                else move();
             }
-            Plant poorPlant = gamePlayer.whichEntityIsWithinReachOf(this);
-            if(poorPlant != null)
-                destroy(poorPlant);
-            else move();
         }
         if(isBurnt)
             try {

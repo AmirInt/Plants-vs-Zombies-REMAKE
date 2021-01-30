@@ -1,6 +1,6 @@
 package entities.plants;
 
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,8 +8,18 @@ import java.awt.*;
 public class Walnut extends Plant {
 
     public Walnut(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(150, xLocation, yLocation,
-                new ImageIcon("Game accessories\\images\\Gifs\\walnut_full_life.gif").getImage(), gamePlayer);
+        super(150, xLocation, yLocation, gamePlayer);
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        if(life > 100)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_full_life.gif").getImage());
+        else if(life > 50)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life.gif").getImage());
+        else
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\walnut_half_life (1).gif").getImage());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package manager;
+package managers;
 
 import entities.Entity;
 import entities.bullets.Bullet;
@@ -16,7 +16,7 @@ import cards.*;
 
 public class GamePlayer implements Runnable, Serializable {
 
-    private final GameManager gameManager;
+    transient private final GameManager gameManager;
     private int score;
     private int time;
     private int energy;
@@ -24,23 +24,27 @@ public class GamePlayer implements Runnable, Serializable {
     private final GameDifficulty gameDifficulty;
     private final ArrayList<AvailableZombies> availableZombies;
     private final ArrayList<AvailablePlants> availablePlants;
-    private ArrayList<Card> cards;
+    transient private ArrayList<Card> cards;
     private final ArrayList<Entity> entities;
-    transient private Random random;
+    private final Random random;
     private final ArrayList<Integer> rows;
     private final ArrayList<Integer> columns;
     private final int sunDroppingPeriod;
     private boolean gameFinished;
+    private boolean gamePaused;
 
     public GamePlayer(GameDifficulty gameDifficulty, ArrayList<AvailableZombies> availableZombies,
                       ArrayList<AvailablePlants> availablePlants, GameManager gameManager) {
+        score = 0;
         time = 0;
         energy = 0;
+        random = new Random();
         rows = new ArrayList<>();
         setRows();
         columns = new ArrayList<>();
         setColumns();
         zombiesTurnUpTimes = new int[35];
+        setZombiesTurnUpTimes();
         this.gameManager = gameManager;
         this.gameDifficulty = gameDifficulty;
         this.availableZombies = availableZombies;
@@ -51,11 +55,10 @@ public class GamePlayer implements Runnable, Serializable {
             sunDroppingPeriod = 25;
         else sunDroppingPeriod = 30;
         gameFinished = false;
+        gamePaused = true;
     }
 
     public void initialise() {
-        random = new Random();
-
         cards = new ArrayList<>();
         int i = 0;
         for (AvailablePlants availablePlant:
@@ -72,9 +75,11 @@ public class GamePlayer implements Runnable, Serializable {
                 cards.add(CherryBombCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
             }
             ++i;
+            for (Entity entity :
+                    entities) {
+                entity.initialise(this);
+            }
         }
-
-        setZombiesTurnUpTimes();
     }
 
     private void setLawnMowers() {
@@ -136,14 +141,12 @@ public class GamePlayer implements Runnable, Serializable {
         this.energy = energy;
     }
 
-    private Zombie enterNewZombie() {
-        int zombieType = random.nextInt(availableZombies.size());
-        int zombieYLocation = getZombieYLocation();
-        return switch (availableZombies.get(zombieType)) {
-            case BucketHeadZombie -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
-            case ConeHeadZombie -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
-            default -> new NormalZombie(this, 1400, zombieYLocation);
-        };
+    public void setGamePaused(boolean gamePaused) {
+        this.gamePaused = gamePaused;
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        this.gameFinished = gameFinished;
     }
 
     private synchronized int getZombieYLocation() {
@@ -195,6 +198,10 @@ public class GamePlayer implements Runnable, Serializable {
         return rows.get(4);
     }
 
+    public ArrayList<Entity> getEntities() {
+        return entities;
+    }
+
     public synchronized <T extends Entity> void add(T t) {
         entities.add(t);
     }
@@ -203,14 +210,21 @@ public class GamePlayer implements Runnable, Serializable {
         entities.remove(t);
     }
 
-    public synchronized void dropASun(int xLocation, int yLocation, int yDestination) {
-        Sun newSun = new Sun(xLocation, yLocation, yDestination, this);
-        add(newSun);
-        ThreadPool.execute(newSun);
+    private Zombie enterNewZombie() {
+        int zombieType = random.nextInt(availableZombies.size());
+        int zombieYLocation = getZombieYLocation();
+        return switch (availableZombies.get(zombieType)) {
+            case BucketHeadZombie -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            case ConeHeadZombie -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            default -> new NormalZombie(this, 1400, zombieYLocation);
+        };
     }
 
-    public ArrayList<Entity> getEntities() {
-        return entities;
+    public synchronized void dropASun(int xLocation, int yLocation, int yDestination) {
+        Sun newSun = new Sun(xLocation, yLocation, yDestination, this);
+        newSun.initialise(this);
+        add(newSun);
+        ThreadPool.execute(newSun);
     }
 
     public ArrayList<Card> getAvailablePlants() {
@@ -229,6 +243,10 @@ public class GamePlayer implements Runnable, Serializable {
         return score;
     }
 
+    public boolean isGamePaused() {
+        return gamePaused;
+    }
+
     public synchronized Plant whichEntityIsWithinReachOf(Zombie zombie) {
         LawnMower lawnMower = null;
         Plant poorPlant = null;
@@ -245,17 +263,17 @@ public class GamePlayer implements Runnable, Serializable {
                         Math.abs(zombie.getXLocation() - entity.getXLocation()) < 20)
                     lawnMower = (LawnMower) entity;
         }
-        if(lawnMower != null)
+        if(lawnMower != null) {
+            lawnMower.setTriggered(true);
             ThreadPool.execute(lawnMower);
+        }
 
         return poorPlant;
     }
 
     public synchronized void bumpBullet(Bullet bullet) {
-
         for (Entity entity:
                 entities) {
-
                 if (entity instanceof Zombie)
                     if (entity.getYLocation() == bullet.getYLocation() &&
                             Math.abs(entity.getXLocation() - bullet.getXLocation()) <= 20) {
@@ -296,16 +314,18 @@ public class GamePlayer implements Runnable, Serializable {
     }
 
     public synchronized void runOverZombies(LawnMower lawnMower) {
-        Zombie zombie = null;
+        ArrayList<Zombie> zombies = new ArrayList<>();
         for (Entity entity :
                 entities) {
             if(entity instanceof Zombie)
                 if(entity.getYLocation() == lawnMower.getYLocation()
                         && Math.abs(columnOf(entity.getXLocation()) - columnOf(lawnMower.getXLocation())) <= 60)
-                    zombie = (Zombie) entity;
+                    zombies.add((Zombie) entity);
         }
-        if(zombie != null)
+        for (Zombie zombie :
+                zombies) {
             zombie.setLife(0);
+        }
     }
 
     public void consumeEnergy(int consumedEnergy) {
@@ -340,39 +360,41 @@ public class GamePlayer implements Runnable, Serializable {
         gameFinished = true;
     }
 
-    public void win() {
-        finishTheGame();
-        score = gameDifficulty == GameDifficulty.MEDIUM ? 3 : 10;
-    }
-
-    public void lose() {
-        finishTheGame();
-        score = gameDifficulty == GameDifficulty.MEDIUM ? -1 : -3;
+    public void killGame() {
+        gameManager.gameFinished(this);
     }
 
     @Override
     public void run() {
         int index = 0;
         while (time < 530 && !gameFinished) {
-            try {
-                Thread.sleep(1000);
-                ++time;
-                if(time % sunDroppingPeriod == 0)
-                    dropASun(random.nextInt(600) + 200,
-                            0, random.nextInt(400) + 200);
-                if(time == zombiesTurnUpTimes[index]) {
-                    Zombie newZombie = enterNewZombie();
-                    add(newZombie);
-                    ThreadPool.execute(newZombie);
-                    ++index;
-                    index = Math.min(index, 34);
+            if(gamePaused) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    ++time;
+                    if (time % sunDroppingPeriod == 0)
+                        dropASun(random.nextInt(600) + 200,
+                                0, random.nextInt(400) + 200);
+                    if (time == zombiesTurnUpTimes[index]) {
+                        Zombie newZombie = enterNewZombie();
+                        newZombie.initialise(this);
+                        add(newZombie);
+                        ThreadPool.execute(newZombie);
+                        ++index;
+                        index = Math.min(index, 34);
+                    }
+                } catch (InterruptedException ignore) {
                 }
-            } catch (InterruptedException ignore) { }
+            }
         }
+        if(time < 530)
+            score = ((gameDifficulty == GameDifficulty.HARD) ? -3 : -1);
+        else score = ((gameDifficulty == GameDifficulty.HARD) ? 10 : 3);
         gameFinished = true;
-        System.out.println("Game Over");
-        for (int i = 0; i < Thread.activeCount(); ++i) {
-            Thread.currentThread().interrupt();
-        }
+        killGame();
     }
 }

@@ -1,7 +1,7 @@
 package entities.others;
 
 import entities.Entity;
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +9,30 @@ import java.awt.*;
 public class LawnMower extends Entity {
 
     int movingSpeed;
+    boolean isTriggered;
 
     public LawnMower(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(life, xLocation, yLocation, 100, 100,
-                new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage(), gamePlayer);
-        movingSpeed = 0;
+        super(life, xLocation, yLocation, 100, 100, gamePlayer);
+        movingSpeed = 140;
+        isTriggered = false;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        if(isTriggered) {
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
+            run();
+        }
+        else setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
+    }
+
+    public void setTriggered(boolean triggered) {
+        isTriggered = triggered;
+    }
+
+    public boolean isTriggered() {
+        return isTriggered;
     }
 
     @Override
@@ -47,8 +66,8 @@ public class LawnMower extends Entity {
     }
 
     public void move() {
-        xLocation += movingSpeed;
-        ++movingSpeed;
+        xLocation += 10;
+        movingSpeed -= 1;
     }
 
     @Override
@@ -60,12 +79,19 @@ public class LawnMower extends Entity {
     public void run() {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
-        while (xLocation < 1350) {
-            gamePlayer.runOverZombies(this);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignore) { }
-            move();
+        while (xLocation < 1350 && gamePlayer.isNotGameFinished()) {
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                gamePlayer.runOverZombies(this);
+                try {
+                    Thread.sleep(movingSpeed);
+                } catch (InterruptedException ignore) {
+                }
+                move();
+            }
         }
         die();
     }

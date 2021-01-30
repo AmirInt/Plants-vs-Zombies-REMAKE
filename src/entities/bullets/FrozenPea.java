@@ -1,7 +1,7 @@
 package entities.bullets;
 
 import entities.zombies.Zombie;
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +9,13 @@ import java.awt.*;
 public class FrozenPea extends Bullet {
 
     public FrozenPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(xLocation, yLocation,
-                new ImageIcon("Game accessories\\images\\freezepea.png").getImage(), 35, gamePlayer);
+        super(xLocation, yLocation, 35, gamePlayer);
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        setAppearance(new ImageIcon("Game accessories\\images\\freezepea.png").getImage());
     }
 
     @Override

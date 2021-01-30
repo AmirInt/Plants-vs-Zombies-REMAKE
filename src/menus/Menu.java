@@ -1,7 +1,7 @@
 package menus;
 
-import manager.GameManager;
-
+import graphics.GameFrame;
+import managers.GameManager;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Menu extends JPanel implements Serializable {
 
     protected final GameManager gameManager;
-    protected final JFrame gameFrame;
+    protected final GameFrame gameFrame;
     protected final Image backgroundImage;
     protected final Border selectedItemBorder;
     protected final Font unselectedItemFont;
@@ -19,7 +19,7 @@ public class Menu extends JPanel implements Serializable {
     protected final Color unselectedItemColour;
     protected final GridBagConstraints constraints;
 
-    public Menu(GameManager gameManager, JFrame gameFrame, Image backgroundImage, LayoutManager layoutManager) {
+    public Menu(GameManager gameManager, GameFrame gameFrame, Image backgroundImage, LayoutManager layoutManager) {
 
         super(layoutManager);
         this.gameManager = gameManager;
@@ -36,6 +36,8 @@ public class Menu extends JPanel implements Serializable {
     }
 
     public void getListenersReady() { }
+
+    public void update() { }
 
     @Override
     protected void paintComponent(Graphics g) {

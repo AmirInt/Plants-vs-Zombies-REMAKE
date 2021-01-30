@@ -2,15 +2,14 @@ package entities.zombies;
 
 import entities.plants.Plant;
 import enums.GameDifficulty;
-import manager.GamePlayer;
+import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
 public class ConeHeadZombie extends Zombie{
 
     public ConeHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(gamePlayer, 560, xLocation, yLocation, new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif").getImage(),
-                0);
+        super(gamePlayer, 560, xLocation, yLocation,0);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
             setMovingSpeed(25);
@@ -20,6 +19,14 @@ public class ConeHeadZombie extends Zombie{
             setDestructionPower(15);
         }
         affectedMovingSpeed = movingSpeed * 2;
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        if(life > 200)
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\coneheadzombie.gif").getImage());
+        else downGrade();
     }
 
     @Override

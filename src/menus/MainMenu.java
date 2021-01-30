@@ -1,9 +1,15 @@
 package menus;
 
-import manager.GameManager;
+import enums.GameDifficulty;
+import graphics.GameFrame;
+import managers.GameManager;
+import managers.GamePlayer;
+import server.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class MainMenu extends Menu {
 
@@ -12,26 +18,48 @@ public class MainMenu extends Menu {
     private final JPanel settingsMenu;
     private JLabel signOut, user;
     private JLabel newGame, loadGame, ranking, settings, exitGame;
+    private final JLabel back, errorLabel;
+    private JList<String> playersList;
+    private JScrollPane scoreBoard;
+    private JLabel Hard, Medium;
+    private JTextField username;
+    private JPasswordField passwordField, repeatPasswordField;
 
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
+    private final ActionHandler actionHandler;
 
-    public MainMenu(GameManager gameManager, JFrame gameFrame) {
+    public MainMenu(GameManager gameManager, GameFrame gameFrame) {
         super(gameManager, gameFrame,
                 new ImageIcon("Game accessories\\images\\PvZStreet_1440x900.0.jpeg").getImage(),
                 new BorderLayout());
 
         mainMenu = new JPanel(new GridBagLayout());
         mainMenu.setOpaque(false);
-        rankingMenu = new JPanel();
-        settingsMenu = new JPanel();
+        rankingMenu = new JPanel(new GridBagLayout());
+        settingsMenu = new JPanel(new GridBagLayout());
+        back = new JLabel("Back");
+        back.setFont(unselectedItemFont);
+        back.setForeground(unselectedItemColour);
+        errorLabel = new JLabel();
+        errorLabel.setPreferredSize(new Dimension(600, 80));
+        errorLabel.setFont(new Font("", Font.PLAIN, 16));
+        errorLabel.setForeground(Color.YELLOW);
 
         keyHandler = new KeyHandler(mainMenu);
-        mouseHandler = new MouseHandler(mainMenu);
+        mouseHandler = new MouseHandler();
+        actionHandler = new ActionHandler();
 
+        setRankingMenuComponents();
+        setSettingsMenuComponents();
+        setSignOutPanel();
         setMainMenuComponents();
         setMainMenu();
-        setSignOutPanel();
+    }
+
+    @Override
+    public void update() {
+        user.setText(gameManager.getUser() + ": " + gameManager.getScore());
     }
 
     private void setMainMenuComponents() {
@@ -52,15 +80,6 @@ public class MainMenu extends Menu {
         exitGame.setForeground(unselectedItemColour);
     }
 
-    public void getListenersReady() {
-        gameFrame.addKeyListener(keyHandler);
-        newGame.addMouseListener(mouseHandler);
-        loadGame.addMouseListener(mouseHandler);
-        ranking.addMouseListener(mouseHandler);
-        settings.addMouseListener(mouseHandler);
-        exitGame.addMouseListener(mouseHandler);
-    }
-
     private void setMainMenu() {
         constraints.gridy = 0;
         mainMenu.add(newGame, constraints);
@@ -76,19 +95,193 @@ public class MainMenu extends Menu {
         add(mainMenu, BorderLayout.CENTER);
     }
 
+    private void setRankingMenuComponents() {
+        rankingMenu.setOpaque(false);
+        playersList = new JList<>();
+        playersList.setFixedCellHeight(80);
+        playersList.setFixedCellWidth(800);
+        playersList.setFont(selectedItemFont);
+        scoreBoard = new JScrollPane(playersList);
+        scoreBoard.setBackground(Color.BLACK);
+        scoreBoard.setMinimumSize(new Dimension(1000, 400));
+        scoreBoard.setOpaque(false);
+    }
+
+    public void setRankingMenu() {
+        constraints.gridy = 0;
+        rankingMenu.add(back, constraints);
+        constraints.gridy = 1;
+        rankingMenu.add(scoreBoard, constraints);
+        constraints.gridy = 2;
+        rankingMenu.add(errorLabel, constraints);
+        constraints.gridy = 0;
+        errorLabel.setText("Connecting to the server");
+        errorLabel.revalidate();
+        remove(mainMenu);
+        add(rankingMenu, BorderLayout.CENTER);
+        rankingMenu.repaint();
+        gameFrame.revalidate();
+        gameFrame.repaint();
+
+        if(!gameManager.updateUser(gameManager.getUser(), "")) {
+            errorLabel.setText("Something went wrong, try again later");
+            errorLabel.revalidate();
+            rankingMenu.revalidate();
+            rankingMenu.repaint();
+            gameFrame.revalidate();
+            gameFrame.repaint();
+        }
+        else {
+            ArrayList<User> usersList = gameManager.getPlayers();
+            if(usersList != null) {
+                errorLabel.setText("");
+                String[] users = new String[usersList.size()];
+                int i = 0;
+                for (User user :
+                        usersList) {
+                    users[i] = user.toString();
+                    ++i;
+                }
+                playersList.setListData(users);
+            }
+        }
+        rankingMenu.revalidate();
+        rankingMenu.repaint();
+        gameFrame.revalidate();
+    }
+
+    public void setSettingsMenuComponents() {
+        settingsMenu.setOpaque(false);
+        Hard = new JLabel("Hard");
+        Hard.setFont(unselectedItemFont);
+        Hard.setForeground(unselectedItemColour);
+        Medium = new JLabel("Medium");
+        Medium.setForeground(unselectedItemColour);
+        Medium.setFont(unselectedItemFont);
+        username = new JTextField();
+        username.setForeground(Color.WHITE);
+        username.setFont(new Font("", Font.PLAIN, 16));
+        username.setPreferredSize(new Dimension(200, 40));
+        username.setOpaque(false);
+        username.setBorder(selectedItemBorder);
+        passwordField = new JPasswordField();
+        passwordField.setForeground(Color.WHITE);
+        passwordField.setPreferredSize(new Dimension(200, 40));
+        passwordField.setOpaque(false);
+        passwordField.setBorder(selectedItemBorder);
+        repeatPasswordField = new JPasswordField();
+        repeatPasswordField.setForeground(Color.WHITE);
+        repeatPasswordField.setPreferredSize(new Dimension(200, 40));
+        repeatPasswordField.setOpaque(false);
+        repeatPasswordField.setBorder(selectedItemBorder);
+        errorLabel.setText("");
+        JLabel gameDifficulty = new JLabel("Game Difficulty");
+        gameDifficulty.setFont(unselectedItemFont);
+        JLabel label01 = new JLabel("New Username:");
+        label01.setFont(new Font("", Font.PLAIN, 16));
+        label01.setForeground(Color.WHITE);
+        JLabel label02 = new JLabel("New Password:");
+        label02.setFont(new Font("", Font.PLAIN, 16));
+        label02.setForeground(Color.WHITE);
+        JLabel label03 = new JLabel("Repeat Password:");
+        label03.setFont(new Font("", Font.PLAIN, 16));
+        label03.setForeground(Color.WHITE);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        settingsMenu.add(gameDifficulty, constraints);
+        constraints.gridy = 1;
+        settingsMenu.add(Medium, constraints);
+        constraints.gridx = 1;
+        settingsMenu.add(Hard, constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        settingsMenu.add(label01, constraints);
+        constraints.gridx = 1;
+        settingsMenu.add(username, constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        settingsMenu.add(label02, constraints);
+        constraints.gridx = 1;
+        settingsMenu.add(passwordField, constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        settingsMenu.add(label03, constraints);
+        constraints.gridx = 1;
+        settingsMenu.add(repeatPasswordField, constraints);
+        constraints.gridy = 0;
+        constraints.gridx = 0;
+    }
+
+    public void setSettingsMenu() {
+        errorLabel.setText("");
+        username.setText("");
+        passwordField.setText("");
+        repeatPasswordField.setText("");
+        if(gameManager.getGameDifficulty() == GameDifficulty.MEDIUM) {
+            Medium.setText("* Medium");
+        } else Hard.setText("* Hard");
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        settingsMenu.add(back, constraints);
+        constraints.gridx = 1;
+        settingsMenu.add(errorLabel, constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        username.addActionListener(actionHandler);
+        passwordField.addActionListener(actionHandler);
+        repeatPasswordField.addActionListener(actionHandler);
+        remove(mainMenu);
+        add(settingsMenu, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+        gameFrame.revalidate();
+        gameFrame.repaint();
+    }
+
     private void setSignOutPanel() {
         JPanel signOutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
         signOutPanel.setOpaque(false);
         signOut = new JLabel("Sign Out");
         signOut.setFont(unselectedItemFont);
         signOut.setForeground(unselectedItemColour);
-        signOut.addMouseListener(mouseHandler);
         user = new JLabel(gameManager.getUser() + ": " + gameManager.getScore());
         user.setFont(unselectedItemFont);
         user.setForeground(Color.WHITE);
         signOutPanel.add(signOut);
         signOutPanel.add(user);
         add(signOutPanel, BorderLayout.SOUTH);
+    }
+
+    public void getListenersReady() {
+        gameFrame.addKeyListener(keyHandler);
+        newGame.addMouseListener(mouseHandler);
+        loadGame.addMouseListener(mouseHandler);
+        ranking.addMouseListener(mouseHandler);
+        settings.addMouseListener(mouseHandler);
+        exitGame.addMouseListener(mouseHandler);
+        back.addMouseListener(mouseHandler);
+        signOut.addMouseListener(mouseHandler);
+        Hard.addMouseListener(mouseHandler);
+        Medium.addMouseListener(mouseHandler);
+    }
+
+    public void removeListeners() {
+        gameFrame.removeKeyListener(keyHandler);
+        back.removeMouseListener(mouseHandler);
+        newGame.removeMouseListener(mouseHandler);
+        loadGame.removeMouseListener(mouseHandler);
+        ranking.removeMouseListener(mouseHandler);
+        settings.removeMouseListener(mouseHandler);
+        exitGame.removeMouseListener(mouseHandler);
+        signOut.removeMouseListener(mouseHandler);
+        Hard.removeMouseListener(mouseHandler);
+        Medium.removeMouseListener(mouseHandler);
+    }
+
+    public void updateUsername() {
+        user.setText(gameManager.getUser() + ": " + gameManager.getScore());
+        user.revalidate();
+        user.repaint();
     }
 
     private void setFocusedItem(JLabel unfocusedItem, JLabel focusGainingItem) {
@@ -104,23 +297,11 @@ public class MainMenu extends Menu {
         }
     }
 
-    public KeyHandler getKeyHandler() {
-        return keyHandler;
-    }
-
-    public MouseHandler getMouseHandler() {
-        return mouseHandler;
-    }
-
     private class KeyHandler extends KeyAdapter {
 
         JPanel panel;
 
         public KeyHandler(JPanel panel) {
-            this.panel = panel;
-        }
-
-        public void setPanel(JPanel panel) {
             this.panel = panel;
         }
 
@@ -150,19 +331,20 @@ public class MainMenu extends Menu {
             }
             else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (newGame.getForeground() == selectedItemColour) {
-                    gameFrame.removeKeyListener(keyHandler);
-                    newGame.removeMouseListener(mouseHandler);
-                    loadGame.removeMouseListener(mouseHandler);
-                    ranking.removeMouseListener(mouseHandler);
-                    settings.removeMouseListener(mouseHandler);
-                    exitGame.removeMouseListener(mouseHandler);
-                    gameManager.play();
+                    removeListeners();
+                    gameManager.play(new GamePlayer(gameManager.getGameDifficulty(), gameManager.getAvailableZombies(),
+                            gameManager.getAvailablePlants(), gameManager));
                 }
                 else if (loadGame.getForeground() == selectedItemColour) { }
-                else if (ranking.getForeground() == selectedItemColour) { }
-                else if (settings.getForeground() == selectedItemColour) { }
-                else if(exitGame.getForeground() == selectedItemColour)
+                else if (ranking.getForeground() == selectedItemColour) {
+                    setRankingMenu();
+                }
+                else if (settings.getForeground() == selectedItemColour) {
+                    setSettingsMenu();
+                }
+                else if(exitGame.getForeground() == selectedItemColour) {
                     System.exit(0);
+                }
             }
             panel.revalidate();
             gameFrame.revalidate();
@@ -170,34 +352,57 @@ public class MainMenu extends Menu {
     }
     private class MouseHandler extends MouseAdapter {
 
-        JPanel panel;
-
-        public MouseHandler(JPanel panel) {
-            this.panel = panel;
-        }
-
-        public void setPanel(JPanel panel) {
-            this.panel = panel;
-        }
-
         @Override
         public void mouseClicked(MouseEvent e) {
             if(e.getSource() == newGame) {
-                gameFrame.removeKeyListener(keyHandler);
-                newGame.removeMouseListener(mouseHandler);
-                loadGame.removeMouseListener(mouseHandler);
-                ranking.removeMouseListener(mouseHandler);
-                settings.removeMouseListener(mouseHandler);
-                exitGame.removeMouseListener(mouseHandler);
-                gameManager.play();
+                removeListeners();
+                gameManager.play(new GamePlayer(gameManager.getGameDifficulty(), gameManager.getAvailableZombies(),
+                        gameManager.getAvailablePlants(), gameManager));
             }
             else if(e.getSource() == loadGame) { }
-            else if(e.getSource() == ranking) { }
-            else if(e.getSource() == settings) { }
-            else if(e.getSource() == exitGame)
+            else if(e.getSource() == ranking) {
+                setRankingMenu();
+            }
+            else if(e.getSource() == settings) {
+                setSettingsMenu();
+            }
+            else if(e.getSource() == exitGame) {
                 System.exit(0);
+            }
             else if(e.getSource() == signOut) {
+                removeListeners();
                 gameManager.signOut();
+            }
+            else if(e.getSource() == back) {
+                username.removeActionListener(actionHandler);
+                passwordField.removeActionListener(actionHandler);
+                repeatPasswordField.removeActionListener(actionHandler);
+                remove(settingsMenu);
+                remove(rankingMenu);
+                //
+                add(mainMenu, BorderLayout.CENTER);
+                gameFrame.revalidate();
+                gameFrame.repaint();
+            }
+            else if(e.getSource() == Hard) {
+                Medium.setText("Medium");
+                Hard.setText("* Hard");
+                settingsMenu.revalidate();
+                settingsMenu.repaint();
+                gameFrame.revalidate();
+                gameFrame.repaint();
+                gameManager.setGameDifficulty(GameDifficulty.HARD);
+                gameManager.store();
+            }
+            else if(e.getSource() == Medium) {
+                Medium.setText("* Medium");
+                Hard.setText("Hard");
+                settingsMenu.revalidate();
+                settingsMenu.repaint();
+                gameFrame.revalidate();
+                gameFrame.repaint();
+                gameManager.setGameDifficulty(GameDifficulty.MEDIUM);
+                gameManager.store();
             }
         }
 
@@ -231,6 +436,31 @@ public class MainMenu extends Menu {
                 releasedLabel.setBorder(null);
                 releasedLabel.setForeground(unselectedItemColour);
                 releasedLabel.setFont(unselectedItemFont);
+            }
+        }
+    }
+    private class ActionHandler implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == username
+                    || e.getSource() == passwordField
+                    || e.getSource() == repeatPasswordField) {
+                String password = new String(passwordField.getPassword());
+                String repPassword = new String(repeatPasswordField.getPassword());
+                if(!password.equals(repPassword))
+                    errorLabel.setText("Conflicting passwords");
+                else {
+                    String newUsername = username.getText().length() == 0 ? gameManager.getUser() : username.getText();
+                    if(gameManager.updateUser(newUsername, password)) {
+                        errorLabel.setText("Successfully saved");
+                        gameManager.store();
+                    } else {
+                        errorLabel.setText("Username already exists");
+                        errorLabel.revalidate();
+                    }
+                }
+                errorLabel.revalidate();
             }
         }
     }

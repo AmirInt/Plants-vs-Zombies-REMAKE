@@ -2,9 +2,8 @@ package entities.plants;
 
 import entities.bullets.Bullet;
 import entities.bullets.FrozenPea;
-import entities.zombies.BucketHeadZombie;
 import graphics.ThreadPool;
-import manager.GamePlayer;
+import managers.GamePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +11,13 @@ import java.awt.*;
 public class SnowPea extends Plant {
 
     public SnowPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(100, xLocation, yLocation,
-                new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage(), gamePlayer);
+        super(100, xLocation, yLocation, gamePlayer);
+    }
+
+    @Override
+    public void initialise(GamePlayer gamePlayer) {
+        super.initialise(gamePlayer);
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage());
     }
 
     @Override
@@ -53,6 +57,7 @@ public class SnowPea extends Plant {
 
     public void shoot() {
         Bullet newBullet = new FrozenPea(xLocation, yLocation, gamePlayer);
+        newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);
         ThreadPool.execute(newBullet);
     }
@@ -65,10 +70,16 @@ public class SnowPea extends Plant {
     @Override
     public void run() {
         while (gamePlayer.isNotGameFinished() && life > 0) {
-            try {
-                Thread.sleep(1000);
-                shoot();
-            } catch (InterruptedException ignore) {
+            if(gamePlayer.isGamePaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignore) { }
+            } else {
+                try {
+                    Thread.sleep(1000);
+                    shoot();
+                } catch (InterruptedException ignore) {
+                }
             }
         }
         if(life == 0) {

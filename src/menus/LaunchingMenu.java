@@ -1,7 +1,7 @@
 package menus;
 
 import graphics.GameFrame;
-import manager.GameManager;
+import managers.GameManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -161,6 +161,9 @@ public class LaunchingMenu extends Menu {
     public void putSignUpOn() {
         mouseHandler.setPanel(signUpPanel);
         errorLabel.setText("");
+        signUpUsername.setText("");
+        signUpPassword.setText("");
+        signUpRepeatPassword.setText("");
         constraints.gridy = 8;
         signUpPanel.add(errorLabel, constraints);
         constraints.gridy = 0;
@@ -170,6 +173,8 @@ public class LaunchingMenu extends Menu {
     public void putSignInOn() {
         mouseHandler.setPanel(signInPanel);
         errorLabel.setText("");
+        signInUsername.setText("");
+        signInPassword.setText("");
         constraints.gridy = 5;
         signInPanel.add(errorLabel, constraints);
         constraints.gridy = 0;
