@@ -2,13 +2,13 @@ package entities.zombies;
 
 import entities.Entity;
 import entities.plants.Plant;
+import managers.GameManager;
 import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
-public abstract class Zombie extends Entity{
+public abstract class Zombie extends Entity {
 
-    transient protected GamePlayer gamePlayer;
     protected int destructionPower;
     protected int movingSpeed;
     protected int affectedMovingSpeed;
@@ -21,8 +21,13 @@ public abstract class Zombie extends Entity{
         isBurnt = false;
     }
 
+    @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
+    }
+
+    public GamePlayer getGamePlayer() {
+        return gamePlayer;
     }
 
     public void setMovingSpeed(int movingSpeed) {

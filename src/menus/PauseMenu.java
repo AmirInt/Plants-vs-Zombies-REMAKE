@@ -18,7 +18,6 @@ public class PauseMenu extends Menu {
     private final JLabel resumeGame, saveGame, exitToMainMenu, errorLabel;
     private final MouseHandler mouseHandler;
     private final KeyHandler keyHandler;
-    private final GridBagConstraints constraints;
 
     public PauseMenu(GameManager gameManager, GameFrame gameFrame, GameState gameState) {
         super(gameManager, gameFrame,
@@ -36,7 +35,7 @@ public class PauseMenu extends Menu {
         errorLabel = new JLabel();
         errorLabel.setForeground(Color.YELLOW);
         errorLabel.setFont(unselectedItemFont);
-        constraints = new GridBagConstraints();
+        GridBagConstraints constraints = new GridBagConstraints();
 
         add(resumeGame, constraints);
         constraints.gridy = 1;
@@ -48,6 +47,14 @@ public class PauseMenu extends Menu {
 
         mouseHandler = new MouseHandler();
         keyHandler = new KeyHandler();
+    }
+
+    @Override
+    public void update() {
+        errorLabel.setText("");
+        setFocusedItem(exitToMainMenu, saveGame);
+        setFocusedItem(saveGame, resumeGame);
+        setFocusedItem(resumeGame, null);
     }
 
     @Override

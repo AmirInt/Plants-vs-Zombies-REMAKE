@@ -1,5 +1,6 @@
 package server;
 
+import managers.GameManager;
 import managers.GamePlayer;
 import java.io.Serializable;
 import java.util.*;
@@ -54,16 +55,26 @@ public class User implements Serializable {
         return true;
     }
 
-    public ArrayList<String> getSavedGames() {
-        return new ArrayList<>(savedGames.keySet());
+    public String[] getSavedGames() {
+        String[] savedGamesArray = new String[savedGames.size()];
+        int i = 0;
+        for (String date:
+             savedGames.keySet()) {
+            savedGamesArray[i] = date;
+            ++i;
+        }
+        return savedGamesArray;
     }
 
     public GamePlayer getSavedGame(String date) {
-        return savedGames.get(date);
+        System.out.println(date);
+        GamePlayer game = savedGames.get(date);
+        savedGames.remove(date, game);
+        return game;
     }
 
     @Override
     public String toString() {
-        return username + "   wins: " + wins + "   losses: " + losses + "   score:" + score;
+        return "        " + username + "    wins: " + wins + "    losses: " + losses + "    score:" + score;
     }
 }

@@ -8,9 +8,11 @@ import java.awt.*;
 public class Sunflower extends Plant {
 
     private final int productionRate;
+    private int productState;
 
     public Sunflower(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(50, xLocation, yLocation, gamePlayer);
+        productState = 0;
         if(gamePlayer.getGameDifficulty() == GameDifficulty.MEDIUM)
             productionRate = 20;
         else productionRate = 25;
@@ -73,7 +75,6 @@ public class Sunflower extends Plant {
 
     @Override
     public void run() {
-        int i = 0;
         while (gamePlayer.isNotGameFinished() && life > 0) {
             if(gamePlayer.isGamePaused()) {
                 try {
@@ -82,9 +83,9 @@ public class Sunflower extends Plant {
             } else {
                 try {
                     Thread.sleep(1000);
-                    ++i;
-                    i %= productionRate;
-                    if (i == 0)
+                    ++productState;
+                    productState %= productionRate;
+                    if (productState == 0)
                         produce();
                 } catch (InterruptedException ignore) {
                 }

@@ -6,10 +6,8 @@ import menus.LaunchingMenu;
 import menus.MainMenu;
 import menus.PauseMenu;
 import server.User;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferStrategy;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ public class GameManager implements Serializable {
     transient private GameFrame frame;
     transient private MainMenu mainMenu;
     transient private LaunchingMenu launchingMenu;
+    transient private PauseMenu pauseMenu;
     private ArrayList<AvailableZombies> availableZombies;
     private ArrayList<AvailablePlants> availablePlants;
     private GameDifficulty gameDifficulty;
@@ -29,8 +28,6 @@ public class GameManager implements Serializable {
     private int score;
     private int wins;
     private int losses;
-    private int plantsNumber;
-    private int zombiesNumber;
 
     public GameManager() {
         gameDifficulty = GameDifficulty.MEDIUM;
@@ -49,19 +46,17 @@ public class GameManager implements Serializable {
         launchingMenu = new LaunchingMenu(this, frame);
     }
 
-    private void setAvailableEntities() {
+    public void setAvailableEntities() {
 
         availableZombies.add(AvailableZombies.NormalZombie);
         availableZombies.add(AvailableZombies.BucketHeadZombie);
         availableZombies.add(AvailableZombies.ConeHeadZombie);
-        zombiesNumber = 3;
 
         availablePlants.add(AvailablePlants.SUNFLOWER);
         availablePlants.add(AvailablePlants.PEASHOOTER);
         availablePlants.add(AvailablePlants.WALNUT);
         availablePlants.add(AvailablePlants.FROZEN_PEASHOOTER);
         availablePlants.add(AvailablePlants.CHERRY_BOMB);
-        plantsNumber = 5;
     }
 
     public void removeAvailableZombie(AvailableZombies zombie) {
@@ -72,8 +67,12 @@ public class GameManager implements Serializable {
         availableZombies.add(zombie);
     }
 
-    public boolean isSignedIn() {
-        return isSignedIn;
+    public void removeAvailablePlant(AvailablePlants plant) {
+        availablePlants.add(plant);
+    }
+
+    public void addToAvailablePlants(AvailablePlants plant) {
+        availablePlants.add(plant);
     }
 
     public void setSignedIn(boolean signedIn) {
@@ -104,15 +103,34 @@ public class GameManager implements Serializable {
         return availableZombies;
     }
 
+    public void signOut() {
+        setSignedIn(false);
+        boolean done = store();
+        if(done) {
+            frame.displayMenu(launchingMenu);
+            frame.revalidate();
+            frame.requestFocus();
+        }
+    }
+
+    public boolean store() {
+        try (FileOutputStream outputStream = new FileOutputStream("Game Manager\\Game Manager.dat")
+             ; ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
+            objectOutputStream.writeObject(this);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
     public int addUser(String username, String password) {
         try (Socket socket = new Socket("127.0.0.1", 10002);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
-        ) {
-            writer.write("Sign up\n".getBytes());
-            writer.write((username + "\n").getBytes());
-            writer.write((password + "\n").getBytes());
-            String str = reader.readLine();
+             ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
+            writer.writeObject("Sign up");
+            writer.writeObject(username);
+            writer.writeObject(password);
+            String str = (String) reader.readObject();
             if(str.equals("Success")) {
                 this.username = username;
                 score = 0;
@@ -130,7 +148,7 @@ public class GameManager implements Serializable {
                 return 1;
             }
             return 2;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return 3;
         }
@@ -138,22 +156,22 @@ public class GameManager implements Serializable {
 
     public int getUser(String username, String password) {
         try (Socket socket = new Socket("127.0.0.1", 10002);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
-        ) {
+             ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
             String str;
-            writer.write("Sign in\n".getBytes());
-            writer.write((username + "\n").getBytes());
-            str = reader.readLine();
-            if(str.equals("Does not exist"))
+            writer.writeObject("Sign in");
+            writer.writeObject(username);
+            str = (String) reader.readObject();
+            if(str.equals("Does not exist")) {
                 return 1;
-            writer.write((password + "\n").getBytes());
-            str = reader.readLine();
+            }
+            writer.writeObject(password);
+            str = (String) reader.readObject();
             if(str.equals("Correct")) {
                 this.username = username;
-                score = Integer.parseInt(reader.readLine());
-                wins = Integer.parseInt(reader.readLine());
-                losses = Integer.parseInt(reader.readLine());
+                score = (int) reader.readObject();
+                wins = (int) reader.readObject();
+                losses = (int) reader.readObject();
                 isSignedIn = true;
                 boolean done = store();
                 if(done) {
@@ -166,36 +184,25 @@ public class GameManager implements Serializable {
                 return 2;
             }
             return 1;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return 3;
         }
     }
 
-    public void signOut() {
-        setSignedIn(false);
-        boolean done = store();
-        if(done) {
-            frame.displayMenu(launchingMenu);
-            frame.revalidate();
-            frame.requestFocus();
-        }
-    }
-
     public boolean updateUser(String newUsername, String newPassword) {
         try (Socket socket = new Socket("127.0.0.1", 10002);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             DataOutputStream writer = new DataOutputStream(socket.getOutputStream())
-        ) {
+             ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
             String str;
-            writer.write("Update\n".getBytes());
-            writer.write((username + "\n").getBytes());
-            writer.write((newUsername + "\n").getBytes());
-            writer.write((newPassword + "\n").getBytes());
-            writer.write((wins + "\n").getBytes());
-            writer.write((losses + "\n").getBytes());
-            writer.write((score + "\n").getBytes());
-            str = reader.readLine();
+            writer.writeObject("Update");
+            writer.writeObject(username);
+            writer.writeObject(newUsername);
+            writer.writeObject(newPassword);
+            writer.writeObject(wins);
+            writer.writeObject(losses);
+            writer.writeObject(score);
+            str = (String) reader.readObject();
             if(str != null && str.equals("Done")) {
                 username = newUsername;
                 mainMenu.updateUsername();
@@ -203,67 +210,65 @@ public class GameManager implements Serializable {
                 return true;
             }
             return false;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public ArrayList<User> getPlayers() {
-        ObjectInputStream objectReader = null;
+    public String[] getPlayers() {
         try (Socket socket = new Socket("127.0.0.1", 10002) ;
-             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
-            outputStream.write("Get users\n".getBytes());
-            objectReader = new ObjectInputStream(socket.getInputStream());
-            return (ArrayList<User>) objectReader.readObject();
-        } catch (IOException e) {
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream objectReader = new ObjectInputStream(socket.getInputStream())) {
+            outputStream.writeObject("Get users");
+            return (String[]) objectReader.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             System.out.println("Caught");
             return null;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Caught differently");
-            return null;
         }
-        finally {
-            if(objectReader != null) {
-                try {
-                    objectReader.close();
-                } catch (IOException ignore) { }
-            }
-        }
-    }
-
-    public boolean store() {
-        try (FileOutputStream outputStream = new FileOutputStream("Game Manager\\Game Manager.dat")
-             ; ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream)) {
-            objectOutputStream.writeObject(this);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
     }
 
     public boolean saveGame(GamePlayer gamePlayer) {
-        ObjectOutputStream objectWriter = null;
-        try (Socket socket = new Socket("127.0.0.1", 10002) ;
-             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())
-             ; BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            outputStream.write("Save game\n".getBytes());
-            outputStream.write((username + "\n").getBytes());
-            objectWriter = new ObjectOutputStream(socket.getOutputStream());
-            objectWriter.writeObject(gamePlayer);
-            String str = reader.readLine();
+        try (Socket socket = new Socket("127.0.0.1", 10002)
+             ; ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
+            writer.writeObject("Save game");
+            writer.writeObject(username);
+            writer.writeObject(gamePlayer);
+            String str = (String) reader.readObject();
             return str.equals("Done");
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             System.out.println("Caught");
             return false;
-        } finally {
-            if(objectWriter != null) {
-                try {
-                    objectWriter.close();
-                } catch (IOException ignore) { }
-            }
+        }
+    }
+
+    public String[] getLoadedGames() {
+        try (Socket socket = new Socket("127.0.0.1", 10002);
+             ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
+            writer.writeObject("Take loaded games");
+            writer.writeObject(username);
+            return (String[]) reader.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public GamePlayer getGame(String date) {
+        try (Socket socket = new Socket("127.0.0.1", 10002);
+             ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
+            writer.writeObject("Get game");
+            writer.writeObject(username);
+            writer.writeObject(date);
+            return (GamePlayer) reader.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -284,38 +289,21 @@ public class GameManager implements Serializable {
     }
 
     public void gameFinished(GamePlayer gamePlayer) {
-
         score += gamePlayer.getScore();
-        if(score > 0)
+        if(gamePlayer.getScore() > 0)
             ++wins;
-        else ++losses;
+        if(gamePlayer.getScore() < 0)
+            ++losses;
         store();
         updateUser(username, username);
 
-        BufferStrategy bufferStrategy = frame.getBufferStrategy();
-        Graphics2D g2d = (Graphics2D) bufferStrategy.getDrawGraphics();
-        g2d.drawImage(new ImageIcon("Game accessories\\images\\gameOver.jpg").getImage(), 0, 0, frame);
-        g2d.setFont(new Font("", Font.BOLD, 45));
-        g2d.setColor(Color.WHITE);
-        if(score > 0) {
-            g2d.drawString("You Lost And...", 20, 100);
-            g2d.drawString("Poor Lame Lad", 800, 100);
-        } else {
-            g2d.drawString("You Lost And...", 20, 100);
-            g2d.drawString("Poor Lame Lad", 800, 100);
-        }
-        g2d.drawString("" + gamePlayer.getScore(), 600, 700);
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException ignore) { }
         frame.displayMenu(mainMenu);
     }
 
     public void play(GamePlayer gamePlayer) {
         EventQueue.invokeLater(() -> {
 //             Create and execute the game-loop
-            gamePlayer.initialise();
+            gamePlayer.initialise(this);
             GameLoop game = new GameLoop(frame, gamePlayer, this);
             game.init();
             frame.setEntities(gamePlayer);

@@ -48,19 +48,35 @@ public class Server {
         user.update(newUsername, newPassword, wins, losses, score);
         if(!username.equals(newUsername)) {
             users.remove(username, user);
-            System.out.println(users.get(username));
             users.put(newUsername, user);
         }
         return true;
     }
 
-    public ArrayList<User> getUsersList() {
-        return usersList;
+    public synchronized String[] getUsersList() {
+        String[] usersArray = new String[usersList.size()];
+        int i = 0;
+        for (User user:
+             usersList) {
+            usersArray[i] = user.toString();
+            ++i;
+        }
+        return usersArray;
     }
 
-    public boolean saveGame(GamePlayer gamePlayer, String username) {
+    public synchronized boolean saveGame(GamePlayer gamePlayer, String username) {
         User user = users.get(username);
         return user.saveGame(gamePlayer);
+    }
+
+    public synchronized String[] getLoadedGamesOf(String username) {
+        User user = checkForUser(username);
+        return user.getSavedGames();
+    }
+
+    public synchronized GamePlayer getSavedGameOf(String username, String date) {
+        User user = checkForUser(username);
+        return user.getSavedGame(date);
     }
 
     public static void main(String[] args) {
@@ -70,7 +86,7 @@ public class Server {
             Socket communicationSocket;
             try {
                 communicationSocket = server.serverSocket.accept();
-                System.out.println("Someone reached out");
+//                System.out.println("Someone reached out");
                 //
                 SubServer subServer = new SubServer(server, communicationSocket);
                 executorService.execute(subServer);

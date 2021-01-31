@@ -20,11 +20,7 @@ public class LawnMower extends Entity {
     @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
-        if(isTriggered) {
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
-            run();
-        }
-        else setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawn_mower.gif").getImage());
     }
 
     public void setTriggered(boolean triggered) {

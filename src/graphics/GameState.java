@@ -112,7 +112,7 @@ public class GameState {
     }
 
     public void killGame() {
-        gamePlayer.killGame();
+        gamePlayer.killGame(false);
     }
 
     /**

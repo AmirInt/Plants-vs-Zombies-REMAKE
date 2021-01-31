@@ -7,71 +7,73 @@ import java.net.Socket;
 
 public class SubServer implements Runnable {
 
-    Server serverSocket;
+    Server server;
     Socket communicationSocket;
 
-    public SubServer(Server serverSocket, Socket communicationSocket) {
-        this.serverSocket = serverSocket;
+    public SubServer(Server server, Socket communicationSocket) {
+        this.server = server;
         this.communicationSocket = communicationSocket;
     }
 
     @Override
     public synchronized void run() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(communicationSocket.getInputStream()))
-             ; DataOutputStream writer = new DataOutputStream(communicationSocket.getOutputStream())) {
-            String str = reader.readLine();
-            if(str.equals("Sign in")) {
-                User user = serverSocket.checkForUser(reader.readLine());
-                if (user == null)
-                    writer.write("Does not exist\n".getBytes());
-                else {
-                    writer.write("Does exist\n".getBytes());
-                    str = reader.readLine();
-                    if (str.equals(user.getPassword())) {
-                        writer.write("Correct\n".getBytes());
-                        writer.write((user.getScore() + "\n").getBytes());
-                        writer.write((user.getWins() + "\n").getBytes());
-                        writer.write((user.getLosses() + "\n").getBytes());
-                    } else writer.write("Incorrect".getBytes());
-                }
+        try (ObjectOutputStream writer = new ObjectOutputStream(communicationSocket.getOutputStream())
+             ; ObjectInputStream reader = new ObjectInputStream(communicationSocket.getInputStream())) {
+            String str = (String) reader.readObject();
+            switch (str) {
+                case "Sign in":
+                    User user = server.checkForUser((String) reader.readObject());
+                    if (user == null) {
+                        writer.writeObject("Does not exist");
+                    } else {
+                        writer.writeObject("Does exist");
+                        str = (String) reader.readObject();
+                        if (str.equals(user.getPassword())) {
+                            writer.writeObject("Correct");
+                            writer.writeObject(user.getScore());
+                            writer.writeObject(user.getWins());
+                            writer.writeObject(user.getLosses());
+                        } else writer.writeObject("Incorrect");
+                    }
+                    break;
+                case "Sign up":
+                    boolean done = server.addUser((String) reader.readObject(), (String) reader.readObject());
+                    writer.writeObject((done ? "Success" : "Failure"));
+                    break;
+                case "Update":
+                    String username = (String) reader.readObject();
+                    String newUsername = (String) reader.readObject();
+                    String password = (String) reader.readObject();
+                    int wins = (int) reader.readObject();
+                    int losses = (int) reader.readObject();
+                    int score = (int) reader.readObject();
+                    if (server.updateUser(username, newUsername, password, wins, losses, score))
+                        writer.writeObject("Done");
+                    else writer.writeObject("Not allowed");
+                    break;
+                case "Get users":
+                    writer.writeObject(server.getUsersList());
+                    break;
+                case "Save game":
+                    str = (String) reader.readObject();
+                    GamePlayer gamePlayer = (GamePlayer) reader.readObject();
+                    if (server.saveGame(gamePlayer, str))
+                        writer.writeObject("Done");
+                    else
+                        writer.writeObject("Not done");
+                    break;
+                case "Take loaded games":
+                    str = (String) reader.readObject();
+                    writer.writeObject(server.getLoadedGamesOf(str));
+                    break;
+                case "Get game":
+                    str = (String) reader.readObject();
+                    String date = (String) reader.readObject();
+                    writer.writeObject(server.getSavedGameOf(str, date));
+                    break;
             }
-            else if(str.equals("Sign up")) {
-                boolean done = serverSocket.addUser(reader.readLine(), reader.readLine());
-                writer.write((done ? "Success\n" : "Failure\n").getBytes());
-            }
-            else if(str.equals("Update")) {
-                String username = reader.readLine();
-                String newUsername = reader.readLine();
-                String password = reader.readLine();
-                int wins = Integer.parseInt(reader.readLine());
-                System.out.println(wins);
-                int losses = Integer.parseInt(reader.readLine());
-                System.out.println(losses);
-                int score = Integer.parseInt(reader.readLine());
-                System.out.println(score);
-                if (serverSocket.updateUser(username, newUsername, password, wins, losses, score))
-                    writer.write("Done\n".getBytes());
-                else writer.write("Not allowed\n".getBytes());
-            }
-            else if(str.equals("Get users")) {
-                try (ObjectOutputStream objectWriter = new ObjectOutputStream(communicationSocket.getOutputStream())) {
-                    objectWriter.writeObject(serverSocket.getUsersList());
-                } catch (IOException e) {
-                    System.out.println("Wrong in object writer");
-                }
-            }
-            else if(str.equals("Save game")) {
-                str = reader.readLine();
-                try (ObjectInputStream objectReader = new ObjectInputStream((communicationSocket.getInputStream()))){
-                    GamePlayer gamePlayer = (GamePlayer) objectReader.readObject();
-                    if(serverSocket.saveGame(gamePlayer, str))
-                        writer.write("Done\n".getBytes());
-                    else throw new ClassCastException();
-                } catch (IOException | ClassNotFoundException e) {
-                    writer.write("Not done\n".getBytes());
-                }
-            }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
             System.out.println("wrong sub server");
         }
     }

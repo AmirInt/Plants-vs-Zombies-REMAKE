@@ -4,18 +4,13 @@ import enums.GameDifficulty;
 import graphics.GameFrame;
 import managers.GameManager;
 import managers.GamePlayer;
-import server.User;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class MainMenu extends Menu {
 
-    private final JPanel mainMenu;
-    private final JPanel rankingMenu;
-    private final JPanel settingsMenu;
+    private final JPanel mainMenu, rankingMenu, settingsMenu, loadGameMenu;
     private JLabel signOut, user;
     private JLabel newGame, loadGame, ranking, settings, exitGame;
     private final JLabel back, errorLabel;
@@ -38,6 +33,8 @@ public class MainMenu extends Menu {
         mainMenu.setOpaque(false);
         rankingMenu = new JPanel(new GridBagLayout());
         settingsMenu = new JPanel(new GridBagLayout());
+        loadGameMenu = new JPanel(new GridBagLayout());
+        loadGameMenu.setOpaque(false);
         back = new JLabel("Back");
         back.setFont(unselectedItemFont);
         back.setForeground(unselectedItemColour);
@@ -59,6 +56,22 @@ public class MainMenu extends Menu {
 
     @Override
     public void update() {
+        remove(mainMenu);
+        remove(settingsMenu);
+        remove(rankingMenu);
+        remove(loadGameMenu);
+        add(mainMenu, BorderLayout.CENTER);
+        setFocusedItem(signOut, exitGame);
+        setFocusedItem(exitGame, settings);
+        setFocusedItem(settings, ranking);
+        setFocusedItem(ranking, loadGame);
+        setFocusedItem(loadGame, newGame);
+        setFocusedItem(newGame, back);
+        setFocusedItem(back, Hard);
+        setFocusedItem(Hard, Medium);
+        Medium.setFont(unselectedItemFont);
+        Medium.setForeground(unselectedItemColour);
+        Medium.setBorder(null);
         user.setText(gameManager.getUser() + ": " + gameManager.getScore());
     }
 
@@ -98,13 +111,17 @@ public class MainMenu extends Menu {
     private void setRankingMenuComponents() {
         rankingMenu.setOpaque(false);
         playersList = new JList<>();
-        playersList.setFixedCellHeight(80);
-        playersList.setFixedCellWidth(800);
-        playersList.setFont(selectedItemFont);
+        playersList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        playersList.setFixedCellHeight(50);
+        playersList.setFixedCellWidth(500);
+        playersList.setFont(new Font("", Font.BOLD, 16));
+        playersList.setSelectionBackground(new Color(150, 150, 100));
+        playersList.setSelectionForeground(selectedItemColour);
+        playersList.setOpaque(false);
         scoreBoard = new JScrollPane(playersList);
-        scoreBoard.setBackground(Color.BLACK);
-        scoreBoard.setMinimumSize(new Dimension(1000, 400));
+        scoreBoard.getViewport().setOpaque(false);
         scoreBoard.setOpaque(false);
+        scoreBoard.setPreferredSize(new Dimension(600, 300));
     }
 
     public void setRankingMenu() {
@@ -115,36 +132,29 @@ public class MainMenu extends Menu {
         constraints.gridy = 2;
         rankingMenu.add(errorLabel, constraints);
         constraints.gridy = 0;
-        errorLabel.setText("Connecting to the server");
-        errorLabel.revalidate();
+        playersList.clearSelection();
+        playersList.removeMouseListener(mouseHandler);
+        errorLabel.setText("Connecting to the server...");
         remove(mainMenu);
         add(rankingMenu, BorderLayout.CENTER);
         rankingMenu.repaint();
         gameFrame.revalidate();
         gameFrame.repaint();
-
+        errorLabel.setText("");
         if(!gameManager.updateUser(gameManager.getUser(), "")) {
             errorLabel.setText("Something went wrong, try again later");
-            errorLabel.revalidate();
-            rankingMenu.revalidate();
-            rankingMenu.repaint();
-            gameFrame.revalidate();
-            gameFrame.repaint();
         }
         else {
-            ArrayList<User> usersList = gameManager.getPlayers();
-            if(usersList != null) {
-                errorLabel.setText("");
-                String[] users = new String[usersList.size()];
-                int i = 0;
-                for (User user :
-                        usersList) {
-                    users[i] = user.toString();
-                    ++i;
-                }
-                playersList.setListData(users);
+            String[] usersList = gameManager.getPlayers();
+            if(usersList == null) {
+                errorLabel.setText("Something went wrong, try again later");
+            }
+            else {
+                playersList.setListData(usersList);
             }
         }
+        errorLabel.revalidate();
+        scoreBoard.revalidate();
         rankingMenu.revalidate();
         rankingMenu.repaint();
         gameFrame.revalidate();
@@ -236,6 +246,42 @@ public class MainMenu extends Menu {
         repaint();
         gameFrame.revalidate();
         gameFrame.repaint();
+    }
+
+    public void setLoadGameMenu() {
+        constraints.gridy = 0;
+        loadGameMenu.add(back, constraints);
+        constraints.gridy = 1;
+        loadGameMenu.add(scoreBoard, constraints);
+        constraints.gridy = 2;
+        loadGameMenu.add(errorLabel, constraints);
+        constraints.gridy = 0;
+        playersList.clearSelection();
+        playersList.setListData(new String[0]);
+        playersList.addMouseListener(mouseHandler);
+        errorLabel.setText("Connecting to the server");
+        remove(mainMenu);
+        add(loadGameMenu, BorderLayout.CENTER);
+        loadGameMenu.revalidate();
+        loadGameMenu.repaint();
+        gameFrame.revalidate();
+
+        String[] loadedGames = gameManager.getLoadedGames();
+        errorLabel.setText("");
+        if(loadedGames == null) {
+            errorLabel.setText("Something went wrong, try again later");
+        }
+        else if(loadedGames.length == 0){
+            errorLabel.setText("Nothing to show");
+        }
+        else {
+            playersList.setListData(loadedGames);
+        }
+        errorLabel.revalidate();
+        scoreBoard.revalidate();
+        loadGameMenu.revalidate();
+        loadGameMenu.repaint();
+        gameFrame.revalidate();
     }
 
     private void setSignOutPanel() {
@@ -333,9 +379,11 @@ public class MainMenu extends Menu {
                 if (newGame.getForeground() == selectedItemColour) {
                     removeListeners();
                     gameManager.play(new GamePlayer(gameManager.getGameDifficulty(), gameManager.getAvailableZombies(),
-                            gameManager.getAvailablePlants(), gameManager));
+                            gameManager.getAvailablePlants()));
                 }
-                else if (loadGame.getForeground() == selectedItemColour) { }
+                else if (loadGame.getForeground() == selectedItemColour) {
+                    setLoadGameMenu();
+                }
                 else if (ranking.getForeground() == selectedItemColour) {
                     setRankingMenu();
                 }
@@ -357,9 +405,11 @@ public class MainMenu extends Menu {
             if(e.getSource() == newGame) {
                 removeListeners();
                 gameManager.play(new GamePlayer(gameManager.getGameDifficulty(), gameManager.getAvailableZombies(),
-                        gameManager.getAvailablePlants(), gameManager));
+                        gameManager.getAvailablePlants()));
             }
-            else if(e.getSource() == loadGame) { }
+            else if(e.getSource() == loadGame) {
+                setLoadGameMenu();
+            }
             else if(e.getSource() == ranking) {
                 setRankingMenu();
             }
@@ -379,7 +429,7 @@ public class MainMenu extends Menu {
                 repeatPasswordField.removeActionListener(actionHandler);
                 remove(settingsMenu);
                 remove(rankingMenu);
-                //
+                remove(loadGameMenu);
                 add(mainMenu, BorderLayout.CENTER);
                 gameFrame.revalidate();
                 gameFrame.repaint();
@@ -404,6 +454,20 @@ public class MainMenu extends Menu {
                 gameManager.setGameDifficulty(GameDifficulty.MEDIUM);
                 gameManager.store();
             }
+            else if(e.getSource() == playersList) {
+                GamePlayer gamePlayer = gameManager.getGame(playersList.getSelectedValue());
+                if(gamePlayer == null) {
+                    errorLabel.setText("Game not loaded properly");
+                } else {
+                    update();
+                    revalidate();
+                    repaint();
+                    gameFrame.revalidate();
+                    removeListeners();
+                    gameManager.play(gamePlayer);
+                    gameFrame.requestFocus();
+                }
+            }
         }
 
         @Override
@@ -423,10 +487,12 @@ public class MainMenu extends Menu {
             exitGame.setFont(unselectedItemFont);
             exitGame.setForeground(unselectedItemColour);
             exitGame.setBorder(null);
-            JLabel hoveredLabel = (JLabel) e.getSource();
-            hoveredLabel.setFont(selectedItemFont);
-            hoveredLabel.setForeground(selectedItemColour);
-            hoveredLabel.setBorder(selectedItemBorder);
+            try {
+                JLabel hoveredLabel = (JLabel) e.getSource();
+                hoveredLabel.setFont(selectedItemFont);
+                hoveredLabel.setForeground(selectedItemColour);
+                hoveredLabel.setBorder(selectedItemBorder);
+            } catch (ClassCastException ignore) { }
         }
 
         @Override

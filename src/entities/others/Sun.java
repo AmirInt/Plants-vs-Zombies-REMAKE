@@ -2,21 +2,21 @@ package entities.others;
 
 import entities.Entity;
 import managers.GamePlayer;
-
-import javax.print.attribute.standard.Finishings;
 import javax.swing.*;
 
 public class Sun extends Entity {
 
-    int movingSpeed;
-    int reflection;
-    int yDestination;
+    private int movingSpeed;
+    private int reflection;
+    private int yDestination;
+    private boolean isFallen;
 
     public Sun(int xLocation, int yLocation, int yDestination, GamePlayer gamePlayer) {
         super(10, xLocation, yLocation, 50, 48, gamePlayer);
         this.yDestination = yDestination;
         movingSpeed = 0;
         reflection = yDestination - (yDestination - yLocation) / 10;
+        isFallen = false;
     }
 
     @Override
@@ -85,6 +85,7 @@ public class Sun extends Entity {
                 }
             }
         }
+        isFallen = true;
     }
 
     @Override
@@ -94,6 +95,7 @@ public class Sun extends Entity {
 
     @Override
     public void run() {
-        fall();
+        if(!isFallen)
+            fall();
     }
 }

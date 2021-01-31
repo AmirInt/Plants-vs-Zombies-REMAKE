@@ -5,28 +5,28 @@ import entities.bullets.Bullet;
 import entities.others.LawnMower;
 import entities.plants.*;
 import entities.zombies.*;
-
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import enums.*;
 import entities.others.Sun;
 import graphics.ThreadPool;
-import java.util.Random;
 import cards.*;
 
 public class GamePlayer implements Runnable, Serializable {
 
-    transient private final GameManager gameManager;
+    transient private GameManager gameManager;
     private int score;
     private int time;
     private int energy;
+    private int index;
     private final int[] zombiesTurnUpTimes;
     private final GameDifficulty gameDifficulty;
     private final ArrayList<AvailableZombies> availableZombies;
     private final ArrayList<AvailablePlants> availablePlants;
     transient private ArrayList<Card> cards;
     private final ArrayList<Entity> entities;
-    private final Random random;
+    private final SecureRandom random;
     private final ArrayList<Integer> rows;
     private final ArrayList<Integer> columns;
     private final int sunDroppingPeriod;
@@ -34,18 +34,18 @@ public class GamePlayer implements Runnable, Serializable {
     private boolean gamePaused;
 
     public GamePlayer(GameDifficulty gameDifficulty, ArrayList<AvailableZombies> availableZombies,
-                      ArrayList<AvailablePlants> availablePlants, GameManager gameManager) {
+                      ArrayList<AvailablePlants> availablePlants) {
         score = 0;
         time = 0;
         energy = 0;
-        random = new Random();
+        index = 0;
+        random = new SecureRandom();
         rows = new ArrayList<>();
         setRows();
         columns = new ArrayList<>();
         setColumns();
         zombiesTurnUpTimes = new int[35];
         setZombiesTurnUpTimes();
-        this.gameManager = gameManager;
         this.gameDifficulty = gameDifficulty;
         this.availableZombies = availableZombies;
         this.availablePlants = availablePlants;
@@ -58,7 +58,8 @@ public class GamePlayer implements Runnable, Serializable {
         gamePaused = true;
     }
 
-    public void initialise() {
+    public void initialise(GameManager gameManager) {
+        this.gameManager = gameManager;
         cards = new ArrayList<>();
         int i = 0;
         for (AvailablePlants availablePlant:
@@ -75,10 +76,16 @@ public class GamePlayer implements Runnable, Serializable {
                 cards.add(CherryBombCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
             }
             ++i;
-            for (Entity entity :
-                    entities) {
-                entity.initialise(this);
-            }
+        }
+        for (Entity entity :
+                entities) {
+            entity.initialise(this);
+            if (entity instanceof LawnMower) {
+                LawnMower lawnMower = (LawnMower) entity;
+                if (lawnMower.isTriggered())
+                    ThreadPool.execute(entity);
+            } else if (!(entity instanceof Walnut))
+                ThreadPool.execute(entity);
         }
     }
 
@@ -356,17 +363,16 @@ public class GamePlayer implements Runnable, Serializable {
         return columns.get(8);
     }
 
-    private void finishTheGame() {
-        gameFinished = true;
-    }
-
-    public void killGame() {
+    public void killGame(boolean exitedManually) {
+        if(exitedManually)
+            if(time < 530)
+                score = ((gameDifficulty == GameDifficulty.HARD) ? -3 : -1);
+            else score = ((gameDifficulty == GameDifficulty.HARD) ? 10 : 3);
         gameManager.gameFinished(this);
     }
 
     @Override
     public void run() {
-        int index = 0;
         while (time < 530 && !gameFinished) {
             if(gamePaused) {
                 try {
@@ -387,14 +393,10 @@ public class GamePlayer implements Runnable, Serializable {
                         ++index;
                         index = Math.min(index, 34);
                     }
-                } catch (InterruptedException ignore) {
-                }
+                } catch (InterruptedException ignore) { }
             }
         }
-        if(time < 530)
-            score = ((gameDifficulty == GameDifficulty.HARD) ? -3 : -1);
-        else score = ((gameDifficulty == GameDifficulty.HARD) ? 10 : 3);
         gameFinished = true;
-        killGame();
+        killGame(true);
     }
 }
