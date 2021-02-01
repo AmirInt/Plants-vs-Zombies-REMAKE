@@ -10,8 +10,8 @@ public abstract class Entity implements Runnable, Serializable {
     protected int life;
     protected int xLocation;
     protected int yLocation;
-    protected final int width;
-    protected final int height;
+    protected int width;
+    protected int height;
     transient protected Image appearance;
     transient protected GamePlayer gamePlayer;
 

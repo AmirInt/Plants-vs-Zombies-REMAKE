@@ -8,8 +8,7 @@ import java.awt.*;
 public class NormalZombie extends Zombie {
 
     public NormalZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
-        super(gamePlayer, 200, xLocation, yLocation,5);
-//        Setting the moving speed
+        super(gamePlayer, 200, xLocation, yLocation,5, 100, 130);
         setMovingSpeed(30);
         affectedMovingSpeed = movingSpeed * 2;
     }
@@ -17,7 +16,7 @@ public class NormalZombie extends Zombie {
     @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Normal-Zombie-unscreen.gif").getImage());
     }
 
     @Override

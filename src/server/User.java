@@ -1,6 +1,5 @@
 package server;
 
-import managers.GameManager;
 import managers.GamePlayer;
 import java.io.Serializable;
 import java.util.*;

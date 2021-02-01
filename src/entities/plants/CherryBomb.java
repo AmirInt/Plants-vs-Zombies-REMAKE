@@ -7,7 +7,7 @@ import java.awt.*;
 public class CherryBomb extends Plant {
 
     public CherryBomb(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(70, xLocation, yLocation, gamePlayer);
+        super(70, xLocation, yLocation, gamePlayer, 40, 32);
     }
 
     @Override

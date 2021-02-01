@@ -2,8 +2,10 @@ package graphics;
 
 import managers.GameManager;
 import managers.GamePlayer;
+import menus.FinishingMenu;
 
 import javax.swing.*;
+import java.io.IOException;
 
 /**
  * A very simple structure for the main game loop.
@@ -70,6 +72,10 @@ public class GameLoop implements Runnable {
             }
         }
         canvas.render(state);
+        canvas.displayMenu(new FinishingMenu(gamePlayer.getScore(), canvas));
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ignore) { }
         canvas.removeKeyListener(state.getKeyListener());
         canvas.removeMouseListener(state.getMouseListener());
         canvas.removeMouseMotionListener(state.getMouseMotionListener());

@@ -4,20 +4,19 @@ import entities.bullets.Bullet;
 import entities.bullets.Pea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class PeaShooter extends Plant {
 
     public PeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(70, xLocation, yLocation, gamePlayer);
+        super(70, xLocation, yLocation, gamePlayer, 110, 93);
     }
 
     @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Pea-Shooter-unscreen.gif").getImage());
     }
 
     @Override
@@ -48,11 +47,6 @@ public class PeaShooter extends Plant {
     @Override
     public Image getAppearance() {
         return super.getAppearance();
-    }
-
-    @Override
-    public void getReadyForSabotage() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter.gif").getImage());
     }
 
     @Override
@@ -88,7 +82,6 @@ public class PeaShooter extends Plant {
             }
         }
         if(life == 0) {
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\pea_shooter_dying.gif").getImage());
             try {
                 Thread.sleep(750);
             } catch (InterruptedException ignore) {

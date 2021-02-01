@@ -5,23 +5,22 @@ import graphics.*;
 import menus.LaunchingMenu;
 import menus.MainMenu;
 import menus.PauseMenu;
-import server.User;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class GameManager implements Serializable {
 
     transient private GameFrame frame;
     transient private MainMenu mainMenu;
     transient private LaunchingMenu launchingMenu;
-    transient private PauseMenu pauseMenu;
-    private ArrayList<AvailableZombies> availableZombies;
-    private ArrayList<AvailablePlants> availablePlants;
+    private HashSet<AvailableZombies> availableZombies;
+    private HashSet<AvailablePlants> availablePlants;
     private GameDifficulty gameDifficulty;
-    static final int[] cardXs = {180, 254, 328, 402, 476, 540};
+    static final int[] cardXs = {180, 250, 320, 390, 460, 530, 600, 670, 740, 810};
     static final int cardY = 80;
     private String username;
     private boolean isSignedIn;
@@ -31,8 +30,8 @@ public class GameManager implements Serializable {
 
     public GameManager() {
         gameDifficulty = GameDifficulty.MEDIUM;
-        availableZombies = new ArrayList<>();
-        availablePlants = new ArrayList<>();
+        availableZombies = new HashSet<>();
+        availablePlants = new HashSet<>();
         wins = 0;
         losses = 0;
         score = 0;
@@ -51,12 +50,22 @@ public class GameManager implements Serializable {
         availableZombies.add(AvailableZombies.NormalZombie);
         availableZombies.add(AvailableZombies.BucketHeadZombie);
         availableZombies.add(AvailableZombies.ConeHeadZombie);
+        availableZombies.add(AvailableZombies.BalloonZombie);
+        availableZombies.add(AvailableZombies.CatapultZombie);
+        availableZombies.add(AvailableZombies.CreepyZombie);
+        availableZombies.add(AvailableZombies.DoorShieldZombie);
+        availableZombies.add(AvailableZombies.FootballZombie);
+        availableZombies.add(AvailableZombies.YetiZombie);
 
         availablePlants.add(AvailablePlants.SUNFLOWER);
         availablePlants.add(AvailablePlants.PEASHOOTER);
         availablePlants.add(AvailablePlants.WALNUT);
         availablePlants.add(AvailablePlants.FROZEN_PEASHOOTER);
         availablePlants.add(AvailablePlants.CHERRY_BOMB);
+        availablePlants.add(AvailablePlants.CABBAGE);
+        availablePlants.add(AvailablePlants.CHOMPER);
+        availablePlants.add(AvailablePlants.GALTING_SHOOTER);
+        availablePlants.add(AvailablePlants.WINTERMELON);
     }
 
     public void removeAvailableZombie(AvailableZombies zombie) {
@@ -68,7 +77,7 @@ public class GameManager implements Serializable {
     }
 
     public void removeAvailablePlant(AvailablePlants plant) {
-        availablePlants.add(plant);
+        availablePlants.remove(plant);
     }
 
     public void addToAvailablePlants(AvailablePlants plant) {
@@ -95,11 +104,11 @@ public class GameManager implements Serializable {
         return score;
     }
 
-    public ArrayList<AvailablePlants> getAvailablePlants() {
+    public HashSet<AvailablePlants> getAvailablePlants() {
         return availablePlants;
     }
 
-    public ArrayList<AvailableZombies> getAvailableZombies() {
+    public HashSet<AvailableZombies> getAvailableZombies() {
         return availableZombies;
     }
 
@@ -149,7 +158,6 @@ public class GameManager implements Serializable {
             }
             return 2;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return 3;
         }
     }
@@ -185,7 +193,6 @@ public class GameManager implements Serializable {
             }
             return 1;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return 3;
         }
     }
@@ -211,7 +218,6 @@ public class GameManager implements Serializable {
             }
             return false;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -223,8 +229,6 @@ public class GameManager implements Serializable {
             outputStream.writeObject("Get users");
             return (String[]) objectReader.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("Caught");
             return null;
         }
     }
@@ -239,8 +243,6 @@ public class GameManager implements Serializable {
             String str = (String) reader.readObject();
             return str.equals("Done");
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("Caught");
             return false;
         }
     }
@@ -253,7 +255,6 @@ public class GameManager implements Serializable {
             writer.writeObject(username);
             return (String[]) reader.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -267,7 +268,6 @@ public class GameManager implements Serializable {
             writer.writeObject(date);
             return (GamePlayer) reader.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }

@@ -14,8 +14,8 @@ public abstract class Zombie extends Entity {
     protected int affectedMovingSpeed;
     private boolean isBurnt;
 
-    public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, int destructionPower) {
-        super(life, xLocation, yLocation, 70, 100, gamePlayer);
+    public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, int destructionPower, int width, int height) {
+        super(life, xLocation, yLocation, width, height, gamePlayer);
         this.gamePlayer = gamePlayer;
         this.destructionPower = destructionPower;
         isBurnt = false;
@@ -92,7 +92,7 @@ public abstract class Zombie extends Entity {
     }
 
     public void downGrade() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\normalzombie.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Normal-Zombie-unscreen.gif").getImage());
     }
 
     public void move() {
@@ -136,6 +136,8 @@ public abstract class Zombie extends Entity {
         }
         if(isBurnt)
             try {
+                width = 50;
+                height = 120;
                 setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\burntZombie.gif").getImage());
                 Thread.sleep(3000);
                 die();
@@ -143,7 +145,11 @@ public abstract class Zombie extends Entity {
             } catch (InterruptedException ignore) { }
         if(life == 0)
             try {
+                width = 78;
+                height = 125;
                 setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_normal_dying.gif").getImage());
+                if(this instanceof FootballZombie)
+                    setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\zombie_football_dying.gif").getImage());
                 Thread.sleep(1000);
                 die();
             } catch (InterruptedException ignore) { }

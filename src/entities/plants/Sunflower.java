@@ -11,7 +11,7 @@ public class Sunflower extends Plant {
     private int productState;
 
     public Sunflower(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(50, xLocation, yLocation, gamePlayer);
+        super(50, xLocation, yLocation, gamePlayer, 66, 75);
         productState = 0;
         if(gamePlayer.getGameDifficulty() == GameDifficulty.MEDIUM)
             productionRate = 20;
@@ -21,7 +21,7 @@ public class Sunflower extends Plant {
     @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower.gif").getImage());
     }
 
     @Override
@@ -52,11 +52,6 @@ public class Sunflower extends Plant {
     @Override
     public Image getAppearance() {
         return super.getAppearance();
-    }
-
-    @Override
-    public void getReadyForSabotage() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun_flower.gif").getImage());
     }
 
     @Override

@@ -1,9 +1,6 @@
 package graphics;
 
 import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -28,22 +25,15 @@ public class GameFrame extends JFrame {
     public static final int GAME_HEIGHT = 720;                  // 720p game resolution
     public static final int GAME_WIDTH = 16 * GAME_HEIGHT / 9;  // wide aspect ratio
 
-    private long lastRender;
-    private final ArrayList<Float> fpsHistory;
     private BufferStrategy bufferStrategy;
     private final Image image;
     private ArrayList<Entity> entities;
     private ArrayList<Card> availablePlants;
-    private KeyListener keyListener;
-    private MouseListener mouseListener;
-    private MouseMotionListener mouseMotionListener;
 
     public GameFrame() {
         super("Plants vs. Zombies");
         setResizable(false);
         setSize(GAME_WIDTH, GAME_HEIGHT);
-        lastRender = -1;
-        fpsHistory = new ArrayList<>(100);
         image = new ImageIcon("Game accessories\\images\\mainBG.png").getImage();
     }
 
@@ -137,21 +127,6 @@ public class GameFrame extends JFrame {
         if(state.getToPlant()) {
             g2d.drawImage(state.getSelectedCardImage(), state.getMouseX(), state.getMouseY(), null);
         }
-
-        // Print FPS info
-        long currentRender = System.currentTimeMillis();
-        if (lastRender > 0) {
-            fpsHistory.add(1000.0f / (currentRender - lastRender));
-            if (fpsHistory.size() > 100) {
-                fpsHistory.remove(0); // remove oldest
-            }
-            float avg = 0.0f;
-            for (float fps : fpsHistory) {
-                avg += fps;
-            }
-            avg /= fpsHistory.size();
-        }
-        lastRender = currentRender;
     }
 
 }

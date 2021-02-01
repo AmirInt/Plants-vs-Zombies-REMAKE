@@ -8,7 +8,7 @@ import java.awt.*;
 public class Walnut extends Plant {
 
     public Walnut(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(150, xLocation, yLocation, gamePlayer);
+        super(150, xLocation, yLocation, gamePlayer, 66, 75);
     }
 
     @Override
@@ -51,8 +51,6 @@ public class Walnut extends Plant {
     public Image getAppearance() {
         return super.getAppearance();
     }
-
-    public void getReadyForSabotage() { }
 
     @Override
     public synchronized void injure(int lifeTakenAway) {

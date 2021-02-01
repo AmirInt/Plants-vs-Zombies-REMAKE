@@ -12,7 +12,7 @@ public class Bullet extends Entity {
 
     public Bullet(int xLocation, int yLocation, int destructionPower, GamePlayer gamePlayer) {
         super(10, xLocation, yLocation, 28, 28, gamePlayer);
-        movingSpeed = 10;
+        movingSpeed = 20;
         this.destructionPower = destructionPower;
     }
 
@@ -54,8 +54,8 @@ public class Bullet extends Entity {
 
     public void move() {
         try {
-            Thread.sleep(5);
-            xLocation += 1;
+            Thread.sleep(80);
+            xLocation += movingSpeed;
             if (xLocation > 1300) {
                 life = 0;
                 die();

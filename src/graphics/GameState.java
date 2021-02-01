@@ -76,19 +76,26 @@ public class GameState {
 
     public Image getSelectedCardImage() {
 
-        Image image = null;
+        Image image;
 
-        if (selectedCard instanceof SunflowerCard) {
-            image = new ImageIcon("Game accessories\\images\\Gifs\\sunflower.gif").getImage();
-        } else if (selectedCard instanceof PeaShooterCard) {
-            image = new ImageIcon("Game accessories\\images\\Gifs\\peashooter.gif").getImage();
-        } else if (selectedCard instanceof SnowPeaCard) {
-            image = new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage();
-        } else if (selectedCard instanceof WalnutCard) {
+        if (selectedCard instanceof SunflowerCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\sun_flower.gif").getImage();
+        else if (selectedCard instanceof PeaShooterCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\Pea-Shooter-unscreen.gif").getImage();
+        else if (selectedCard instanceof SnowPeaCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\SnowPea-Shooter-unscreen.gif").getImage();
+        else if (selectedCard instanceof WalnutCard)
             image = new ImageIcon("Game accessories\\images\\Gifs\\walnut_full_life.gif").getImage();
-        } else if (selectedCard instanceof CherryBombCard) {
+        else if (selectedCard instanceof CherryBombCard)
             image = new ImageIcon("Game accessories\\images\\Gifs\\newCherryBomb.gif").getImage();
-        }
+        else if (selectedCard instanceof CabbageCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\Cauliflower-unscreen.gif").getImage();
+        else if (selectedCard instanceof ChomperCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\Chomper Chomping.gif").getImage();
+        else if (selectedCard instanceof GaltingPeaShooterCard)
+            image = new ImageIcon("Game accessories\\images\\Gifs\\Gatling-Pea-unscreen.gif").getImage();
+        else
+            image = new ImageIcon("Game accessories\\images\\Gifs\\Winter-Melon-unscreen.gif").getImage();
 
         return image;
     }
@@ -153,31 +160,29 @@ public class GameState {
                 int row = gamePlayer.rowOf(e.getY());
                 int column = gamePlayer.columnOf(e.getX());
                 if(gamePlayer.isFree(row, column) && selectedCard.getEnabled()) {
-                    if (selectedCard instanceof SunflowerCard) {
-                        Sunflower sunflower = new Sunflower(column, row, gamePlayer);
-                        sunflower.initialise(gamePlayer);
-                        gamePlayer.add(sunflower);
-                        ThreadPool.execute(sunflower);
-                    } else if (selectedCard instanceof PeaShooterCard) {
-                        PeaShooter peaShooter = new PeaShooter(column, row, gamePlayer);
-                        peaShooter.initialise(gamePlayer);
-                        gamePlayer.add(peaShooter);
-                        ThreadPool.execute(peaShooter);
-                    } else if (selectedCard instanceof SnowPeaCard) {
-                        SnowPea snowPea = new SnowPea(column, row, gamePlayer);
-                        snowPea.initialise(gamePlayer);
-                        gamePlayer.add(snowPea);
-                        ThreadPool.execute(snowPea);
-                    } else if (selectedCard instanceof WalnutCard) {
-                        Walnut walnut = new Walnut(column, row, gamePlayer);
-                        walnut.initialise(gamePlayer);
-                        gamePlayer.add(walnut);
-                    } else if (selectedCard instanceof CherryBombCard) {
-                        CherryBomb cherryBomb = new CherryBomb(column, row, gamePlayer);
-                        cherryBomb.initialise(gamePlayer);
-                        gamePlayer.add(cherryBomb);
-                        ThreadPool.execute(cherryBomb);
-                    }
+                    Entity entity;
+                    if (selectedCard instanceof SunflowerCard)
+                        entity = new Sunflower(column, row, gamePlayer);
+                    else if (selectedCard instanceof PeaShooterCard)
+                        entity = new PeaShooter(column, row, gamePlayer);
+                    else if (selectedCard instanceof SnowPeaCard)
+                        entity = new SnowPea(column, row, gamePlayer);
+                    else if (selectedCard instanceof WalnutCard)
+                        entity = new Walnut(column, row, gamePlayer);
+                    else if (selectedCard instanceof CherryBombCard)
+                        entity = new CherryBomb(column, row, gamePlayer);
+                    else if (selectedCard instanceof CabbageCard)
+                        entity = new Cabbage(column, row, gamePlayer);
+                    else if (selectedCard instanceof ChomperCard)
+                        entity = new Chomper(column, row, gamePlayer);
+                    else if (selectedCard instanceof GaltingPeaShooterCard)
+                        entity = new GaltingPeaShooter(column, row, gamePlayer);
+                    else entity = new WinterMelon(column, row, gamePlayer);
+
+                    entity.initialise(gamePlayer);
+                    gamePlayer.add(entity);
+                    ThreadPool.execute(entity);
+
                     ThreadPool.execute(selectedCard);
                     gameFrame.removeMouseMotionListener(mouseMotionHandler);
                     gamePlayer.consumeEnergy(selectedCard.getRequiredEnergy());

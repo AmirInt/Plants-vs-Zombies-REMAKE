@@ -9,7 +9,7 @@ import java.awt.*;
 public class BucketHeadZombie extends Zombie{
 
     public BucketHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(gamePlayer, 1300, xLocation, yLocation, 0);
+        super(gamePlayer, 1300, xLocation, yLocation, 0, 120, 120);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
             setMovingSpeed(25);
@@ -25,7 +25,7 @@ public class BucketHeadZombie extends Zombie{
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
         if(life > 200)
-            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\bucketheadzombie.gif").getImage());
+            setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Bucket-head-Zombie-unscreen.gif").getImage());
         else downGrade();
     }
 

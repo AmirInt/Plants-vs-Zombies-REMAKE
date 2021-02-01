@@ -9,7 +9,7 @@ import java.awt.*;
 public class ConeHeadZombie extends Zombie{
 
     public ConeHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
-        super(gamePlayer, 560, xLocation, yLocation,0);
+        super(gamePlayer, 560, xLocation, yLocation,0, 90, 100);
 //        Setting the moving speed
         if(gameDifficulty == GameDifficulty.MEDIUM) {
             setMovingSpeed(25);

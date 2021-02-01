@@ -2,12 +2,16 @@ package managers;
 
 import entities.Entity;
 import entities.bullets.Bullet;
+import entities.bullets.CabbageBullet;
+import entities.bullets.SnowWaterMelon;
 import entities.others.LawnMower;
 import entities.plants.*;
 import entities.zombies.*;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import enums.*;
 import entities.others.Sun;
 import graphics.ThreadPool;
@@ -22,8 +26,9 @@ public class GamePlayer implements Runnable, Serializable {
     private int index;
     private final int[] zombiesTurnUpTimes;
     private final GameDifficulty gameDifficulty;
-    private final ArrayList<AvailableZombies> availableZombies;
-    private final ArrayList<AvailablePlants> availablePlants;
+    private final HashSet<AvailableZombies> availableZombies;
+    private final HashSet<AvailablePlants> availablePlants;
+    transient private ArrayList<AvailableZombies> availableZombiesList;
     transient private ArrayList<Card> cards;
     private final ArrayList<Entity> entities;
     private final SecureRandom random;
@@ -33,8 +38,8 @@ public class GamePlayer implements Runnable, Serializable {
     private boolean gameFinished;
     private boolean gamePaused;
 
-    public GamePlayer(GameDifficulty gameDifficulty, ArrayList<AvailableZombies> availableZombies,
-                      ArrayList<AvailablePlants> availablePlants) {
+    public GamePlayer(GameDifficulty gameDifficulty, HashSet<AvailableZombies> availableZombies,
+                      HashSet<AvailablePlants> availablePlants) {
         score = 0;
         time = 0;
         energy = 0;
@@ -74,9 +79,18 @@ public class GamePlayer implements Runnable, Serializable {
                 cards.add(SnowPeaCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
             } else if(availablePlant == AvailablePlants.CHERRY_BOMB) {
                 cards.add(CherryBombCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.GALTING_SHOOTER) {
+                cards.add(GaltingPeaShooterCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.CABBAGE) {
+                cards.add(CabbageCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.WINTERMELON) {
+                cards.add(WintermelonCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
+            } else if(availablePlant == AvailablePlants.CHOMPER) {
+                cards.add(ChomperCard.getInstance(gameDifficulty, GameManager.cardXs[i], GameManager.cardY));
             }
             ++i;
         }
+        availableZombiesList = new ArrayList<>(availableZombies);
         for (Entity entity :
                 entities) {
             entity.initialise(this);
@@ -157,37 +171,42 @@ public class GamePlayer implements Runnable, Serializable {
     }
 
     private synchronized int getZombieYLocation() {
-        int[] probabilities = new int[]{24, 24, 24, 24, 24};
+        int[] probabilities = new int[]{30, 30, 30, 30, 30};
 
         int index;
+        int decrease = 0;
 
         for (Entity entity:
              entities) {
+            index = -1;
             if(entity instanceof LawnMower) {
                 index = rows.indexOf(entity.getYLocation());
-                probabilities[index] -= 12;
+                decrease = 12;
+            } else if(entity instanceof Cabbage) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 8;
+            } else if(entity instanceof Chomper) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 16;
+            } else if(entity instanceof GaltingPeaShooter) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 4;
+            } else if(entity instanceof WinterMelon) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 12;
+            } else if(entity instanceof SnowPea) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 8;
+            } else if(entity instanceof PeaShooter) {
+                index = rows.indexOf(entity.getYLocation());
+                decrease = 4;
+            }
+            if(index != -1) {
+                probabilities[index] = probabilities[index] - decrease;
                 for (int i = 0; i < 5; i++) {
                     if(i != index)
-                        probabilities[i] += 3;
+                        probabilities[i] = probabilities[i] + decrease / 4;
                 }
-            }
-            else if(entity instanceof SnowPea) {
-                index = rows.indexOf(entity.getYLocation());
-                probabilities[index] -= 8;
-                for (int i = 0; i < 5; i++) {
-                    if(i != index)
-                        probabilities[i] += 2;
-                }
-            }
-            else if(entity instanceof PeaShooter) {
-                index = rows.indexOf(entity.getYLocation());
-                try {
-                    probabilities[index] = probabilities[index] - 4;
-                    for (int i = 0; i < 5; i++) {
-                        if(i != index)
-                            probabilities[i] = probabilities[i] + 1;
-                    }
-                } catch (IndexOutOfBoundsException ignore) { }
             }
         }
 
@@ -218,11 +237,20 @@ public class GamePlayer implements Runnable, Serializable {
     }
 
     private Zombie enterNewZombie() {
-        int zombieType = random.nextInt(availableZombies.size());
+        int zombieType;
+        if(time < 350)
+            zombieType = random.nextInt(3);
+        else zombieType = random.nextInt(availableZombies.size() - 3) + 3;
         int zombieYLocation = getZombieYLocation();
-        return switch (availableZombies.get(zombieType)) {
+        return switch (availableZombiesList.get(zombieType)) {
             case BucketHeadZombie -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
             case ConeHeadZombie -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            case BalloonZombie -> new BalloonZombie(this, 1400, zombieYLocation);
+            case CatapultZombie -> new CatapultZombie(this, 1400, zombieYLocation);
+            case CreepyZombie -> new CreepyZombie(this, 1400, zombieYLocation);
+            case DoorShieldZombie -> new DoorShieldZombie(this, 1400, zombieYLocation);
+            case FootballZombie -> new FootballZombie(this, 1400, zombieYLocation);
+            case YetiZombie -> new YetiZombie(this, 1400, zombieYLocation);
             default -> new NormalZombie(this, 1400, zombieYLocation);
         };
     }
@@ -261,11 +289,11 @@ public class GamePlayer implements Runnable, Serializable {
                 entities) {
             if(entity instanceof Plant)
                 if(entity.getYLocation() == zombie.getYLocation() &&
-                        Math.abs(zombie.getXLocation() - entity.getXLocation()) < 20) {
+                        Math.abs(zombie.getXLocation() - entity.getXLocation()) < 40) {
                     poorPlant = (Plant) entity;
                     break;
                 }
-            if(entity instanceof LawnMower)
+            if(entity instanceof LawnMower && !(zombie instanceof BalloonZombie))
                 if(entity.getYLocation() == zombie.getYLocation() &&
                         Math.abs(zombie.getXLocation() - entity.getXLocation()) < 20)
                     lawnMower = (LawnMower) entity;
@@ -282,9 +310,15 @@ public class GamePlayer implements Runnable, Serializable {
         for (Entity entity:
                 entities) {
                 if (entity instanceof Zombie)
-                    if (entity.getYLocation() == bullet.getYLocation() &&
-                            Math.abs(entity.getXLocation() - bullet.getXLocation()) <= 20) {
-                        bullet.hit((Zombie) entity);
+                    if (Math.abs(entity.getYLocation() - bullet.getYLocation()) < 50 &&
+                            Math.abs(entity.getXLocation() - bullet.getXLocation()) < 50) {
+                        if(entity instanceof BalloonZombie) {
+                            if(bullet instanceof CabbageBullet || bullet instanceof SnowWaterMelon)
+                                bullet.hit((Zombie) entity);
+                        }
+                        else {
+                            bullet.hit((Zombie) entity);
+                        }
                         break;
                     }
         }
@@ -363,6 +397,29 @@ public class GamePlayer implements Runnable, Serializable {
         return columns.get(8);
     }
 
+    public synchronized boolean catchAZombie(Chomper chomper) {
+        Zombie zombie = null;
+        for (Entity entity :
+                entities) {
+            if(entity instanceof Zombie)
+                if(entity.getYLocation() == chomper.getYLocation()
+                        && Math.abs(columnOf(entity.getXLocation()) - columnOf(chomper.getXLocation())) <= 60) {
+                    zombie = ((Zombie) entity);
+                    break;
+                }
+        }
+        if(zombie != null) {
+            if(zombie instanceof YetiZombie) {
+                zombie.injure(500);
+                return true;
+            } else if(!(zombie instanceof BalloonZombie)) {
+                zombie.die();
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void killGame(boolean exitedManually) {
         if(exitedManually)
             if(time < 530)
@@ -397,6 +454,9 @@ public class GamePlayer implements Runnable, Serializable {
             }
         }
         gameFinished = true;
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ignore) { }
         killGame(true);
     }
 }

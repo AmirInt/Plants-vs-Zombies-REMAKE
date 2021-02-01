@@ -7,8 +7,8 @@ import java.awt.*;
 
 public abstract class Plant extends Entity {
 
-    public Plant(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(life, xLocation, yLocation, 70, 100, gamePlayer);
+    public Plant(int life, int xLocation, int yLocation, GamePlayer gamePlayer, int width, int height) {
+        super(life, xLocation, yLocation, width, height, gamePlayer);
     }
 
     @Override
@@ -45,8 +45,6 @@ public abstract class Plant extends Entity {
     public Image getAppearance() {
         return super.getAppearance();
     }
-
-    public void getReadyForSabotage() { }
 
     public synchronized void injure(int lifeTakenAway) {
         life -= lifeTakenAway;

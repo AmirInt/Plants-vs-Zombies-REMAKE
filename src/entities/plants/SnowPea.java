@@ -4,20 +4,19 @@ import entities.bullets.Bullet;
 import entities.bullets.FrozenPea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
 public class SnowPea extends Plant {
 
     public SnowPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
-        super(100, xLocation, yLocation, gamePlayer);
+        super(100, xLocation, yLocation, gamePlayer, 150, 150);
     }
 
     @Override
     public void initialise(GamePlayer gamePlayer) {
         super.initialise(gamePlayer);
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\freezepeashooter.gif").getImage());
+        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\SnowPea-Shooter-unscreen.gif").getImage());
     }
 
     @Override
@@ -43,11 +42,6 @@ public class SnowPea extends Plant {
     @Override
     public int getHeight() {
         return super.getHeight();
-    }
-
-    @Override
-    public void getReadyForSabotage() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\freezenpeashooter.gif").getImage());
     }
 
     @Override

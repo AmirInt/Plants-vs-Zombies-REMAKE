@@ -1,5 +1,7 @@
 package menus;
 
+import enums.AvailablePlants;
+import enums.AvailableZombies;
 import enums.GameDifficulty;
 import graphics.GameFrame;
 import managers.GameManager;
@@ -19,6 +21,7 @@ public class MainMenu extends Menu {
     private JLabel Hard, Medium;
     private JTextField username;
     private JPasswordField passwordField, repeatPasswordField;
+    private JCheckBox cabbage, chomper, galting, wintermelon, balloon, catapult, creepy, doorShield, football, yeti;
 
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
@@ -52,6 +55,11 @@ public class MainMenu extends Menu {
         setSignOutPanel();
         setMainMenuComponents();
         setMainMenu();
+
+        username.addActionListener(actionHandler);
+        passwordField.addActionListener(actionHandler);
+        repeatPasswordField.addActionListener(actionHandler);
+
     }
 
     @Override
@@ -115,13 +123,13 @@ public class MainMenu extends Menu {
         playersList.setFixedCellHeight(50);
         playersList.setFixedCellWidth(500);
         playersList.setFont(new Font("", Font.BOLD, 16));
-        playersList.setSelectionBackground(new Color(150, 150, 100));
+        playersList.setSelectionBackground(new Color(190, 180, 110));
         playersList.setSelectionForeground(selectedItemColour);
         playersList.setOpaque(false);
         scoreBoard = new JScrollPane(playersList);
         scoreBoard.getViewport().setOpaque(false);
         scoreBoard.setOpaque(false);
-        scoreBoard.setPreferredSize(new Dimension(600, 300));
+        scoreBoard.setPreferredSize(new Dimension(800, 300));
     }
 
     public void setRankingMenu() {
@@ -161,7 +169,13 @@ public class MainMenu extends Menu {
     }
 
     public void setSettingsMenuComponents() {
+        JPanel settingsMenu1, settingsMenu2, settingsMenu3, inclusivePanel;
+        Menu cabbageF, chomperF, galtingF, wintermelonF, balloonF, catapultF, creepyF, doorShieldF, footballF, yetiF;
         settingsMenu.setOpaque(false);
+        settingsMenu1 = new JPanel(new GridBagLayout());
+        settingsMenu1.setOpaque(false);
+        settingsMenu3 = new JPanel(new GridBagLayout());
+        settingsMenu3.setOpaque(false);
         Hard = new JLabel("Hard");
         Hard.setFont(unselectedItemFont);
         Hard.setForeground(unselectedItemColour);
@@ -198,28 +212,148 @@ public class MainMenu extends Menu {
         label03.setForeground(Color.WHITE);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        settingsMenu.add(gameDifficulty, constraints);
+        settingsMenu1.add(gameDifficulty, constraints);
         constraints.gridy = 1;
-        settingsMenu.add(Medium, constraints);
+        settingsMenu1.add(Medium, constraints);
         constraints.gridx = 1;
-        settingsMenu.add(Hard, constraints);
+        settingsMenu1.add(Hard, constraints);
         constraints.gridx = 0;
         constraints.gridy = 2;
-        settingsMenu.add(label01, constraints);
+        settingsMenu1.add(label01, constraints);
         constraints.gridx = 1;
-        settingsMenu.add(username, constraints);
+        settingsMenu1.add(username, constraints);
         constraints.gridx = 0;
         constraints.gridy = 3;
-        settingsMenu.add(label02, constraints);
+        settingsMenu1.add(label02, constraints);
         constraints.gridx = 1;
-        settingsMenu.add(passwordField, constraints);
+        settingsMenu1.add(passwordField, constraints);
         constraints.gridx = 0;
         constraints.gridy = 4;
-        settingsMenu.add(label03, constraints);
+        settingsMenu1.add(label03, constraints);
         constraints.gridx = 1;
-        settingsMenu.add(repeatPasswordField, constraints);
+        settingsMenu1.add(repeatPasswordField, constraints);
         constraints.gridy = 0;
         constraints.gridx = 0;
+
+        cabbage = new JCheckBox();
+        cabbage.setSelected(gameManager.getAvailablePlants().contains(AvailablePlants.CABBAGE));
+        cabbageF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\cabbage.png").getImage(), null);
+        cabbage.setOpaque(false);
+        cabbageF.setPreferredSize(new Dimension(110, 110));
+        chomper = new JCheckBox();
+        chomper.setSelected(gameManager.getAvailablePlants().contains(AvailablePlants.CHOMPER));
+        chomperF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\chomper.png").getImage(), null);
+        chomper.setOpaque(false);
+        chomperF.setPreferredSize(new Dimension(110, 110));
+        galting = new JCheckBox();
+        galting.setSelected(gameManager.getAvailablePlants().contains(AvailablePlants.GALTING_SHOOTER));
+        galtingF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\galting.png").getImage(), null);
+        galting.setOpaque(false);
+        galtingF.setPreferredSize(new Dimension(110, 110));
+        wintermelon = new JCheckBox();
+        wintermelon.setSelected(gameManager.getAvailablePlants().contains(AvailablePlants.WINTERMELON));
+        wintermelonF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\wintermelon.png").getImage(), null);
+        wintermelon.setOpaque(false);
+        wintermelonF.setPreferredSize(new Dimension(110, 110));
+        balloon = new JCheckBox();
+        balloon.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.BalloonZombie));
+        balloonF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\balloon.png").getImage(), null);
+        balloon.setOpaque(false);
+        balloonF.setPreferredSize(new Dimension(110, 110));
+        catapult = new JCheckBox();
+        catapult.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.CatapultZombie));
+        catapultF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\catapult.png").getImage(), null);
+        catapult.setOpaque(false);
+        catapultF.setPreferredSize(new Dimension(110, 110));
+        creepy = new JCheckBox();
+        creepy.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.CreepyZombie));
+        creepyF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\creepy.png").getImage(), null);
+        creepy.setOpaque(false);
+        creepyF.setPreferredSize(new Dimension(110, 110));
+        doorShield = new JCheckBox();
+        doorShield.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.DoorShieldZombie));
+        doorShieldF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\doorShield.png").getImage(), null);
+        doorShield.setOpaque(false);
+        doorShieldF.setPreferredSize(new Dimension(110, 110));
+        football = new JCheckBox();
+        football.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.FootballZombie));
+        footballF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\football.png").getImage(), null);
+        football.setOpaque(false);
+        footballF.setPreferredSize(new Dimension(110, 110));
+        yeti = new JCheckBox();
+        yeti.setSelected(gameManager.getAvailableZombies().contains(AvailableZombies.YetiZombie));
+        yetiF = new Menu(null, null,
+                new ImageIcon("Game Accessories\\Images\\yeti.png").getImage(), null);
+        yeti.setOpaque(false);
+        yetiF.setPreferredSize(new Dimension(110, 110));
+        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
+        JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER, 130, 10));
+        JPanel panel3 = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
+        JPanel panel4 = new JPanel(new FlowLayout(FlowLayout.CENTER, 130, 10));
+        panel1.setOpaque(false);
+        panel2.setOpaque(false);
+        panel3.setOpaque(false);
+        panel4.setOpaque(false);
+
+        panel1.add(balloonF);
+        panel1.add(catapultF);
+        panel1.add(creepyF);
+        panel1.add(doorShieldF);
+        panel1.add(footballF);
+        panel1.add(yetiF);
+        panel2.add(balloon);
+        panel2.add(catapult);
+        panel2.add(creepy);
+        panel2.add(doorShield);
+        panel2.add(football);
+        panel2.add(yeti);
+        panel3.add(cabbageF);
+        panel3.add(chomperF);
+        panel3.add(galtingF);
+        panel3.add(wintermelonF);
+        panel4.add(cabbage);
+        panel4.add(chomper);
+        panel4.add(galting);
+        panel4.add(wintermelon);
+
+        cabbage.addActionListener(actionHandler);
+        chomper.addActionListener(actionHandler);
+        galting.addActionListener(actionHandler);
+        wintermelon.addActionListener(actionHandler);
+        balloon.addActionListener(actionHandler);
+        catapult.addActionListener(actionHandler);
+        creepy.addActionListener(actionHandler);
+        doorShield.addActionListener(actionHandler);
+        football.addActionListener(actionHandler);
+        yeti.addActionListener(actionHandler);
+
+        inclusivePanel = new JPanel(new GridBagLayout());
+        inclusivePanel.setOpaque(false);
+        inclusivePanel.add(settingsMenu1, constraints);
+        constraints.gridy = 1;
+        inclusivePanel.add(panel1, constraints);
+        constraints.gridy = 2;
+        inclusivePanel.add(panel2, constraints);
+        constraints.gridy = 3;
+        inclusivePanel.add(panel3, constraints);
+        constraints.gridy = 4;
+        inclusivePanel.add(panel4, constraints);
+        JScrollPane settingsMenuPane = new JScrollPane(inclusivePanel);
+        settingsMenuPane.setPreferredSize(new Dimension(1200, 400));
+        settingsMenuPane.setBorder(null);
+        settingsMenuPane.getViewport().setOpaque(false);
+        settingsMenuPane.setOpaque(false);
+        constraints.gridy = 0;
+        settingsMenu.add(settingsMenuPane, constraints);
     }
 
     public void setSettingsMenu() {
@@ -230,16 +364,12 @@ public class MainMenu extends Menu {
         if(gameManager.getGameDifficulty() == GameDifficulty.MEDIUM) {
             Medium.setText("* Medium");
         } else Hard.setText("* Hard");
-        constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 1;
         settingsMenu.add(back, constraints);
-        constraints.gridx = 1;
+        constraints.gridy = 2;
         settingsMenu.add(errorLabel, constraints);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        username.addActionListener(actionHandler);
-        passwordField.addActionListener(actionHandler);
-        repeatPasswordField.addActionListener(actionHandler);
         remove(mainMenu);
         add(settingsMenu, BorderLayout.CENTER);
         revalidate();
@@ -411,6 +541,7 @@ public class MainMenu extends Menu {
                 setLoadGameMenu();
             }
             else if(e.getSource() == ranking) {
+                playersList.removeMouseListener(mouseHandler);
                 setRankingMenu();
             }
             else if(e.getSource() == settings) {
@@ -527,6 +658,69 @@ public class MainMenu extends Menu {
                     }
                 }
                 errorLabel.revalidate();
+            }
+            else if(e.getSource() instanceof JCheckBox) {
+                errorLabel.setText("");
+                JCheckBox actedBox = (JCheckBox) e.getSource();
+                if(!actedBox.isSelected()) {
+                    if (cabbage == (actedBox)) {
+                        if (!wintermelon.isSelected() && balloon.isSelected()) {
+                            errorLabel.setText("Impossible");
+                            actedBox.setSelected(true);
+                        }
+                        else gameManager.removeAvailablePlant(AvailablePlants.CABBAGE);
+                    } else if (wintermelon == (actedBox)) {
+                        if (!cabbage.isSelected() && balloon.isSelected()) {
+                            errorLabel.setText("Impossible");
+                            actedBox.setSelected(true);
+                        }
+                        else gameManager.removeAvailablePlant(AvailablePlants.WINTERMELON);
+                    } else if (galting == (actedBox)) {
+                        gameManager.removeAvailablePlant(AvailablePlants.GALTING_SHOOTER);
+                    } else if (chomper == (actedBox)) {
+                        gameManager.removeAvailablePlant(AvailablePlants.CHOMPER);
+                    } else if (balloon == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.BalloonZombie);
+                    } else if (catapult == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.CatapultZombie);
+                    } else if (creepy == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.CreepyZombie);
+                    } else if (doorShield == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.DoorShieldZombie);
+                    } else if (football == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.FootballZombie);
+                    } else if (yeti == (actedBox)) {
+                        gameManager.removeAvailableZombie(AvailableZombies.YetiZombie);
+                    }
+                }
+                else {
+                    if (cabbage == (actedBox)) {
+                        if (!wintermelon.isSelected() && balloon.isSelected())
+                            errorLabel.setText("Impossible");
+                        else gameManager.addToAvailablePlants(AvailablePlants.CABBAGE);
+                    } else if (wintermelon == (actedBox)) {
+                        if (!cabbage.isSelected() && balloon.isSelected())
+                            errorLabel.setText("Impossible");
+                        else gameManager.addToAvailablePlants(AvailablePlants.WINTERMELON);
+                    } else if (galting == (actedBox)) {
+                        gameManager.addToAvailablePlants(AvailablePlants.GALTING_SHOOTER);
+                    } else if (chomper == (actedBox)) {
+                        gameManager.addToAvailablePlants(AvailablePlants.CHOMPER);
+                    } else if (balloon == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.BalloonZombie);
+                    } else if (catapult == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.CatapultZombie);
+                    } else if (creepy == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.CreepyZombie);
+                    } else if (doorShield == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.DoorShieldZombie);
+                    } else if (football == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.FootballZombie);
+                    } else if (yeti == (actedBox)) {
+                        gameManager.addToAvailableZombies(AvailableZombies.YetiZombie);
+                    }
+                }
+                gameManager.store();
             }
         }
     }
