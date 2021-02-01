@@ -10,6 +10,7 @@ import entities.others.Sun;
 import managers.GameManager;
 import managers.GamePlayer;
 import menus.PauseMenu;
+import sounds.SoundPlayer;
 
 import javax.swing.*;
 
@@ -33,6 +34,7 @@ public class GameState {
     private final ArrayList<Card> availablePlants;
     private Card selectedCard;
     private PauseMenu pauseMenu;
+    private static final String path = "Game Accessories\\sounds\\ting.wav";
 
     public GameState(GamePlayer gamePlayer, GameFrame gameFrame, GameManager gameManager) {
         isToPlant = false;
@@ -150,6 +152,8 @@ public class GameState {
                     if(entity instanceof Sun)
                         if (isInside(e.getX(), entity.getXLocation(), entity.getWidth())
                                 && isInside(e.getY(), entity.getYLocation(), entity.getHeight())) {
+                            if(!gameManager.isMuted())
+                                ThreadPool.execute(new SoundPlayer(path, 400, false));
                             gamePlayer.remove(entity);
                             gamePlayer.setEnergy(gamePlayer.getEnergy() + 25);
                             return;
@@ -181,7 +185,8 @@ public class GameState {
 
                     entity.initialise(gamePlayer);
                     gamePlayer.add(entity);
-                    ThreadPool.execute(entity);
+                    if(!(entity instanceof Walnut))
+                        ThreadPool.execute(entity);
 
                     ThreadPool.execute(selectedCard);
                     gameFrame.removeMouseMotionListener(mouseMotionHandler);

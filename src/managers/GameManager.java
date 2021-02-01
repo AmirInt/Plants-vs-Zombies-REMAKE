@@ -2,9 +2,12 @@ package managers;
 
 import enums.*;
 import graphics.*;
+import menus.FinishingMenu;
 import menus.LaunchingMenu;
 import menus.MainMenu;
 import menus.PauseMenu;
+import sounds.SoundPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -27,6 +30,10 @@ public class GameManager implements Serializable {
     private int score;
     private int wins;
     private int losses;
+    transient private SoundPlayer soundPlayer;
+    private boolean isMuted;
+    private static final String path = "Game accessories\\sounds\\menu.wav";
+
 
     public GameManager() {
         gameDifficulty = GameDifficulty.MEDIUM;
@@ -35,6 +42,7 @@ public class GameManager implements Serializable {
         wins = 0;
         losses = 0;
         score = 0;
+        isMuted = false;
     }
 
     public void initialise() {
@@ -43,6 +51,27 @@ public class GameManager implements Serializable {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainMenu = new MainMenu(this, frame);
         launchingMenu = new LaunchingMenu(this, frame);
+        soundPlayer = new SoundPlayer(path, 0, true);
+    }
+
+    public void replay() {
+        soundPlayer = new SoundPlayer(path, 0, true);
+        ThreadPool.execute(soundPlayer);
+    }
+
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean muted) {
+        System.out.println("Here");
+        isMuted = muted;
+        if(isMuted) {
+            soundPlayer.setFinished(true);
+        } else {
+            soundPlayer = new SoundPlayer(path, 0, true);
+            ThreadPool.execute(soundPlayer);
+        }
     }
 
     public void setAvailableEntities() {
@@ -276,16 +305,20 @@ public class GameManager implements Serializable {
         // Initialize the global thread-pool
         ThreadPool.init();
         initialise();
+
+        if(!isMuted)
+            ThreadPool.execute(soundPlayer);
         // Show the game menu ...
 
-        // After the player clicks 'PLAY' ...
         EventQueue.invokeLater(() -> {
-            if(isSignedIn)
+            if(isSignedIn) {
                 frame.displayMenu(mainMenu);
+            }
             else frame.displayMenu(launchingMenu);
             frame.setVisible(true);
             frame.init();
         });
+        // After the player clicks 'PLAY' ...
     }
 
     public void gameFinished(GamePlayer gamePlayer) {
@@ -301,6 +334,7 @@ public class GameManager implements Serializable {
     }
 
     public void play(GamePlayer gamePlayer) {
+        soundPlayer.setFinished(true);
         EventQueue.invokeLater(() -> {
 //             Create and execute the game-loop
             gamePlayer.initialise(this);

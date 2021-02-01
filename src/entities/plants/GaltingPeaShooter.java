@@ -4,11 +4,14 @@ import entities.bullets.Bullet;
 import entities.bullets.RadicalPea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GaltingPeaShooter extends Plant {
+
+    private static final String path = "Game accessories\\sounds\\shoot.wav";
 
     public GaltingPeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(70, xLocation, yLocation, gamePlayer, 188, 144);
@@ -56,6 +59,8 @@ public class GaltingPeaShooter extends Plant {
     }
 
     public void shoot() {
+        if(gamePlayer.isNotMuted())
+            ThreadPool.execute(new SoundPlayer(path, 500, false));
         Bullet newBullet = new RadicalPea(xLocation, yLocation, gamePlayer);
         newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);

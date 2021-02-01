@@ -1,6 +1,8 @@
 package entities.plants;
 
+import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +10,7 @@ import java.awt.*;
 public class Chomper extends Plant {
 
     int hungerStatus;
+    private static final String path = "Game accessories\\sounds\\chomp.wav";
 
     public Chomper(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(400, xLocation, yLocation, gamePlayer, 100, 100);
@@ -77,6 +80,8 @@ public class Chomper extends Plant {
                 if(hungerStatus == 0) {
                     try {
                         if (gamePlayer.catchAZombie(this)) {
+                            if(gamePlayer.isNotMuted())
+                                ThreadPool.execute(new SoundPlayer(path, 500, false));
                             setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Chomper Chomping.gif").getImage());
                             Thread.sleep(3000);
                         }

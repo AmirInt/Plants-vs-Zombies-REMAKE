@@ -4,10 +4,14 @@ import entities.bullets.Bullet;
 import entities.bullets.Pea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class PeaShooter extends Plant {
+
+    private static final String path = "Game accessories\\sounds\\shoot.wav";
 
     public PeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(70, xLocation, yLocation, gamePlayer, 110, 93);
@@ -55,6 +59,8 @@ public class PeaShooter extends Plant {
     }
 
     public void shoot() {
+        if(gamePlayer.isNotMuted())
+            ThreadPool.execute(new SoundPlayer(path, 500, false));
         Bullet newBullet = new Pea(xLocation, yLocation, gamePlayer);
         newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);

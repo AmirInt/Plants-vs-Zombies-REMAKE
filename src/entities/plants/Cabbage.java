@@ -4,10 +4,14 @@ import entities.bullets.CabbageBullet;
 import graphics.ThreadPool;
 import managers.GamePlayer;
 import entities.bullets.Bullet;
+import sounds.SoundPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Cabbage extends Plant {
+
+    private static final String path = "Game accessories\\sounds\\shoot.wav";
 
     public Cabbage(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(400, xLocation, yLocation, gamePlayer, 180, 180);
@@ -55,6 +59,8 @@ public class Cabbage extends Plant {
     }
 
     public void shoot() {
+        if(gamePlayer.isNotMuted())
+            ThreadPool.execute(new SoundPlayer(path, 500, false));
         Bullet newBullet = new CabbageBullet(xLocation, yLocation, gamePlayer);
         newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);

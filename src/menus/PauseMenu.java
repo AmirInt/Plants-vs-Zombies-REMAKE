@@ -3,8 +3,6 @@ package menus;
 import graphics.GameFrame;
 import graphics.GameState;
 import managers.GameManager;
-import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;

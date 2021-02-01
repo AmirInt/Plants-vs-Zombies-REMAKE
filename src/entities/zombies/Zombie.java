@@ -2,8 +2,9 @@ package entities.zombies;
 
 import entities.Entity;
 import entities.plants.Plant;
-import managers.GameManager;
+import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,6 +14,8 @@ public abstract class Zombie extends Entity {
     protected int movingSpeed;
     protected int affectedMovingSpeed;
     private boolean isBurnt;
+    private static final String path = "Game Accessories\\sounds\\chomp.wav";
+    private static final String normalZombieImage = "Game accessories\\images\\Gifs\\Normal-Zombie-unscreen.gif";
 
     public Zombie(GamePlayer gamePlayer, int life, int xLocation, int yLocation, int destructionPower, int width, int height) {
         super(life, xLocation, yLocation, width, height, gamePlayer);
@@ -86,13 +89,15 @@ public abstract class Zombie extends Entity {
 
     public void destroy(Plant plant) {
         try {
+            if(gamePlayer.isNotMuted())
+                ThreadPool.execute(new SoundPlayer(path, 500, false));
             Thread.sleep(1000);
             plant.injure(destructionPower);
         } catch (InterruptedException ignore) { }
     }
 
     public void downGrade() {
-        setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\Normal-Zombie-unscreen.gif").getImage());
+        setAppearance(new ImageIcon(normalZombieImage).getImage());
     }
 
     public void move() {

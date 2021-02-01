@@ -1,7 +1,9 @@
 package entities.others;
 
 import entities.Entity;
+import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,7 @@ public class LawnMower extends Entity {
 
     int movingSpeed;
     boolean isTriggered;
+    private static final String path = "Game Accessories\\sounds\\lamborghini.wav";
 
     public LawnMower(int life, int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(life, xLocation, yLocation, 100, 100, gamePlayer);
@@ -73,6 +76,10 @@ public class LawnMower extends Entity {
 
     @Override
     public void run() {
+        SoundPlayer soundPlayer = new SoundPlayer(path, 0, true);
+        if(gamePlayer.isNotMuted()) {
+            ThreadPool.execute(soundPlayer);
+        }
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\lawnmowerActivated.gif").getImage());
         while (xLocation < 1350 && gamePlayer.isNotGameFinished()) {
@@ -89,6 +96,7 @@ public class LawnMower extends Entity {
                 move();
             }
         }
+        soundPlayer.setFinished(true);
         die();
     }
 }

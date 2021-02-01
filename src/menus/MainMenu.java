@@ -21,7 +21,7 @@ public class MainMenu extends Menu {
     private JLabel Hard, Medium;
     private JTextField username;
     private JPasswordField passwordField, repeatPasswordField;
-    private JCheckBox cabbage, chomper, galting, wintermelon, balloon, catapult, creepy, doorShield, football, yeti;
+    private JCheckBox cabbage, chomper, galting, wintermelon, balloon, catapult, creepy, doorShield, football, yeti, sound;
 
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
@@ -174,7 +174,7 @@ public class MainMenu extends Menu {
         settingsMenu.setOpaque(false);
         settingsMenu1 = new JPanel(new GridBagLayout());
         settingsMenu1.setOpaque(false);
-        settingsMenu3 = new JPanel(new GridBagLayout());
+        settingsMenu3 = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 100));
         settingsMenu3.setOpaque(false);
         Hard = new JLabel("Hard");
         Hard.setFont(unselectedItemFont);
@@ -336,6 +336,16 @@ public class MainMenu extends Menu {
         football.addActionListener(actionHandler);
         yeti.addActionListener(actionHandler);
 
+        JLabel label = new JLabel("Sound:");
+        label.setForeground(selectedItemColour);
+        label.setFont(unselectedItemFont);
+        settingsMenu3.add(label);
+        sound = new JCheckBox();
+        sound.setSelected(!gameManager.isMuted());
+        sound.setOpaque(false);
+        sound.addActionListener(actionHandler);
+        settingsMenu3.add(sound);
+
         inclusivePanel = new JPanel(new GridBagLayout());
         inclusivePanel.setOpaque(false);
         inclusivePanel.add(settingsMenu1, constraints);
@@ -347,6 +357,8 @@ public class MainMenu extends Menu {
         inclusivePanel.add(panel3, constraints);
         constraints.gridy = 4;
         inclusivePanel.add(panel4, constraints);
+        constraints.gridy = 5;
+        inclusivePanel.add(settingsMenu3, constraints);
         JScrollPane settingsMenuPane = new JScrollPane(inclusivePanel);
         settingsMenuPane.setPreferredSize(new Dimension(1200, 400));
         settingsMenuPane.setBorder(null);
@@ -719,6 +731,10 @@ public class MainMenu extends Menu {
                     } else if (yeti == (actedBox)) {
                         gameManager.addToAvailableZombies(AvailableZombies.YetiZombie);
                     }
+                }
+                if(sound == actedBox) {
+                    System.out.println("acted " + sound.isSelected());
+                    gameManager.setMuted(!sound.isSelected());
                 }
                 gameManager.store();
             }

@@ -16,10 +16,14 @@ import enums.*;
 import entities.others.Sun;
 import graphics.ThreadPool;
 import cards.*;
+import sounds.SoundPlayer;
+
+import javax.sound.sampled.FloatControl;
 
 public class GamePlayer implements Runnable, Serializable {
 
     transient private GameManager gameManager;
+    transient private SoundPlayer soundPlayer;
     private int score;
     private int time;
     private int energy;
@@ -37,6 +41,8 @@ public class GamePlayer implements Runnable, Serializable {
     private final int sunDroppingPeriod;
     private boolean gameFinished;
     private boolean gamePaused;
+    private boolean isMuted;
+    private static final String path = "Game accessories\\sounds\\The Swamp Whistler.wav";
 
     public GamePlayer(GameDifficulty gameDifficulty, HashSet<AvailableZombies> availableZombies,
                       HashSet<AvailablePlants> availablePlants) {
@@ -65,6 +71,7 @@ public class GamePlayer implements Runnable, Serializable {
 
     public void initialise(GameManager gameManager) {
         this.gameManager = gameManager;
+        isMuted = gameManager.isMuted();
         cards = new ArrayList<>();
         int i = 0;
         for (AvailablePlants availablePlant:
@@ -100,6 +107,12 @@ public class GamePlayer implements Runnable, Serializable {
                     ThreadPool.execute(entity);
             } else if (!(entity instanceof Walnut))
                 ThreadPool.execute(entity);
+        }
+        if(!gameManager.isMuted()) {
+            if (time < 50) {
+                soundPlayer = new SoundPlayer(path, 0 ,true);
+                ThreadPool.execute(soundPlayer);
+            }
         }
     }
 
@@ -228,6 +241,10 @@ public class GamePlayer implements Runnable, Serializable {
         return entities;
     }
 
+    public boolean isNotMuted() {
+        return !isMuted;
+    }
+
     public synchronized <T extends Entity> void add(T t) {
         entities.add(t);
     }
@@ -238,10 +255,15 @@ public class GamePlayer implements Runnable, Serializable {
 
     private Zombie enterNewZombie() {
         int zombieType;
-        if(time < 350)
+        if(time < 290)
             zombieType = random.nextInt(3);
-        else zombieType = random.nextInt(availableZombies.size() - 3) + 3;
+        else zombieType = random.nextInt(availableZombies.size());
         int zombieYLocation = getZombieYLocation();
+        if(time < 290) return switch (zombieType) {
+            case 0 -> new NormalZombie(this, 1400, zombieYLocation);
+            case 1 -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+            default -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
+        };
         return switch (availableZombiesList.get(zombieType)) {
             case BucketHeadZombie -> new BucketHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
             case ConeHeadZombie -> new ConeHeadZombie(this, gameDifficulty, 1400, zombieYLocation);
@@ -421,10 +443,12 @@ public class GamePlayer implements Runnable, Serializable {
     }
 
     public void killGame(boolean exitedManually) {
+        soundPlayer.setFinished(true);
         if(exitedManually)
             if(time < 530)
                 score = ((gameDifficulty == GameDifficulty.HARD) ? -3 : -1);
             else score = ((gameDifficulty == GameDifficulty.HARD) ? 10 : 3);
+        gameManager.replay();
         gameManager.gameFinished(this);
     }
 
@@ -439,6 +463,8 @@ public class GamePlayer implements Runnable, Serializable {
                 try {
                     Thread.sleep(1000);
                     ++time;
+                    if(time == 50)
+                        soundPlayer.setFinished(true);
                     if (time % sunDroppingPeriod == 0)
                         dropASun(random.nextInt(600) + 200,
                                 0, random.nextInt(400) + 200);

@@ -4,10 +4,14 @@ import entities.bullets.Bullet;
 import entities.bullets.FrozenPea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class SnowPea extends Plant {
+
+    private static final String path = "Game accessories\\sounds\\shoot.wav";
 
     public SnowPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(100, xLocation, yLocation, gamePlayer, 150, 150);
@@ -50,6 +54,8 @@ public class SnowPea extends Plant {
     }
 
     public void shoot() {
+        if(gamePlayer.isNotMuted())
+            ThreadPool.execute(new SoundPlayer(path, 500, false));
         Bullet newBullet = new FrozenPea(xLocation, yLocation, gamePlayer);
         newBullet.initialise(gamePlayer);
         gamePlayer.add(newBullet);
