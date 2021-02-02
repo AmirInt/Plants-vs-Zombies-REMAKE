@@ -5,8 +5,17 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the catapult zombies
+ */
 public class CatapultZombie extends Zombie {
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public CatapultZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
         super(gamePlayer, 1700, xLocation, yLocation,40, 150, 150);
         setMovingSpeed(15);

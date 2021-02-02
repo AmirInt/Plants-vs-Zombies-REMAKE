@@ -9,10 +9,20 @@ import sounds.SoundPlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the mysterious and marvelous winter melons
+ */
 public class WinterMelon extends Plant {
 
     private static final String path = "Game accessories\\sounds\\shoot.wav";
 
+
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public WinterMelon(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(400, xLocation, yLocation, gamePlayer, 188, 144);
     }
@@ -58,6 +68,9 @@ public class WinterMelon extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Shoots a new bullet to the zombies
+     */
     public void shoot() {
         if(gamePlayer.isNotMuted())
             ThreadPool.execute(new SoundPlayer(path, 500, false));

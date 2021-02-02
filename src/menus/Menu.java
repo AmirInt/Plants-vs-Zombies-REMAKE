@@ -7,8 +7,16 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.io.Serializable;
 
+/**
+ * Class Menu extending JPanel is for creating and displaying various
+ * menus used during the game
+ * @author Amir Fazlollahi
+ * @since The dawn of time
+ * @version 0.1
+ */
 public class Menu extends JPanel implements Serializable {
 
+//    The common attributes of the menus
     protected final GameManager gameManager;
     protected final GameFrame gameFrame;
     protected final Image backgroundImage;
@@ -19,6 +27,13 @@ public class Menu extends JPanel implements Serializable {
     protected final Color unselectedItemColour;
     protected final GridBagConstraints constraints;
 
+    /**
+     * Instantiates this class, initialising the common attributes and fields
+     * @param gameManager The supervising game manager
+     * @param gameFrame The JFrame displaying this menu
+     * @param backgroundImage This menu's background image
+     * @param layoutManager This menu's layout manager
+     */
     public Menu(GameManager gameManager, GameFrame gameFrame, Image backgroundImage, LayoutManager layoutManager) {
 
         super(layoutManager);
@@ -35,8 +50,14 @@ public class Menu extends JPanel implements Serializable {
 
     }
 
+    /**
+     * Activates this class' listeners
+     */
     public void getListenersReady() { }
 
+    /**
+     * Updates info about this menu's attributes
+     */
     public void update() { }
 
     @Override

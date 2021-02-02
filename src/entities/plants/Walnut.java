@@ -1,12 +1,21 @@
 package entities.plants;
 
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the walnuts
+ */
 public class Walnut extends Plant {
 
+
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public Walnut(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(150, xLocation, yLocation, gamePlayer, 66, 75);
     }

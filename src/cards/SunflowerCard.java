@@ -3,17 +3,31 @@ package cards;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for sunflowers
+ */
 public class SunflowerCard extends Card {
 
     private final int rechargeTime;
     private static SunflowerCard sunflowerCard = null;
 
+    /**
+     * Instantiates this class
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private SunflowerCard(int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\card_sunflower.png").getImage(),
                 xLocation, yLocation, 50);
         rechargeTime = 7500;
     }
 
+    /**
+     * This is a singleton model
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static SunflowerCard getInstance(int xLocation, int yLocation) {
         if(sunflowerCard == null)
             sunflowerCard = new SunflowerCard(xLocation, yLocation);

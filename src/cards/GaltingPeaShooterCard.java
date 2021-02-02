@@ -1,16 +1,23 @@
 package cards;
 
-import entities.plants.GaltingPeaShooter;
 import enums.GameDifficulty;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for the galting-pea shooter
+ */
 public class GaltingPeaShooterCard extends Card {
 
     private final int rechargeTime;
     private static GaltingPeaShooterCard galtingPeaShooterCard = null;
 
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private GaltingPeaShooterCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\GaltingShooterCard.png").getImage(),
                 xLocation, yLocation, 200);
@@ -19,6 +26,13 @@ public class GaltingPeaShooterCard extends Card {
         else rechargeTime = 30000;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static GaltingPeaShooterCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(galtingPeaShooterCard == null)
             galtingPeaShooterCard = new GaltingPeaShooterCard(gameDifficulty, xLocation, yLocation);

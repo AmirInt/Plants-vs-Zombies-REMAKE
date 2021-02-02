@@ -9,10 +9,19 @@ import sounds.SoundPlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the pea shooters
+ */
 public class PeaShooter extends Plant {
 
     private static final String path = "Game accessories\\sounds\\shoot.wav";
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public PeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(70, xLocation, yLocation, gamePlayer, 110, 93);
     }
@@ -58,6 +67,9 @@ public class PeaShooter extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Shoots a new bullet in the game
+     */
     public void shoot() {
         if(gamePlayer.isNotMuted())
             ThreadPool.execute(new SoundPlayer(path, 500, false));

@@ -3,15 +3,24 @@ package entities.plants;
 import graphics.ThreadPool;
 import managers.GamePlayer;
 import sounds.SoundPlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents them horrifying chompers of the game
+ */
 public class Chomper extends Plant {
 
+//    hungerStatus is to determine when this chomper should act
     int hungerStatus;
     private static final String path = "Game accessories\\sounds\\chomp.wav";
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public Chomper(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(400, xLocation, yLocation, gamePlayer, 100, 100);
         hungerStatus = 0;

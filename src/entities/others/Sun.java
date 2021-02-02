@@ -4,18 +4,27 @@ import entities.Entity;
 import managers.GamePlayer;
 import javax.swing.*;
 
+/**
+ * Represents suns in the game
+ */
 public class Sun extends Entity {
 
     private int movingSpeed;
-    private int reflection;
-    private int yDestination;
+//    Where this sun should land
+    private final int yDestination;
     private boolean isFallen;
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param yDestination The final y location
+     * @param gamePlayer The owning game player
+     */
     public Sun(int xLocation, int yLocation, int yDestination, GamePlayer gamePlayer) {
         super(10, xLocation, yLocation, 50, 48, gamePlayer);
         this.yDestination = yDestination;
         movingSpeed = 0;
-        reflection = yDestination - (yDestination - yLocation) / 10;
         isFallen = false;
     }
 
@@ -25,6 +34,10 @@ public class Sun extends Entity {
         setAppearance(new ImageIcon("Game accessories\\images\\Gifs\\sun.gif").getImage());
     }
 
+    /**
+     * This method models the falling of the sun and lands on its
+     * predetermined place
+     */
     public void fall() {
         while(yLocation < yDestination) {
             if(gamePlayer.isGamePaused()) {

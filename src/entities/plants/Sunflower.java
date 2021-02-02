@@ -5,11 +5,22 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the sunflowers
+ */
 public class Sunflower extends Plant {
 
+//    The period of the energy production
     private final int productionRate;
+//    The current state in the production process!
     private int productState;
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public Sunflower(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(50, xLocation, yLocation, gamePlayer, 66, 75);
         productState = 0;
@@ -59,6 +70,9 @@ public class Sunflower extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Creates a new sun and drops next to this sunflower
+     */
     private void produce() {
         gamePlayer.dropASun(xLocation, yLocation - height, yLocation);
     }

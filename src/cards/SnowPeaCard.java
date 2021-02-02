@@ -4,11 +4,20 @@ import enums.GameDifficulty;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for the snow-pea shooters
+ */
 public class SnowPeaCard extends Card {
 
     private final int rechargeTime;
     private static SnowPeaCard snowPeaCard = null;
 
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private SnowPeaCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\card_freezepeashooter.png").getImage(),
                 xLocation, yLocation, 175);
@@ -17,6 +26,13 @@ public class SnowPeaCard extends Card {
         else rechargeTime = 7500;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static SnowPeaCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(snowPeaCard == null)
             snowPeaCard = new SnowPeaCard(gameDifficulty, xLocation, yLocation);

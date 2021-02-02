@@ -10,8 +10,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * MainMenu is used to perform different operations related to the game
+ * managing, like saving the game, loading the saved games, changing the
+ * different settings, etc.
+ */
 public class MainMenu extends Menu {
 
+//    Menu assets
     private final JPanel mainMenu, rankingMenu, settingsMenu, loadGameMenu;
     private JLabel signOut, user;
     private JLabel newGame, loadGame, ranking, settings, exitGame;
@@ -23,10 +29,16 @@ public class MainMenu extends Menu {
     private JPasswordField passwordField, repeatPasswordField;
     private JCheckBox cabbage, chomper, galting, wintermelon, balloon, catapult, creepy, doorShield, football, yeti, sound;
 
+//    Menu listeners
     private final KeyHandler keyHandler;
     private final MouseHandler mouseHandler;
     private final ActionHandler actionHandler;
 
+    /**
+     * Instantiates this class, creating a new menu
+     * @param gameManager The supervising GameManager
+     * @param gameFrame The Frame displaying the ongoing games
+     */
     public MainMenu(GameManager gameManager, GameFrame gameFrame) {
         super(gameManager, gameFrame,
                 new ImageIcon("Game accessories\\images\\PvZStreet_1440x900.0.jpeg").getImage(),
@@ -83,6 +95,9 @@ public class MainMenu extends Menu {
         user.setText(gameManager.getUser() + ": " + gameManager.getScore());
     }
 
+    /**
+     * Initialises the main menu
+     */
     private void setMainMenuComponents() {
         newGame = new JLabel("New Game");
         newGame.setFont(unselectedItemFont);
@@ -101,6 +116,9 @@ public class MainMenu extends Menu {
         exitGame.setForeground(unselectedItemColour);
     }
 
+    /**
+     * Prepares the main menu
+     */
     private void setMainMenu() {
         constraints.gridy = 0;
         mainMenu.add(newGame, constraints);
@@ -116,6 +134,9 @@ public class MainMenu extends Menu {
         add(mainMenu, BorderLayout.CENTER);
     }
 
+    /**
+     * Initialises the ranking menu
+     */
     private void setRankingMenuComponents() {
         rankingMenu.setOpaque(false);
         playersList = new JList<>();
@@ -132,6 +153,9 @@ public class MainMenu extends Menu {
         scoreBoard.setPreferredSize(new Dimension(800, 300));
     }
 
+    /**
+     * Prepares the ranking menu
+     */
     public void setRankingMenu() {
         constraints.gridy = 0;
         rankingMenu.add(back, constraints);
@@ -149,7 +173,7 @@ public class MainMenu extends Menu {
         gameFrame.revalidate();
         gameFrame.repaint();
         errorLabel.setText("");
-        if(!gameManager.updateUser(gameManager.getUser(), "")) {
+        if(gameManager.updateUser(gameManager.getUser(), "") != 0) {
             errorLabel.setText("Something went wrong, try again later");
         }
         else {
@@ -168,8 +192,11 @@ public class MainMenu extends Menu {
         gameFrame.revalidate();
     }
 
+    /**
+     * Initialises the settings menu
+     */
     public void setSettingsMenuComponents() {
-        JPanel settingsMenu1, settingsMenu2, settingsMenu3, inclusivePanel;
+        JPanel settingsMenu1, settingsMenu3, inclusivePanel;
         Menu cabbageF, chomperF, galtingF, wintermelonF, balloonF, catapultF, creepyF, doorShieldF, footballF, yetiF;
         settingsMenu.setOpaque(false);
         settingsMenu1 = new JPanel(new GridBagLayout());
@@ -368,6 +395,9 @@ public class MainMenu extends Menu {
         settingsMenu.add(settingsMenuPane, constraints);
     }
 
+    /**
+     * Prepares the settings menu
+     */
     public void setSettingsMenu() {
         errorLabel.setText("");
         username.setText("");
@@ -390,6 +420,9 @@ public class MainMenu extends Menu {
         gameFrame.repaint();
     }
 
+    /**
+     * Prepares the game loading menu, using the same field as the settings menu
+     */
     public void setLoadGameMenu() {
         constraints.gridy = 0;
         loadGameMenu.add(back, constraints);
@@ -426,6 +459,9 @@ public class MainMenu extends Menu {
         gameFrame.revalidate();
     }
 
+    /**
+     * Initialises the sign-out panel
+     */
     private void setSignOutPanel() {
         JPanel signOutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
         signOutPanel.setOpaque(false);
@@ -440,6 +476,7 @@ public class MainMenu extends Menu {
         add(signOutPanel, BorderLayout.SOUTH);
     }
 
+    @Override
     public void getListenersReady() {
         gameFrame.addKeyListener(keyHandler);
         newGame.addMouseListener(mouseHandler);
@@ -453,6 +490,9 @@ public class MainMenu extends Menu {
         Medium.addMouseListener(mouseHandler);
     }
 
+    /**
+     * Removes this menu's listeners
+     */
     public void removeListeners() {
         gameFrame.removeKeyListener(keyHandler);
         back.removeMouseListener(mouseHandler);
@@ -466,12 +506,20 @@ public class MainMenu extends Menu {
         Medium.removeMouseListener(mouseHandler);
     }
 
+    /**
+     * Updates the username displayed in the menu bottom
+     */
     public void updateUsername() {
         user.setText(gameManager.getUser() + ": " + gameManager.getScore());
         user.revalidate();
         user.repaint();
     }
 
+    /**
+     * Changes the focused label upon key or mouse events
+     * @param unfocusedItem The focus losing label
+     * @param focusGainingItem The focus gaining label
+     */
     private void setFocusedItem(JLabel unfocusedItem, JLabel focusGainingItem) {
         if(unfocusedItem != null) {
             unfocusedItem.setBorder(null);
@@ -485,6 +533,9 @@ public class MainMenu extends Menu {
         }
     }
 
+    /**
+     * The key listener of this menu
+     */
     private class KeyHandler extends KeyAdapter {
 
         JPanel panel;
@@ -540,6 +591,10 @@ public class MainMenu extends Menu {
             gameFrame.revalidate();
         }
     }
+
+    /**
+     * The mouse listener of this menu
+     */
     private class MouseHandler extends MouseAdapter {
 
         @Override
@@ -648,6 +703,10 @@ public class MainMenu extends Menu {
             }
         }
     }
+
+    /**
+     * The action listener of this menu
+     */
     private class ActionHandler implements ActionListener {
 
         @Override
@@ -661,12 +720,13 @@ public class MainMenu extends Menu {
                     errorLabel.setText("Conflicting passwords");
                 else {
                     String newUsername = username.getText().length() == 0 ? gameManager.getUser() : username.getText();
-                    if(gameManager.updateUser(newUsername, password)) {
+                    if(gameManager.updateUser(newUsername, password) == 0) {
                         errorLabel.setText("Successfully saved");
                         gameManager.store();
-                    } else {
+                    } else if(gameManager.updateUser(newUsername, password) == 1){
                         errorLabel.setText("Username already exists");
-                        errorLabel.revalidate();
+                    } else {
+                        errorLabel.setText("Something went wrong, try again later");
                     }
                 }
                 errorLabel.revalidate();
@@ -733,7 +793,6 @@ public class MainMenu extends Menu {
                     }
                 }
                 if(sound == actedBox) {
-                    System.out.println("acted " + sound.isSelected());
                     gameManager.setMuted(!sound.isSelected());
                 }
                 gameManager.store();

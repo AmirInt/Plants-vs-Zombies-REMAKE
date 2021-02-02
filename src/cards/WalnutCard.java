@@ -3,17 +3,31 @@ package cards;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for walnuts
+ */
 public class WalnutCard extends Card {
 
     private final int rechargeTime;
     private static WalnutCard walnutCard = null;
 
+    /**
+     * Instantiates this class
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private WalnutCard(int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\card_wallnut.png").getImage(),
                 xLocation, yLocation, 50);
         rechargeTime = 30000;
     }
 
+    /**
+     * This is a singleton model
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static WalnutCard getInstance(int xLocation, int yLocation) {
         if(walnutCard == null)
             walnutCard = new WalnutCard(xLocation, yLocation);

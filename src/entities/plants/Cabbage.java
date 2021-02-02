@@ -9,10 +9,20 @@ import sounds.SoundPlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the cabbages of the game
+ */
 public class Cabbage extends Plant {
 
+//    The relative address of the sound file
     private static final String path = "Game accessories\\sounds\\shoot.wav";
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public Cabbage(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(400, xLocation, yLocation, gamePlayer, 180, 180);
     }
@@ -58,6 +68,9 @@ public class Cabbage extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Creates and runs a new bullet of its own associating type (cabbage)
+     */
     public void shoot() {
         if(gamePlayer.isNotMuted())
             ThreadPool.execute(new SoundPlayer(path, 500, false));

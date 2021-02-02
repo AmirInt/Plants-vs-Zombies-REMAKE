@@ -5,8 +5,17 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the simplest and the most modest zombies of the game
+ */
 public class NormalZombie extends Zombie {
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public NormalZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
         super(gamePlayer, 200, xLocation, yLocation,5, 100, 130);
         setMovingSpeed(30);

@@ -5,14 +5,23 @@ import entities.bullets.RadicalPea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
 import sounds.SoundPlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the multi directional bullet shooters of the game
+ */
 public class GaltingPeaShooter extends Plant {
 
+//    The address of the related sound file
     private static final String path = "Game accessories\\sounds\\shoot.wav";
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public GaltingPeaShooter(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(70, xLocation, yLocation, gamePlayer, 188, 144);
     }
@@ -58,6 +67,9 @@ public class GaltingPeaShooter extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Creates and runs a new bullet
+     */
     public void shoot() {
         if(gamePlayer.isNotMuted())
             ThreadPool.execute(new SoundPlayer(path, 500, false));

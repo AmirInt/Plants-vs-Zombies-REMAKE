@@ -18,11 +18,19 @@ import graphics.ThreadPool;
 import cards.*;
 import sounds.SoundPlayer;
 
-import javax.sound.sampled.FloatControl;
-
+/**
+ * GamePlayer is the centre of decision during a game
+ * This class is responsible for handling the game events, such as updating the
+ * energy, determining the score, specifying the zombies turn-up times, types and
+ * entrance states, updating the present entities, etc
+ * @author Amir Fazlollahi
+ * @since He woke up
+ * @version 0.0
+ */
 public class GamePlayer implements Runnable, Serializable {
 
     transient private GameManager gameManager;
+//    soundPlayer plays the background soundtrack
     transient private SoundPlayer soundPlayer;
     private int score;
     private int time;
@@ -42,13 +50,20 @@ public class GamePlayer implements Runnable, Serializable {
     private boolean gameFinished;
     private boolean gamePaused;
     private boolean isMuted;
+//    path is the address of the sound file
     private static final String path = "Game accessories\\sounds\\The Swamp Whistler.wav";
 
+    /**
+     * Instantiates this class, initialising fields when a new game is created and started
+     * @param gameDifficulty The game difficulty determined by the game manager
+     * @param availableZombies The zombies that can be used to enter into the game
+     * @param availablePlants The available plants that the player can use during the game
+     */
     public GamePlayer(GameDifficulty gameDifficulty, HashSet<AvailableZombies> availableZombies,
                       HashSet<AvailablePlants> availablePlants) {
         score = 0;
         time = 0;
-        energy = 0;
+        energy = 100000;
         index = 0;
         random = new SecureRandom();
         rows = new ArrayList<>();
@@ -69,6 +84,11 @@ public class GamePlayer implements Runnable, Serializable {
         gamePaused = true;
     }
 
+    /**
+     * Initialises the game for its available entities, and its sound,
+     * executes the threads if its a loaded game
+     * @param gameManager The supervising game manager
+     */
     public void initialise(GameManager gameManager) {
         this.gameManager = gameManager;
         isMuted = gameManager.isMuted();
@@ -116,12 +136,18 @@ public class GamePlayer implements Runnable, Serializable {
         }
     }
 
+    /**
+     * Puts the lawn-mowers onto the game
+     */
     private void setLawnMowers() {
         for (int i = 0; i < 5; ++i) {
             entities.add(new LawnMower(10, 5, rows.get(i), this));
         }
     }
 
+    /**
+     * Specifies the predetermined rows
+     */
     private void setRows() {
         rows.add(160);
         rows.add(280);
@@ -130,6 +156,9 @@ public class GamePlayer implements Runnable, Serializable {
         rows.add(620);
     }
 
+    /**
+     * Specifies the predetermined columns
+     */
     private void setColumns() {
         columns.add(120);
         columns.add(250);
@@ -142,14 +171,20 @@ public class GamePlayer implements Runnable, Serializable {
         columns.add(1150);
     }
 
+    /**
+     * Determines the zombies turn-up times (when zombies appear during
+     * the game). These times are predetermined for the game
+     */
     private void setZombiesTurnUpTimes() {
         int turnUpTime = 50;
         int index = 0;
+//        Phase 1 of the game
         for (int i = 0; i < 5; ++i) {
             zombiesTurnUpTimes[index] = random.nextInt(30) + turnUpTime;
             turnUpTime += 30;
             ++index;
         }
+//        Phase 2 of the game
         for (int i = 0; i < 6; ++i) {
             int first = random.nextInt(30);
             zombiesTurnUpTimes[index] = first + turnUpTime;
@@ -158,6 +193,7 @@ public class GamePlayer implements Runnable, Serializable {
             ++index;
             turnUpTime += 30;
         }
+//        Phase 3 of the game (the final phase, entering 3 zombies each 25 secs)
         for (int i = 0; i < 6; ++i) {
             int first = random.nextInt(10);
             zombiesTurnUpTimes[index] = first + turnUpTime;
@@ -171,18 +207,36 @@ public class GamePlayer implements Runnable, Serializable {
         }
     }
 
+    /**
+     * Sets the game accessible energy
+     * @param energy The new energy status
+     */
     public void setEnergy(int energy) {
         this.energy = energy;
     }
 
+    /**
+     * Is used to pause or unpause the game
+     * @param gamePaused The game pause status
+     */
     public void setGamePaused(boolean gamePaused) {
         this.gamePaused = gamePaused;
     }
 
+    /**
+     * Is used to finish the game
+     * @param gameFinished The game finished status
+     */
     public void setGameFinished(boolean gameFinished) {
         this.gameFinished = gameFinished;
     }
 
+    /**
+     * Produces the new zombie's turn-up row. The presence of any plant in a row
+     * reduces the probability of the row to be selected as the zombie's row (This is
+     * a so-called intelligent way of implementing zombie's entrances)
+     * @return The selected row
+     */
     private synchronized int getZombieYLocation() {
         int[] probabilities = new int[]{30, 30, 30, 30, 30};
 
@@ -237,25 +291,45 @@ public class GamePlayer implements Runnable, Serializable {
         return rows.get(4);
     }
 
+    /**
+     * @return The list of the entities
+     */
     public ArrayList<Entity> getEntities() {
         return entities;
     }
 
+    /**
+     * @return True if sounds are not muted, false otherwise
+     */
     public boolean isNotMuted() {
         return !isMuted;
     }
 
+    /**
+     * Used to add a new entity to the list of the game entities
+     * @param t The new entity
+     * @param <T> Class extending entity (such as Plant, Zombie, etc)
+     */
     public synchronized <T extends Entity> void add(T t) {
         entities.add(t);
     }
 
+    /**
+     * Used to remove an entity from the list of the entities
+     * @param t The removed entity
+     * @param <T> Class extending entity
+     */
     public synchronized <T extends Entity> void remove(T t) {
         entities.remove(t);
     }
 
+    /**
+     * Selects a zombie type and its location to enter to the game randomly
+     * @return Zombie
+     */
     private Zombie enterNewZombie() {
         int zombieType;
-        if(time < 290)
+        if(time < 350)
             zombieType = random.nextInt(3);
         else zombieType = random.nextInt(availableZombies.size());
         int zombieYLocation = getZombieYLocation();
@@ -277,6 +351,12 @@ public class GamePlayer implements Runnable, Serializable {
         };
     }
 
+    /**
+     * Pushes a new sun to the game randomly from atop
+     * @param xLocation The x location of the sun
+     * @param yLocation The y location of the sun
+     * @param yDestination Where the new sun ends up landing
+     */
     public synchronized void dropASun(int xLocation, int yLocation, int yDestination) {
         Sun newSun = new Sun(xLocation, yLocation, yDestination, this);
         newSun.initialise(this);
@@ -284,26 +364,48 @@ public class GamePlayer implements Runnable, Serializable {
         ThreadPool.execute(newSun);
     }
 
+    /**
+     * @return The available plants cards
+     */
     public ArrayList<Card> getAvailablePlants() {
         return cards;
     }
 
+    /**
+     * @return The current energy status of the game
+     */
     public int getEnergy() {
         return energy;
     }
 
+    /**
+     * @return The game difficulty of this game
+     */
     public GameDifficulty getGameDifficulty() {
         return gameDifficulty;
     }
 
+    /**
+     * @return The score of the game
+     */
     public int getScore() {
         return score;
     }
 
+    /**
+     * @return True if the game is paused by the player
+     */
     public boolean isGamePaused() {
         return gamePaused;
     }
 
+    /**
+     * Searches for the entities within reach of the zombie it's handed.
+     * Triggers any one lawn-mower the zombie bumps into and starts eating
+     * down any one plant near the zombie
+     * @param zombie The requesting zombie
+     * @return The plant that's within reach
+     */
     public synchronized Plant whichEntityIsWithinReachOf(Zombie zombie) {
         LawnMower lawnMower = null;
         Plant poorPlant = null;
@@ -328,6 +430,11 @@ public class GamePlayer implements Runnable, Serializable {
         return poorPlant;
     }
 
+    /**
+     * Searches for zombies near the bullet requesting and hits the first zombie
+     * it comes across
+     * @param bullet The requesting bullet
+     */
     public synchronized void bumpBullet(Bullet bullet) {
         for (Entity entity:
                 entities) {
@@ -346,6 +453,13 @@ public class GamePlayer implements Runnable, Serializable {
         }
     }
 
+    /**
+     * Looks up the row and the column and makes sure no live plant is
+     * currently occupying the block before planting any new one
+     * @param row The row
+     * @param column The column
+     * @return True if the block is empty
+     */
     public synchronized boolean isFree(int row, int column) {
         for (Entity entity:
                 entities) {
@@ -356,6 +470,10 @@ public class GamePlayer implements Runnable, Serializable {
         return true;
     }
 
+    /**
+     * Gets a cherry bomb's location and "burn"s zombies nearby
+     * @param cherryBomb The exploding cherry bomb
+     */
     public synchronized void bustThemZombies(CherryBomb cherryBomb) {
         ArrayList<Zombie> burntZombies = new ArrayList<>();
         int cColumn = columns.indexOf(columnOf(cherryBomb.getXLocation()));
@@ -376,6 +494,10 @@ public class GamePlayer implements Runnable, Serializable {
             burntZombie.burn();
     }
 
+    /**
+     * Used by the lawn-mowers of the game to kill any zombie they reach
+     * @param lawnMower The triggered lawn-mower
+     */
     public synchronized void runOverZombies(LawnMower lawnMower) {
         ArrayList<Zombie> zombies = new ArrayList<>();
         for (Entity entity :
@@ -391,14 +513,26 @@ public class GamePlayer implements Runnable, Serializable {
         }
     }
 
+    /**
+     * Reduces the accessible energy of the game when a new plant is planted
+     * @param consumedEnergy The new plant's required energy
+     */
     public void consumeEnergy(int consumedEnergy) {
         energy -= consumedEnergy;
     }
 
+    /**
+     * @return True if the game is still afoot
+     */
     public boolean isNotGameFinished() {
         return !gameFinished;
     }
 
+    /**
+     * Takes a y location and returns its corresponding row
+     * @param y The y location
+     * @return The corresponding row
+     */
     public int rowOf(int y) {
         if(y < 220) return rows.get(0);
         if(y < 330) return rows.get(1);
@@ -407,6 +541,11 @@ public class GamePlayer implements Runnable, Serializable {
         return rows.get(4);
     }
 
+    /**
+     * Takes an x location and returns its corresponding column
+     * @param x The x location
+     * @return The corresponding column
+     */
     public int columnOf(int x) {
         if(x < 190) return columns.get(0);
         if(x < 310) return columns.get(1);
@@ -419,6 +558,11 @@ public class GamePlayer implements Runnable, Serializable {
         return columns.get(8);
     }
 
+    /**
+     * Used exclusively by the chomper plants to trap zombies
+     * @param chomper The chomper plant
+     * @return True if a zombie is within reach
+     */
     public synchronized boolean catchAZombie(Chomper chomper) {
         Zombie zombie = null;
         for (Entity entity :
@@ -442,8 +586,16 @@ public class GamePlayer implements Runnable, Serializable {
         return false;
     }
 
+    /**
+     * Kills the game
+     * @param exitedManually Parametre explaining whether the game has manually
+     * ended by the user or it has just normally finished
+     */
     public void killGame(boolean exitedManually) {
-        soundPlayer.setFinished(true);
+        try {
+            soundPlayer.setFinished(true);
+        } catch (NullPointerException ignore) { }
+
         if(exitedManually)
             if(time < 530)
                 score = ((gameDifficulty == GameDifficulty.HARD) ? -3 : -1);
@@ -480,9 +632,6 @@ public class GamePlayer implements Runnable, Serializable {
             }
         }
         gameFinished = true;
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException ignore) { }
         killGame(true);
     }
 }

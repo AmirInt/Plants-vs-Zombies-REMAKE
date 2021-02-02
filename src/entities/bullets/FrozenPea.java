@@ -6,8 +6,17 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the frozen peas
+ */
 public class FrozenPea extends Bullet {
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public FrozenPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(xLocation, yLocation, 35, gamePlayer);
     }

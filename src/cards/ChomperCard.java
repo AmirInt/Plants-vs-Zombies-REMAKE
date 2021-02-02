@@ -5,11 +5,21 @@ import enums.GameDifficulty;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for the chomper
+ */
 public class ChomperCard extends Card {
 
     private final int rechargeTime;
     private static ChomperCard chomperCard = null;
 
+
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private ChomperCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\ChomperCard.png").getImage(),
                 xLocation, yLocation, 425);
@@ -18,6 +28,13 @@ public class ChomperCard extends Card {
         else rechargeTime = 250000;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static ChomperCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(chomperCard == null)
             chomperCard = new ChomperCard(gameDifficulty, xLocation, yLocation);

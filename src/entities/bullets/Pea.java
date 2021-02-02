@@ -2,12 +2,20 @@ package entities.bullets;
 
 import entities.zombies.Zombie;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents peas
+ */
 public class Pea extends Bullet {
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public Pea(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(xLocation, yLocation, 30, gamePlayer);
     }

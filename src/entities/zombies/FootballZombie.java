@@ -5,8 +5,17 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents them football zombies
+ */
 public class FootballZombie extends Zombie {
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public FootballZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
         super(gamePlayer, 800, xLocation, yLocation,20, 106, 126);
         setMovingSpeed(20);

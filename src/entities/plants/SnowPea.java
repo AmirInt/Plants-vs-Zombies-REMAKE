@@ -5,14 +5,22 @@ import entities.bullets.FrozenPea;
 import graphics.ThreadPool;
 import managers.GamePlayer;
 import sounds.SoundPlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the snow-pea shooters
+ */
 public class SnowPea extends Plant {
 
     private static final String path = "Game accessories\\sounds\\shoot.wav";
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public SnowPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(100, xLocation, yLocation, gamePlayer, 150, 150);
     }
@@ -53,6 +61,9 @@ public class SnowPea extends Plant {
         super.injure(lifeTakenAway);
     }
 
+    /**
+     * Creates and has executed a new bullet
+     */
     public void shoot() {
         if(gamePlayer.isNotMuted())
             ThreadPool.execute(new SoundPlayer(path, 500, false));

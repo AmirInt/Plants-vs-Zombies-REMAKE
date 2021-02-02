@@ -1,11 +1,25 @@
 package entities.plants;
 
+import graphics.ThreadPool;
 import managers.GamePlayer;
+import sounds.SoundPlayer;
+
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the cherry bombs
+ */
 public class CherryBomb extends Plant {
 
+    private static final String path = "Game accessories\\sounds\\explosion.wav";
+
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public CherryBomb(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(70, xLocation, yLocation, gamePlayer, 40, 32);
     }
@@ -46,6 +60,9 @@ public class CherryBomb extends Plant {
         return super.getAppearance();
     }
 
+    /**
+     * Has all of the nearby zombies "burn"t
+     */
     public void bust() {
         gamePlayer.bustThemZombies(this);
     }
@@ -59,6 +76,7 @@ public class CherryBomb extends Plant {
     public void run() {
         try {
             Thread.sleep(1000);
+            ThreadPool.execute(new SoundPlayer(path, 3000, false));
         } catch (InterruptedException ignore) { }
         bust();
         die();

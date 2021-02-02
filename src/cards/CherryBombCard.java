@@ -4,11 +4,20 @@ import enums.GameDifficulty;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the card for the cherry bomb
+ */
 public class CherryBombCard extends Card {
 
     private final int rechargeTime;
     private static CherryBombCard cherryBombCard = null;
 
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private CherryBombCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\card_cherrybomb.png").getImage(),
                 xLocation, yLocation, 150);
@@ -17,6 +26,13 @@ public class CherryBombCard extends Card {
         else rechargeTime = 30000;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static CherryBombCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(cherryBombCard == null)
             cherryBombCard = new CherryBombCard(gameDifficulty, xLocation, yLocation);

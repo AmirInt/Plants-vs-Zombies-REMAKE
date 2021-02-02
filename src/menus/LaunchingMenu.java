@@ -10,6 +10,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
+/**
+ * LaunchingMenu is used at the beginning of the game, for sign-in
+ * or sign-up
+ */
 public class LaunchingMenu extends Menu {
 
     private final Font font;
@@ -22,16 +26,21 @@ public class LaunchingMenu extends Menu {
     private JPasswordField signInPassword;
     private JLabel signIn;
     private JLabel signUp;
-    private JLabel errorLabel;
-    private JLabel label01;
-    private JLabel label02;
-    private JLabel label03;
-    private JLabel label04;
-    private JLabel label05;
-    private JLabel exit;
+    private final JLabel errorLabel;
+    private final JLabel label01;
+    private final JLabel label02;
+    private final JLabel label03;
+    private final JLabel label04;
+    private final JLabel label05;
+    private final JLabel exit;
     private final MouseHandler mouseHandler;
     private final ActionHandler actionHandler;
 
+    /**
+     * Instantiates this class
+     * @param gameManager The supervising game manager
+     * @param gameFrame The game frame displaying this menu
+     */
     public LaunchingMenu(GameManager gameManager, GameFrame gameFrame) {
         super(gameManager, gameFrame,
                 new ImageIcon("Game accessories\\images\\81l+GSScs7L._AC_SL1500_.jpg").getImage(),
@@ -72,6 +81,9 @@ public class LaunchingMenu extends Menu {
         putSignUpOn();
     }
 
+    /**
+     * Instantiates the sign-up panel
+     */
     private void setUpSignUpPanel() {
         signUpPanel = new JPanel(new GridBagLayout());
         signUpPanel.setOpaque(false);
@@ -121,6 +133,9 @@ public class LaunchingMenu extends Menu {
         constraints.gridy = 0;
     }
 
+    /**
+     * Instantiates the sign-in panel
+     */
     private void setUpSignInPanel() {
         signInPanel = new JPanel(new GridBagLayout());
         signInPanel.setOpaque(false);
@@ -158,6 +173,9 @@ public class LaunchingMenu extends Menu {
         constraints.gridy = 0;
     }
 
+    /**
+     * Applies the sign-up panel as the first page
+     */
     public void putSignUpOn() {
         mouseHandler.setPanel(signUpPanel);
         errorLabel.setText("");
@@ -170,6 +188,9 @@ public class LaunchingMenu extends Menu {
         add(signUpPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Applies the sign-in panel as the first page
+     */
     public void putSignInOn() {
         mouseHandler.setPanel(signInPanel);
         errorLabel.setText("");
@@ -186,6 +207,9 @@ public class LaunchingMenu extends Menu {
         super.getListenersReady();
     }
 
+    /**
+     * This menu's mouse listener
+     */
     private class MouseHandler extends MouseAdapter {
 
         JPanel panel;
@@ -236,6 +260,9 @@ public class LaunchingMenu extends Menu {
         }
     }
 
+    /**
+     * This menu's action listener
+     */
     private class ActionHandler implements ActionListener {
 
         @Override

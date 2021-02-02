@@ -2,12 +2,20 @@ package entities.zombies;
 
 import entities.plants.Plant;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents them door-shield zombies
+ */
 public class DoorShieldZombie extends Zombie {
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public DoorShieldZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
         super(gamePlayer, 850, xLocation, yLocation,15, 188, 180);
         setMovingSpeed(30);

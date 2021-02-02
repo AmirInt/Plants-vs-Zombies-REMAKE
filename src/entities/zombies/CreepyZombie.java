@@ -2,12 +2,20 @@ package entities.zombies;
 
 import entities.plants.Plant;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the creepy zombies
+ */
 public class CreepyZombie extends Zombie {
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public CreepyZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {
         super(gamePlayer, 500, xLocation, yLocation,10, 200, 200);
         setMovingSpeed(15);

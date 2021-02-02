@@ -5,11 +5,21 @@ import enums.GameDifficulty;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the only cabbage card
+ */
 public class CabbageCard extends Card {
 
+//    Time to reactivate this card
     private final int rechargeTime;
     private static CabbageCard cabbageCard = null;
 
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private CabbageCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\CabbageCard.png").getImage(),
                 xLocation, yLocation, 275);
@@ -18,6 +28,13 @@ public class CabbageCard extends Card {
         else rechargeTime = 14000;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static CabbageCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(cabbageCard == null)
             cabbageCard = new CabbageCard(gameDifficulty, xLocation, yLocation);

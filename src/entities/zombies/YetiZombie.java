@@ -2,10 +2,12 @@ package entities.zombies;
 
 import entities.plants.Plant;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents the giant yeti zombies
+ */
 public class YetiZombie extends Zombie {
 
     public YetiZombie(GamePlayer gamePlayer, int xLocation, int yLocation) {

@@ -33,16 +33,18 @@ public class GameState {
     private final KeyHandler keyHandler;
     private final ArrayList<Card> availablePlants;
     private Card selectedCard;
-    private PauseMenu pauseMenu;
+    private final PauseMenu pauseMenu;
     private static final String path = "Game Accessories\\sounds\\ting.wav";
 
     public GameState(GamePlayer gamePlayer, GameFrame gameFrame, GameManager gameManager) {
+//        isToPlant determines whether the player is going to plant a new entity or not
         isToPlant = false;
 
         this.gamePlayer = gamePlayer;
         this.gameFrame = gameFrame;
         this.gameManager = gameManager;
         availablePlants = gamePlayer.getAvailablePlants();
+//        pauseMenu is displayed when esc is typed on the keyboard
         pauseMenu = new PauseMenu(gameManager, gameFrame, this);
 
         mouseHandler = new MouseHandler();
@@ -50,10 +52,16 @@ public class GameState {
         keyHandler = new KeyHandler();
     }
 
+    /**
+     * @return The x position of the mouse
+     */
     public int getMouseX() {
         return mouseX;
     }
 
+    /**
+     * @return The y position of the mouse
+     */
     public int getMouseY() {
         return mouseY;
     }
@@ -68,14 +76,24 @@ public class GameState {
         return mouseMotionHandler;
     }
 
+    /**
+     * @return The planting status of the player (True if the player plans to
+     * plant a new thing)
+     */
     public boolean getToPlant() {
         return isToPlant;
     }
 
+    /**
+     * @return The ongoing game energy state
+     */
     public int getEnergy() {
         return gamePlayer.getEnergy();
     }
 
+    /**
+     * @return The selected card image
+     */
     public Image getSelectedCardImage() {
 
         Image image;
@@ -102,6 +120,9 @@ public class GameState {
         return image;
     }
 
+    /**
+     * Pauses the game
+     */
     public void pauseGame() {
         gameFrame.removeMouseMotionListener(mouseMotionHandler);
         gameFrame.removeMouseListener(mouseHandler);
@@ -109,6 +130,9 @@ public class GameState {
         gamePlayer.setGamePaused(true);
     }
 
+    /**
+     * Resumes the afoot game
+     */
     public void unpauseGame() {
         gameFrame.addKeyListener(keyHandler);
         gameFrame.addMouseListener(mouseHandler);
@@ -116,10 +140,17 @@ public class GameState {
         gamePlayer.setGamePaused(false);
     }
 
+    /**
+     * Attempts to save the ongoing game
+     * @return True if it's done properly
+     */
     public boolean saveGame() {
         return gameManager.saveGame(gamePlayer);
     }
 
+    /**
+     * Stops the game momentarily
+     */
     public void killGame() {
         gamePlayer.killGame(false);
     }
@@ -128,7 +159,14 @@ public class GameState {
      * The mouse handler.
      */
     private class MouseHandler extends MouseAdapter {
-
+        /**
+         * Checks the position of the mouse and compares it with that of other entities in the
+         * game, like the suns and the cards
+         * @param point The given point
+         * @param location The entity's location
+         * @param range The range of the entity's size
+         * @return True if the point coincides with the entity's location
+         */
         private boolean isInside(int point, int location, int range) {
             return !((point > location + range / 2) || (point < location - range / 2));
         }
@@ -140,7 +178,8 @@ public class GameState {
                         availablePlants) {
                     if (isInside(e.getX(), card.getXLocation(), card.getWidth())
                             && isInside(e.getY(), card.getYLocation(), card.getHeight())
-                            && gamePlayer.getEnergy() >= card.getRequiredEnergy()) {
+                            && gamePlayer.getEnergy() >= card.getRequiredEnergy()
+                            && card.getEnabled()) {
                         gameFrame.addMouseMotionListener(mouseMotionHandler);
                         selectedCard = card;
                         isToPlant = true;
@@ -201,6 +240,9 @@ public class GameState {
         }
     }
 
+    /**
+     * The mouse motion listener
+     */
     private class MouseMotionHandler extends MouseAdapter {
 
         @Override
@@ -210,6 +252,9 @@ public class GameState {
         }
     }
 
+    /**
+     * The key listener
+     */
     private class KeyHandler extends KeyAdapter {
         @Override
         public void keyReleased(KeyEvent e) {

@@ -6,8 +6,17 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents cabbages
+ */
 public class CabbageBullet extends Bullet {
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public CabbageBullet(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(xLocation, yLocation, 50, gamePlayer);
     }

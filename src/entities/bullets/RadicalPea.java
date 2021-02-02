@@ -2,19 +2,28 @@ package entities.bullets;
 
 import entities.zombies.Zombie;
 import managers.GamePlayer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Represents them radical peas (the ones that move orthogonally across the rows along
+ * with their ordinary move)
+ */
 public class RadicalPea extends Bullet {
 
-    transient private Random random;
-    private int direction;
+    private final int direction;
 
+    /**
+     * Instantiates this class
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     * @param gamePlayer The owning game player
+     */
     public RadicalPea(int xLocation, int yLocation, GamePlayer gamePlayer) {
         super(xLocation, yLocation, 30, gamePlayer);
-        random = new Random();
+        //    random generates a random number to determine the direction of this radical pea
+        Random random = new Random();
         direction = 10 - random.nextInt(20);
     }
 

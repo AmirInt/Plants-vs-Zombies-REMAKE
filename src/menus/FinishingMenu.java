@@ -1,13 +1,19 @@
 package menus;
 
-import com.sun.management.GcInfo;
 import graphics.GameFrame;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * FinishingMenu is used only after a game finishes, thus displays the
+ * players score
+ */
 public class FinishingMenu extends Menu {
-
+    /**
+     * Instantiates this menu
+     * @param score The score of the game
+     * @param gameFrame The game frame displaying this menu
+     */
     public FinishingMenu(int score, GameFrame gameFrame) {
         super(null, gameFrame,
                 new ImageIcon("Game accessories\\images\\gameOver.jpg").getImage(), new BorderLayout());

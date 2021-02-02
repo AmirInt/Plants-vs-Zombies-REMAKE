@@ -10,6 +10,12 @@ public class WintermelonCard extends Card {
     private final int rechargeTime;
     private static WintermelonCard wintermelonCard = null;
 
+    /**
+     * Instantiates this class
+     * @param gameDifficulty The difficulty of the game, affecting the recharge time
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     */
     private WintermelonCard(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(new ImageIcon("Game accessories\\images\\Cards\\Wintermelon.png").getImage(),
                 xLocation, yLocation, 350);
@@ -18,6 +24,13 @@ public class WintermelonCard extends Card {
         else rechargeTime = 30000;
     }
 
+    /**
+     * This is a singleton model
+     * @param gameDifficulty The difficulty of the game
+     * @param xLocation The fixed x position of this card
+     * @param yLocation The fixed y position of this card
+     * @return The only object of this class
+     */
     public static WintermelonCard getInstance(GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         if(wintermelonCard == null)
             wintermelonCard = new WintermelonCard(gameDifficulty, xLocation, yLocation);

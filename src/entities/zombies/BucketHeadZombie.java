@@ -6,8 +6,18 @@ import managers.GamePlayer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents them bucket-head zombies
+ */
 public class BucketHeadZombie extends Zombie{
 
+    /**
+     * Instantiates this class
+     * @param gamePlayer The owning game player
+     * @param gameDifficulty The difficulty of the game as in Hard or Medium
+     * @param xLocation The initial x location
+     * @param yLocation The initial y location
+     */
     public BucketHeadZombie(GamePlayer gamePlayer, GameDifficulty gameDifficulty, int xLocation, int yLocation) {
         super(gamePlayer, 1300, xLocation, yLocation, 0, 120, 120);
 //        Setting the moving speed

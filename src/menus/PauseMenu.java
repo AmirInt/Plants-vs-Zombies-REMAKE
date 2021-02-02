@@ -10,6 +10,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Class PauseMenu is used when pausing the game
+ */
 public class PauseMenu extends Menu {
 
     private final GameState gameState;
@@ -17,6 +20,12 @@ public class PauseMenu extends Menu {
     private final MouseHandler mouseHandler;
     private final KeyHandler keyHandler;
 
+    /**
+     * Instantiates this menu
+     * @param gameManager The supervising game manager
+     * @param gameFrame The game frame displaying this menu
+     * @param gameState The game state controlling the mouse events
+     */
     public PauseMenu(GameManager gameManager, GameFrame gameFrame, GameState gameState) {
         super(gameManager, gameFrame,
                 new ImageIcon("Game accessories\\images\\pauseMenu.jpg").getImage(), new GridBagLayout());
@@ -63,6 +72,9 @@ public class PauseMenu extends Menu {
         exitToMainMenu.addMouseListener(mouseHandler);
     }
 
+    /**
+     * Removes this menu's listeners
+     */
     public void removeListeners() {
         gameFrame.removeKeyListener(keyHandler);
         resumeGame.removeMouseListener(mouseHandler);
@@ -70,6 +82,11 @@ public class PauseMenu extends Menu {
         exitToMainMenu.removeMouseListener(mouseHandler);
     }
 
+    /**
+     * Changes the selected label upon key or mouse events
+     * @param unfocusedItem The focus losing label
+     * @param focusGainingItem The focus gaining label
+     */
     private void setFocusedItem(JLabel unfocusedItem, JLabel focusGainingItem) {
         if(unfocusedItem != null) {
             unfocusedItem.setBorder(null);
@@ -83,7 +100,11 @@ public class PauseMenu extends Menu {
         }
     }
 
+    /**
+     * The key listener of this class
+     */
     private class KeyHandler extends KeyAdapter {
+
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -122,6 +143,10 @@ public class PauseMenu extends Menu {
             gameFrame.revalidate();
         }
     }
+
+    /**
+     * The mouse listener of this menu
+     */
     private class MouseHandler extends MouseAdapter {
 
         @Override
