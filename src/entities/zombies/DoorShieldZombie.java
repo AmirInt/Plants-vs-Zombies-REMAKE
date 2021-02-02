@@ -100,8 +100,10 @@ public class DoorShieldZombie extends Zombie {
 
     @Override
     public void burn() {
-        if(life > 200)
+        if(life > 200) {
             downGrade();
+            life = 200;
+        }
         else super.burn();
     }
 

@@ -63,7 +63,7 @@ public class GamePlayer implements Runnable, Serializable {
                       HashSet<AvailablePlants> availablePlants) {
         score = 0;
         time = 0;
-        energy = 100000;
+        energy = 0;
         index = 0;
         random = new SecureRandom();
         rows = new ArrayList<>();
