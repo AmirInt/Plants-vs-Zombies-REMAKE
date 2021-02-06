@@ -95,8 +95,9 @@ public class LawnMower extends Entity {
 
     @Override
     public void run() {
-        SoundPlayer soundPlayer = new SoundPlayer(path, 0, true);
+        SoundPlayer soundPlayer = null;
         if(gamePlayer.isNotMuted()) {
+            soundPlayer = new SoundPlayer(path, 0, true);
             ThreadPool.execute(soundPlayer);
         }
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
@@ -104,13 +105,16 @@ public class LawnMower extends Entity {
         while (xLocation < 1350 && gamePlayer.isNotGameFinished()) {
             if(gamePlayer.isGamePaused()) {
                 try {
-                    soundPlayer.pause();
+                    if(soundPlayer != null)
+                        soundPlayer.pause();
                     Thread.sleep(500);
                 } catch (InterruptedException ignore) { }
             } else {
-                soundPlayer.resume();
+                if(soundPlayer != null)
+                    soundPlayer.resume();
                 if(xLocation > 600)
-                    soundPlayer.setFinished(true);
+                    if(soundPlayer != null)
+                        soundPlayer.setFinished(true);
                 gamePlayer.runOverZombies(this);
                 try {
                     Thread.sleep(movingSpeed);
@@ -119,6 +123,8 @@ public class LawnMower extends Entity {
                 move();
             }
         }
+        if(soundPlayer != null)
+            soundPlayer.setFinished(true);
         die();
     }
 }

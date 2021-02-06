@@ -616,7 +616,8 @@ public class GamePlayer implements Runnable, Serializable {
                     Thread.sleep(1000);
                     ++time;
                     if(time == 50)
-                        soundPlayer.setFinished(true);
+                        if(!gameManager.isMuted())
+                            soundPlayer.setFinished(true);
                     if (time % sunDroppingPeriod == 0)
                         dropASun(random.nextInt(600) + 200,
                                 0, random.nextInt(400) + 200);
