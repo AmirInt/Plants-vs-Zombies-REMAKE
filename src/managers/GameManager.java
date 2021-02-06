@@ -448,6 +448,7 @@ public class GameManager implements Serializable {
     public void gameFinished(GamePlayer gamePlayer) {
         score += gamePlayer.getScore();
         try {
+            Thread.sleep(500);
             frame.displayMenu(new FinishingMenu(gamePlayer.getScore(), frame));
             Thread.sleep(4000);
         } catch (InterruptedException ignore) { }
